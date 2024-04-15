@@ -1,86 +1,12 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { gsap } from 'gsap'
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
-import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
-/**
- * Loaders
- */
-const loadingBarElement = document.querySelector('.loading-bar')
+import ModelLoader from './Utils/ModelLoader';
 
-let sceneReady = false
-const loadingManager = new THREE.LoadingManager(
-    // Loaded
-    () =>
-    {
-        // Wait a little
-        window.setTimeout(() =>
-        {
-            // Animate overlay
-            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
-
-            // Update loadingBarElement
-            loadingBarElement.classList.add('ended')
-            loadingBarElement.style.transform = ''
-        }, 500)
-
-        window.setTimeout(() =>
-        {
-            sceneReady = true
-        }, 2000)
-    },
-
-    // Progress
-    (itemUrl, itemsLoaded, itemsTotal) =>
-    {
-        // Calculate the progress and update the loadingBarElement
-        const progressRatio = itemsLoaded / itemsTotal
-        loadingBarElement.style.transform = `scaleX(${progressRatio})`
-    }
-)
-
-/**
- * Load obj model
- */
-//load model
-const objLoader = new OBJLoader(loadingManager);
-
-const mtlLoader = new MTLLoader(loadingManager);
-
-mtlLoader.load(
-    //'models/architectures/obj/architecture.mtl',
-    'models/obj_fix3/arch.mtl',
-    (materials) => {
-        materials.preload()
-
-        const objLoader = new OBJLoader()
-        objLoader.setMaterials(materials)
-        objLoader.load(
-            // 'models/architectures/obj/architecture.obj',
-            'models/obj_fix3/arch.obj',
-            (object) => {
-                console.log(object)
-                object.scale.set(0.01,0.01,0.01)
-                scene.add(object)
-            },
-            (xhr) => {
-                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-            },
-            (error) => {
-                console.log('An error happened')
-            }
-        )
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log('An error happened')
-    }
-)
+ let sceneReady = false
 
 
-/**
+/*
  * Base
  */
 
@@ -89,6 +15,13 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Loader
+ */
+const modelLoader = new ModelLoader(scene)
+modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj')
+
 /**
  * Floor
  */
@@ -104,34 +37,7 @@ floor.receiveShadow = true
 floor.rotation.x = - Math.PI * 0.5
 floor.position.y = -100
 scene.add(floor)
-/**
- * Overlay
- */
-const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
-const overlayMaterial = new THREE.ShaderMaterial({
-    // wireframe: true,
-    transparent: true,
-    uniforms:
-    {
-        uAlpha: { value: 1 }
-    },
-    vertexShader: `
-        void main()
-        {
-            gl_Position = vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform float uAlpha;
 
-        void main()
-        {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
-        }
-    `
-})
-const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
-scene.add(overlay)
 
 
 /**
