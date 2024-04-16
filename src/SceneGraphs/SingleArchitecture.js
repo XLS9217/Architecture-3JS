@@ -1,0 +1,104 @@
+import ModelLoader from "../Utils/ModelLoader";
+import * as THREE from 'three'
+
+let instance = null;
+let modelLoader = null
+let points = null;
+
+export default class SingleArchitecture{
+
+    constructor(inputScene){
+
+        // Singleton
+        if(instance)
+        {
+            return instance
+        }
+        instance = this
+
+        /**
+         * Start creating scene
+         */
+        this.scene = inputScene;
+        //console.log(this.scene)
+
+        //Scene Props
+
+        /**
+         * Lights
+         */
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
+        this.scene.add(ambientLight)
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
+        directionalLight.castShadow = true 
+        directionalLight.shadow.mapSize.set(1024, 1024)
+        directionalLight.position.set(5, 5, 5)
+        this.scene.add(directionalLight)
+
+        /**
+         * Building
+         */
+        let architecture_shenzhen =  null;
+        const setArchitecture = (modelPtr) => {
+            architecture_shenzhen = modelPtr;
+            architecture_shenzhen.scale.set(0.01,0.01,0.01)
+            architecture_shenzhen.position.set(-400,0,200)
+        }
+        //Loader
+        modelLoader = new ModelLoader(this.scene)
+        modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+
+        /**
+         * Floor
+         */
+        const floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(1000, 1000),
+            new THREE.MeshStandardMaterial({
+                color: '#444444',
+                metalness: 0,
+                roughness: 0.5
+            })
+        )
+        floor.receiveShadow = true
+        floor.rotation.x = - Math.PI * 0.5
+        floor.position.y = -100
+        this.scene.add(floor)
+
+        /**
+         * Points
+         */
+        points = [
+            {
+                position: new THREE.Vector3(1.55, 0.3, - 0.6),
+                element: document.querySelector('.point-0')
+            },
+            {
+                position: new THREE.Vector3(0.5, 0.8, - 1.6),
+                element: document.querySelector('.point-1')
+            },
+            {
+                position: new THREE.Vector3(1.6, - 1.3, - 0.7),
+                element: document.querySelector('.point-2')
+            }
+        ]
+
+        
+        console.log(this)
+    }
+
+    /**
+     * set the ideal camera location that can view the stuffs in scene
+     */
+    setIdealCameraLocation(camera) {
+        camera.position.set(774, 67, -571)
+    }
+
+    isSceneReady(){
+        return modelLoader.isSceneReady()
+    }
+
+    getPoints(){
+        return points;
+    }
+}

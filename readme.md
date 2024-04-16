@@ -1,16 +1,26 @@
-# Three.js Journey
+# LingSheng Xu
 
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+scene graph class should follow strandard
 
-``` bash
-# Install dependencies (only the first time)
-npm install
+```js
+//load stuff in constrcutor model, points
+constructor(inputScene)
 
-# Run the local server at localhost:8080
-npm run dev
+//make thit singulton
+let instance = null;
 
-# Build for production in the dist/ directory
-npm run build
+//define priviate variable on top of the class
+
+//setters and getters
+ setIdealCameraLocation(camera) {
+    camera.position.set(774, 67, -571)
+}
+
+isSceneReady(){
+    return modelLoader.isSceneReady()
+}
+
+getPoints(){
+    return points;
+}
 ```

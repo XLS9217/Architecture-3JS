@@ -68,10 +68,20 @@ const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
 
+let instance = null;
+
 export default class ModelLoader
 {
 
     constructor(scene){
+
+        // Singleton
+        if(instance)
+        {
+            return instance
+        }
+        instance = this
+
         this.scene = scene
         this.loadedModel = null//reset after load each object
         scene.add(overlay)
@@ -88,8 +98,6 @@ export default class ModelLoader
         console.log(path + name + '.mtl')
 
         mtlLoader.load(
-            //'models/architectures/obj/architecture.mtl',
-            //'models/obj_fix3/arch.mtl',
             path + name + '.mtl',
             (materials) => {
                 materials.preload()
@@ -97,17 +105,18 @@ export default class ModelLoader
                 const objLoader = new OBJLoader()
                 objLoader.setMaterials(materials)
                 objLoader.load(
-                    // 'models/architectures/obj/architecture.obj',
                     path + name + '.obj',
+                    //when loading is complete
                     (object) => {
                         this.loadedModel = object;
-                        //this.loadedModel.scale.set(0.01,0.01,0.01)
                         this.scene.add(this.loadedModel)
                         callback(this.loadedModel)
                     },
+                    //in the middle of loading
                     (xhr) => {
                         console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
                     },
+                    //if error happened
                     (error) => {
                         console.log('An error happened' + error)
                     }
@@ -122,5 +131,8 @@ export default class ModelLoader
         )
     }
 
+    isSceneReady(){
+        return sceneReady;
+    }
 
 }
