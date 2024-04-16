@@ -3,8 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { gsap } from 'gsap'
 import ModelLoader from './Utils/ModelLoader';
 
- let sceneReady = false
-
+ let sceneReady = true
 
 /*
  * Base
@@ -16,17 +15,26 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+//Scene Props
+let architecture_shenzhen =  null;
+const setArchitecture = (modelPtr) => {
+    architecture_shenzhen = modelPtr;
+    architecture_shenzhen.scale.set(0.01,0.01,0.01)
+    architecture_shenzhen.position.set(-400,0,200)
+}
+
 /**
  * Loader
  */
 const modelLoader = new ModelLoader(scene)
-modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj')
+modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+
 
 /**
  * Floor
  */
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(2000, 2000),
+    new THREE.PlaneGeometry(1000, 1000),
     new THREE.MeshStandardMaterial({
         color: '#444444',
         metalness: 0,
@@ -45,18 +53,18 @@ scene.add(floor)
  */
 const raycaster = new THREE.Raycaster()
 const points = [
-    // {
-    //     position: new THREE.Vector3(1.55, 0.3, - 0.6),
-    //     element: document.querySelector('.point-0')
-    // },
-    // {
-    //     position: new THREE.Vector3(0.5, 0.8, - 1.6),
-    //     element: document.querySelector('.point-1')
-    // },
-    // {
-    //     position: new THREE.Vector3(1.6, - 1.3, - 0.7),
-    //     element: document.querySelector('.point-2')
-    // }
+    {
+        position: new THREE.Vector3(1.55, 0.3, - 0.6),
+        element: document.querySelector('.point-0')
+    },
+    {
+        position: new THREE.Vector3(0.5, 0.8, - 1.6),
+        element: document.querySelector('.point-1')
+    },
+    {
+        position: new THREE.Vector3(1.6, - 1.3, - 0.7),
+        element: document.querySelector('.point-2')
+    }
 ]
 
 /**
@@ -117,6 +125,18 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+/**
+ * Callback for testing
+ */
+document.body.onkeyup = function(e) {
+    if (e.key == " " ||
+        e.code == "Space" ||      
+        e.keyCode == 32      
+    ) {
+      alert(camera.position.x + "\n" + camera.position.y + "\n" +  camera.position.z)
+    }
+  }
 
 /**
  * Animate

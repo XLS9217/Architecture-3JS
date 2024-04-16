@@ -73,11 +73,18 @@ export default class ModelLoader
 
     constructor(scene){
         this.scene = scene
-        
+        this.loadedModel = null//reset after load each object
         scene.add(overlay)
     }
 
-    Load2Scene(path, name, type){
+    /**
+     * 
+     * @param {string} path 
+     * @param {string} name 
+     * @param {string} type 
+     * @param {function} callback use to set the model back to main module
+     */
+    Load2Scene(path, name, type, callback){
         console.log(path + name + '.mtl')
 
         mtlLoader.load(
@@ -93,15 +100,16 @@ export default class ModelLoader
                     // 'models/architectures/obj/architecture.obj',
                     path + name + '.obj',
                     (object) => {
-                        console.log(object)
-                        object.scale.set(0.01,0.01,0.01)
-                        this.scene.add(object)
+                        this.loadedModel = object;
+                        //this.loadedModel.scale.set(0.01,0.01,0.01)
+                        this.scene.add(this.loadedModel)
+                        callback(this.loadedModel)
                     },
                     (xhr) => {
                         console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
                     },
                     (error) => {
-                        console.log('An error happened')
+                        console.log('An error happened' + error)
                     }
                 )
             },
@@ -113,4 +121,6 @@ export default class ModelLoader
             }
         )
     }
+
+
 }
