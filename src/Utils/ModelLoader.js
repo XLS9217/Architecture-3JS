@@ -131,6 +131,7 @@ export default class ModelLoader
         )
     }
 
+    
     isSceneReady(){
         return sceneReady;
     }
