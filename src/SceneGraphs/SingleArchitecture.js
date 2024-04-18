@@ -48,21 +48,21 @@ export default class SingleArchitecture{
         }
         //Loader
         modelLoader = new ModelLoader(this.scene)
-        //modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+        modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
 
 
-        modelLoader.Load2Scene('models/obj_testRoom/', 'testStructure', 'obj',(a) => {
-            console.log(a)
-            a.traverse((child) => {
-                if(child.name == "room"){
-                    console.log("find room!!!")
-                    child.MeshStandardMaterial = new THREE.MeshStandardMaterial({
-                        color: '#ff0000'
-                    })
-                }
-                this.scene.add(a)
-            })
-        })
+        // modelLoader.Load2Scene('models/obj_testRoom/', 'testStructure', 'obj',(a) => {
+        //     console.log(a)
+        //     a.traverse((child) => {
+        //         if(child.name == "room"){
+        //             console.log("find room!!!")
+        //             child.MeshStandardMaterial = new THREE.MeshStandardMaterial({
+        //                 color: '#ff0000'
+        //             })
+        //         }
+        //         this.scene.add(a)
+        //     })
+        // })
 
         /**
          * Floor
