@@ -41,13 +41,28 @@ export default class SingleArchitecture{
          */
         let architecture_shenzhen =  null;
         const setArchitecture = (modelPtr) => {
+            console.log(modelPtr)
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(0.01,0.01,0.01)
             architecture_shenzhen.position.set(-400,0,200)
         }
         //Loader
         modelLoader = new ModelLoader(this.scene)
-        modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+        //modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+
+
+        modelLoader.Load2Scene('models/obj_testRoom/', 'testStructure', 'obj',(a) => {
+            console.log(a)
+            a.traverse((child) => {
+                if(child.name == "room"){
+                    console.log("find room!!!")
+                    child.MeshStandardMaterial = new THREE.MeshStandardMaterial({
+                        color: '#ff0000'
+                    })
+                }
+                this.scene.add(a)
+            })
+        })
 
         /**
          * Floor

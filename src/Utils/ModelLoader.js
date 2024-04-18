@@ -92,7 +92,7 @@ export default class ModelLoader
      * @param {string} path 
      * @param {string} name 
      * @param {string} type 
-     * @param {function} callback use to set the model back to main module
+     * @param {function} callback what to do with the model, immediately after it is loaded
      */
     Load2Scene(path, name, type, callback){
         console.log(path + name + '.mtl')
@@ -110,11 +110,11 @@ export default class ModelLoader
                     (object) => {
                         this.loadedModel = object;
                         this.scene.add(this.loadedModel)
-                        callback(this.loadedModel)
+                        if(callback) callback(this.loadedModel)
                     },
                     //in the middle of loading
                     (xhr) => {
-                        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+                        //console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
                     },
                     //if error happened
                     (error) => {
