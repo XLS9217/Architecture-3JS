@@ -1,14 +1,15 @@
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
+import SceneManager from "../SceneManager";
 
 let instance = null
 let modelLoader = null
+let sceneManager = new SceneManager()
 
 //props inside scene
 let points = null
 let models = []
 
-//mode indicator
 
 export default class SingleArchitecture{
 
@@ -88,26 +89,29 @@ export default class SingleArchitecture{
         let originalMaterial = null;
         let loadedObject = null;
         let changedObject = null
+        let interactiveToken = "room"//what should the first token be, to indicate interactive
 
         modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
             console.log(model)
             model.traverse((child) => {
-                if(child.name == "room-green"){
+                const tokens = child.name.split("-");
+                if(tokens[0] == interactiveToken){
                     console.log("find room!!!")
-
+                    sceneManager.addInteractiveModel(child)
                     // Store a reference to the original material
                     originalMaterial = child.material;
                     changedObject = child
 
-                     // Create a new material with the existing texture and modified color
-                    child.material = new THREE.MeshStandardMaterial({
-                        map: originalMaterial.map, // Preserve the existing texture
-                        color: new THREE.Color('#123456') // Set the new color
-                    });
+                    //  // Create a new material with the existing texture and modified color
+                    // child.material = new THREE.MeshStandardMaterial({
+                    //     map: originalMaterial.map, // Preserve the existing texture
+                    //     color: new THREE.Color('#123456') // Set the new color
+                    // });
                 }
                 loadedObject = model;
                 this.scene.add(model)
             })
+            //console.log(sceneManager.getInteractiveModel())
         }) 
 
          // Event listener to revert material when 'r' is pressed

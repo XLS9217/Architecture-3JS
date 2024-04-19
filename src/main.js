@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import ModelLoader from './Utils/ModelLoader';
 import SingleArchitecture from './SceneGraphs/SingleArchitecture';
 import GUI from 'lil-gui'
+import SceneManager from './SceneManager';
 
 
  let sceneReady = true
@@ -18,6 +19,9 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+//SceneManager
+const sceneManager = new SceneManager()
 
 //SceneGraph
 const singleArch = new SingleArchitecture(scene)
@@ -34,10 +38,6 @@ const axesHelper = new THREE.AxesHelper( 1000 );
 scene.add( axesHelper );
 
 
-/**
- * Points of interest
- */
-const raycaster = new THREE.Raycaster()
 
 /**
  * Sizes
@@ -88,8 +88,27 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
- * Callbacks
+ * Interactive logic
  */
+
+/**
+ * Points of interest
+ */
+const raycaster = new THREE.Raycaster()
+let currentIntersect = null
+
+/**
+ * Mouse
+ */
+const mouse = new THREE.Vector2()
+
+window.addEventListener('mousemove', (event) =>
+{
+    mouse.x = event.clientX / sizes.width * 2 - 1
+    mouse.y = - (event.clientY / sizes.height) * 2 + 1
+
+    //console.log(mouse)
+})
 
 /**
  * For showing where camera is at
@@ -114,6 +133,22 @@ const tick = () =>
     controls.update()
 
     //Raycast with mouse click
+    raycaster.setFromCamera(mouse, camera)
+    const objectsToTest = sceneManager.getInteractiveModels()
+    const intersects = raycaster.intersectObjects(objectsToTest)
+
+    // Reset all objects to red
+    for (const object of objectsToTest) {
+        object.material.color.set('#ff0000');
+    }
+
+    // Change color of the closest intersected object to blue
+    if (intersects.length > 0) {
+        currentIntersect = intersects[0]
+        currentIntersect.object.material.color.set('#0000ff');
+    }
+
+    
 
     // Update points only when the scene is ready
     if(singleArch.isSceneReady())

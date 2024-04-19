@@ -1,4 +1,7 @@
 
+/**
+ * In charge of loading the moddel and showing the process
+ */
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
@@ -68,19 +71,10 @@ const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
 
-let instance = null;
-
 export default class ModelLoader
 {
 
     constructor(scene){
-
-        // Singleton
-        if(instance)
-        {
-            return instance
-        }
-        instance = this
 
         this.scene = scene
         this.loadedModel = null//reset after load each object
