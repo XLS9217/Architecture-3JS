@@ -85,18 +85,42 @@ export default class SingleArchitecture{
         //modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
 
 
+        let originalMaterial = null;
+
+        let loadedObject = null;
+
         modelLoader.Load2Scene('models/obj_testRoom/', 'testStructure', 'obj',(a) => {
             console.log(a)
             a.traverse((child) => {
                 if(child.name == "room"){
                     console.log("find room!!!")
-                    child.MeshStandardMaterial = new THREE.MeshStandardMaterial({
-                        color: '#ff0000'
-                    })
+
+                    // Store a reference to the original material
+                    originalMaterial = child.material;
+
+                     // Create a new material with the existing texture and modified color
+                    child.material = new THREE.MeshStandardMaterial({
+                        map: originalMaterial.map, // Preserve the existing texture
+                        color: new THREE.Color('#123456') // Set the new color
+                    });
                 }
+                loadedObject = a;
                 this.scene.add(a)
             })
-        })
+        }) 
+
+         // Event listener to revert material when 'r' is pressed
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'r') {
+                revertMaterial(loadedObject.getObjectByName("room"));
+            }
+        });
+
+        function revertMaterial(mesh) {
+            if (originalMaterial) {
+                mesh.material = originalMaterial; // Assign the original material back to the mesh
+            }
+        }
         
         models.push(architecture_shenzhen)
 

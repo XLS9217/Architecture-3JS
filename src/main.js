@@ -8,6 +8,7 @@ import GUI from 'lil-gui'
 
  let sceneReady = true
 
+
 /*
  * Base
  */
@@ -21,9 +22,17 @@ const scene = new THREE.Scene()
 //SceneGraph
 const singleArch = new SingleArchitecture(scene)
 
+
+/**
+ * debug
+ */
 //Debug Gui
 const debug_ui = new GUI()
 //debug_ui.hide();//hide UI
+
+const axesHelper = new THREE.AxesHelper( 1000 );
+scene.add( axesHelper );
+
 
 /**
  * Points of interest
@@ -79,7 +88,11 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
- * Callback for testing
+ * Callbacks
+ */
+
+/**
+ * For showing where camera is at
  */
 document.body.onkeyup = function(e) {
     if (e.key == " " ||
@@ -90,6 +103,8 @@ document.body.onkeyup = function(e) {
     }
   }
 
+
+
 /**
  * Animate
  */
@@ -97,6 +112,8 @@ const tick = () =>
 {
     // Update controls
     controls.update()
+
+    //Raycast with mouse click
 
     // Update points only when the scene is ready
     if(singleArch.isSceneReady())
