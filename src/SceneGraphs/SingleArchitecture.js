@@ -86,17 +86,18 @@ export default class SingleArchitecture{
 
 
         let originalMaterial = null;
-
         let loadedObject = null;
+        let changedObject = null
 
-        modelLoader.Load2Scene('models/obj_testRoom/', 'testStructure', 'obj',(a) => {
-            console.log(a)
-            a.traverse((child) => {
-                if(child.name == "room"){
+        modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
+            console.log(model)
+            model.traverse((child) => {
+                if(child.name == "room-green"){
                     console.log("find room!!!")
 
                     // Store a reference to the original material
                     originalMaterial = child.material;
+                    changedObject = child
 
                      // Create a new material with the existing texture and modified color
                     child.material = new THREE.MeshStandardMaterial({
@@ -104,15 +105,15 @@ export default class SingleArchitecture{
                         color: new THREE.Color('#123456') // Set the new color
                     });
                 }
-                loadedObject = a;
-                this.scene.add(a)
+                loadedObject = model;
+                this.scene.add(model)
             })
         }) 
 
          // Event listener to revert material when 'r' is pressed
         document.addEventListener('keypress', function(event) {
             if (event.key === 'r') {
-                revertMaterial(loadedObject.getObjectByName("room"));
+                revertMaterial(changedObject);
             }
         });
 
