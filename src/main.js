@@ -88,7 +88,7 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
- * Interactive logic
+ * Interactive logic-------------------------------------------------
  */
 
 /**
@@ -122,10 +122,28 @@ document.body.onkeyup = function(e) {
     }
   }
 
+window.addEventListener('click', () =>
+{
+    if(currentIntersect)
+    {
+        let mat2set = new THREE.MeshBasicMaterial({
+            color: new THREE.Color('#ff0055') // Set the new color
+        })
+        sceneManager.setInteractiveModelMaterial(currentIntersect.object, mat2set)
+        //console.log(currentIntersect.object)
+    }
+})
 
+
+
+
+
+
+
+const objectsToTest = sceneManager.getInteractiveModels()
 
 /**
- * Animate
+ * Core Loop for animation and rendering
  */
 const tick = () =>
 {
@@ -134,18 +152,19 @@ const tick = () =>
 
     //Raycast with mouse click
     raycaster.setFromCamera(mouse, camera)
-    const objectsToTest = sceneManager.getInteractiveModels()
     const intersects = raycaster.intersectObjects(objectsToTest)
 
     // Reset all objects to red
     for (const object of objectsToTest) {
-        object.material.color.set('#ff0000');
+        //object.material.color.set('#ff0000');
     }
 
     // Change color of the closest intersected object to blue
     if (intersects.length > 0) {
         currentIntersect = intersects[0]
-        currentIntersect.object.material.color.set('#0000ff');
+        //currentIntersect.object.material.color.set('#0000ff');
+    }else{
+        currentIntersect = null
     }
 
     
