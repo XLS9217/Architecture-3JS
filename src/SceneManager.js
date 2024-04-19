@@ -44,13 +44,22 @@ export default class SceneManager{
         for(const obj of interactiveModels){
             //console.log(obj.model.name + " and " + model.name)
             if(obj.name == object.name){
-                console.log("found model")
+                console.log("found set model")
                 obj.material = material
+                const dataLink = interactiveModel_data.find(item => item.name === object.name);
+                dataLink.hasChanged = true
+                console.log(dataLink)
             }
         }
     }
 
     revertInteractiveModelMaterial(object){
-
+        for(const obj of interactiveModel_data){
+            //console.log(obj.model.name + " and " + model.name)
+            if(obj.name == object.name && obj.hasChanged){
+                console.log("found revert model")
+                object.material = obj.material
+            }
+        }
     }
 }

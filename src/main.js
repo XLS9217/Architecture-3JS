@@ -134,7 +134,12 @@ window.addEventListener('click', () =>
     }
 })
 
-
+window.addEventListener('contextmenu', () => {
+    if(currentIntersect)
+    {
+        sceneManager.revertInteractiveModelMaterial(currentIntersect.object)
+    }
+});
 
 
 
@@ -157,6 +162,7 @@ const tick = () =>
     // Reset all objects to red
     for (const object of objectsToTest) {
         //object.material.color.set('#ff0000');
+        //sceneManager.revertInteractiveModelMaterial(object)
     }
 
     // Change color of the closest intersected object to blue
