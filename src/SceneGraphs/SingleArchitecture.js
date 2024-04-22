@@ -1,3 +1,6 @@
+/**
+ * This is a test scene that only load few model
+ */
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
 import SceneManager from "../SceneManager";
@@ -65,6 +68,10 @@ export default class SingleArchitecture{
             {
                 position: new THREE.Vector3(1.6, - 1.3, - 0.7),
                 element: document.querySelector('.point-2')
+            },
+            {
+                position: new THREE.Vector3(63, 9 , -7),
+                element: document.querySelector('.green-house')
             }
         ]
     }
@@ -77,18 +84,25 @@ export default class SingleArchitecture{
         const setArchitecture = (modelPtr) => {
             console.log(modelPtr)
             architecture_shenzhen = modelPtr;
-            architecture_shenzhen.scale.set(0.01,0.01,0.01)
-            architecture_shenzhen.position.set(-400,0,200)
+            architecture_shenzhen.scale.set(10,10,10)
+            architecture_shenzhen.position.set(-1000,0,500)
+            modelPtr.traverse((child) => {
+                //console.log(child)
+                sceneManager.addInteractiveModel(child)
+                // const tokens = child.name.split("_");
+                // if(tokens[0] == 'interact'){
+                //     console.log("find interact " + child.name)
+                //     sceneManager.addInteractiveModel(child)
+                // }
+            })
         }
         
         //Loader
         modelLoader = new ModelLoader(this.scene)
         //modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
+        modelLoader.Load2Scene('models/shenzhen_gltf/', 'shenzhen', 'gltf',setArchitecture)
 
 
-        let originalMaterial = null;
-        let loadedObject = null;
-        let changedObject = null
         let interactiveToken = "room"//what should the first token be, to indicate interactive
 
         modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
@@ -98,34 +112,11 @@ export default class SingleArchitecture{
                 if(tokens[0] == interactiveToken){
                     console.log("find room!!!")
                     sceneManager.addInteractiveModel(child)
-                    // Store a reference to the original material
-                    originalMaterial = child.material;
-                    changedObject = child
-
-                    //  // Create a new material with the existing texture and modified color
-                    // child.material = new THREE.MeshStandardMaterial({
-                    //     map: originalMaterial.map, // Preserve the existing texture
-                    //     color: new THREE.Color('#123456') // Set the new color
-                    // });
                 }
-                loadedObject = model;
                 this.scene.add(model)
             })
             //console.log(sceneManager.getInteractiveModel())
         }) 
-
-         // Event listener to revert material when 'r' is pressed
-        document.addEventListener('keypress', function(event) {
-            if (event.key === 'r') {
-                revertMaterial(changedObject);
-            }
-        });
-
-        function revertMaterial(mesh) {
-            if (originalMaterial) {
-                mesh.material = originalMaterial; // Assign the original material back to the mesh
-            }
-        }
         
         models.push(architecture_shenzhen)
 
@@ -133,7 +124,7 @@ export default class SingleArchitecture{
          * Floor
          */
         const floor = new THREE.Mesh(
-            new THREE.PlaneGeometry(1000, 1000),
+            new THREE.PlaneGeometry(2000, 2000),
             new THREE.MeshStandardMaterial({
                 color: '#444444',
                 metalness: 0,
@@ -142,7 +133,7 @@ export default class SingleArchitecture{
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -100
+        floor.position.y = -250
         this.scene.add(floor)
     }
 

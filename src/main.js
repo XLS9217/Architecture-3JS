@@ -96,6 +96,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const raycaster = new THREE.Raycaster()
 let currentIntersect = null
+let minimunPointDistance = 200
 
 /**
  * Mouse
@@ -110,9 +111,22 @@ window.addEventListener('mousemove', (event) =>
     //console.log(mouse)
 })
 
+
+
+
+
 /**
- * For showing where camera is at
+ * Interaction Logic
  */
+const hover_material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('#ff0055')
+})
+
+const select_material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('#ff0055'),
+    wireframe: true
+})
+
 document.body.onkeyup = function(e) {
     if (e.key == " " ||
         e.code == "Space" ||      
@@ -122,22 +136,30 @@ document.body.onkeyup = function(e) {
     }
   }
 
+//left button
 window.addEventListener('click', () =>
 {
     if(currentIntersect)
     {
-        let mat2set = new THREE.MeshBasicMaterial({
-            color: new THREE.Color('#ff0055') // Set the new color
-        })
-        sceneManager.setInteractiveModelMaterial(currentIntersect.object, mat2set)
+        sceneManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
 })
 
+//right button
 window.addEventListener('contextmenu', () => {
     if(currentIntersect)
     {
-        sceneManager.revertInteractiveModelMaterial(currentIntersect.object)
+        sceneManager.revertInteractiveModelMaterial(currentIntersect.object, true)
+    }
+});
+
+//mouse wheel
+window.addEventListener('mousedown', (event) => {
+    // Check if the button clicked is the mouse wheel button (button code 1)
+    if (event.button === 1) {
+        if(currentIntersect)
+            sceneManager.printInteractiveModel(currentIntersect)
     }
 });
 
@@ -162,13 +184,13 @@ const tick = () =>
     // Reset all objects to red
     for (const object of objectsToTest) {
         //object.material.color.set('#ff0000');
-        //sceneManager.revertInteractiveModelMaterial(object)
+        sceneManager.revertInteractiveModelMaterial(object,false)
     }
 
     // Change color of the closest intersected object to blue
     if (intersects.length > 0) {
         currentIntersect = intersects[0]
-        //currentIntersect.object.material.color.set('#0000ff');
+        sceneManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
     }else{
         currentIntersect = null
     }
@@ -204,7 +226,7 @@ const tick = () =>
                 const pointDistance = point.position.distanceTo(camera.position)
     
                 // Intersection is close than the point
-                if(intersectionDistance < pointDistance)
+                if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
                 {
                     // Hide
                     point.element.classList.remove('visible')

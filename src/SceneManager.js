@@ -32,7 +32,8 @@ export default class SceneManager{
         interactiveModel_data.push({
             name: model.name,
             material: model.material,
-            hasChanged: false
+            hasChanged: false,
+            isSelected: false
         })
     }
 
@@ -40,26 +41,52 @@ export default class SceneManager{
         return interactiveModels
     }
 
-    setInteractiveModelMaterial(object, material){
+    //if it is clicked, set is selected, until it's clicked agian, don't set back on hover over
+    setInteractiveModelMaterial(object, material, isClicked){
         for(const obj of interactiveModels){
             //console.log(obj.model.name + " and " + model.name)
             if(obj.name == object.name){
-                console.log("found set model")
-                obj.material = material
-                const dataLink = interactiveModel_data.find(item => item.name === object.name);
-                dataLink.hasChanged = true
-                console.log(dataLink)
+                // console.log("found set model")
+                // console.log(metaData)
+                const metaData = interactiveModel_data.find(item => item.name === object.name);
+                if(isClicked){
+                    if(!metaData.isSelected){
+                        metaData.isSelected = true
+                        obj.material = material
+                    }
+                }else{
+                    if(!metaData.isSelected){
+                        obj.material = material
+                    }
+                }
+                //obj.material = material
+                metaData.hasChanged = true
             }
         }
     }
 
-    revertInteractiveModelMaterial(object){
-        for(const obj of interactiveModel_data){
-            //console.log(obj.model.name + " and " + model.name)
-            if(obj.name == object.name && obj.hasChanged){
-                console.log("found revert model")
-                object.material = obj.material
+    revertInteractiveModelMaterial(object, isClicked){
+        for(const metaData of interactiveModel_data){
+            if(metaData.name == object.name && metaData.hasChanged){
+                if(isClicked){
+                    // console.log("found revert model data")
+                    // console.log(metaData)
+                    if(metaData.isSelected){
+                        metaData.isSelected = false
+                        object.material = metaData.material
+                    }
+                }else{  
+                    if(!metaData.isSelected)
+                        object.material = metaData.material
+                }
             }
         }
+    }
+
+    printInteractiveModel(model){
+        console.log("Interactive Model----------------")
+        const metaData = interactiveModel_data.find(item => item.name === model.object.name);
+        console.log(metaData)
+        console.log(model)
     }
 }

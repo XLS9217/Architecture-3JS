@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { gsap } from 'gsap'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const loadingBarElement = document.querySelector('.loading-bar')
 
@@ -70,6 +71,7 @@ const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
+const gltfLoader = new GLTFLoader(loadingManager)
 
 export default class ModelLoader
 {
@@ -89,40 +91,55 @@ export default class ModelLoader
      * @param {function} callback what to do with the model, immediately after it is loaded
      */
     Load2Scene(path, name, type, callback){
-        console.log(path + name + '.mtl')
 
-        mtlLoader.load(
-            path + name + '.mtl',
-            (materials) => {
-                materials.preload()
+        if(type == "gltf"){
+            gltfLoader.load(
+                path+name+'.gltf',
+                (gltf) =>
+                {
+                    const model = gltf.scene
+                    this.scene.add(model)
+                    callback(model)
+                }
+            )
+        }
+        else if(type == "obj"){
+            console.log(path + name + '.mtl')
+
+            mtlLoader.load(
+                path + name + '.mtl',
+                (materials) => {
+                    materials.preload()
+            
+                    const objLoader = new OBJLoader()
+                    objLoader.setMaterials(materials)
+                    objLoader.load(
+                        path + name + '.obj',
+                        //when loading is complete
+                        (object) => {
+                            this.loadedModel = object;
+                            this.scene.add(this.loadedModel)
+                            if(callback) callback(this.loadedModel)
+                        },
+                        //in the middle of loading
+                        (xhr) => {
+                            //console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+                        },
+                        //if error happened
+                        (error) => {
+                            console.log('An error happened' + error)
+                        }
+                    )
+                },
+                (xhr) => {
+                    console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+                },
+                (error) => {
+                    console.log('An error happened')
+                }
+            )
+        }
         
-                const objLoader = new OBJLoader()
-                objLoader.setMaterials(materials)
-                objLoader.load(
-                    path + name + '.obj',
-                    //when loading is complete
-                    (object) => {
-                        this.loadedModel = object;
-                        this.scene.add(this.loadedModel)
-                        if(callback) callback(this.loadedModel)
-                    },
-                    //in the middle of loading
-                    (xhr) => {
-                        //console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-                    },
-                    //if error happened
-                    (error) => {
-                        console.log('An error happened' + error)
-                    }
-                )
-            },
-            (xhr) => {
-                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-            },
-            (error) => {
-                console.log('An error happened')
-            }
-        )
     }
 
     
