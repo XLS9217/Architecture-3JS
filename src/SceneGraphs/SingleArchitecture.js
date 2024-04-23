@@ -85,10 +85,10 @@ export default class SingleArchitecture{
             console.log(modelPtr)
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(10,10,10)
-            architecture_shenzhen.position.set(-1000,0,500)
+            architecture_shenzhen.position.set(650,0,0)
             modelPtr.traverse((child) => {
                 //console.log(child)
-                sceneManager.addInteractiveModel(child)
+                //sceneManager.addInteractiveModel(child)
                 // const tokens = child.name.split("_");
                 // if(tokens[0] == 'interact'){
                 //     console.log("find interact " + child.name)
@@ -99,8 +99,7 @@ export default class SingleArchitecture{
         
         //Loader
         modelLoader = new ModelLoader(this.scene)
-        //modelLoader.Load2Scene('models/obj_shenzhen/', 'arch', 'obj',setArchitecture)
-        modelLoader.Load2Scene('models/shenzhen_gltf/', 'shenzhen', 'gltf',setArchitecture)
+        modelLoader.Load2Scene('models/sz_simplify/', 'sz_simp', 'glb',setArchitecture)
 
 
         let interactiveToken = "room"//what should the first token be, to indicate interactive

@@ -5,14 +5,19 @@ import ModelLoader from './Utils/ModelLoader';
 import SingleArchitecture from './SceneGraphs/SingleArchitecture';
 import GUI from 'lil-gui'
 import SceneManager from './SceneManager';
+import Stats from 'stats.js'
 
 
- let sceneReady = true
 
 
 /*
  * Base
  */
+
+//Statistics 
+const stats = new Stats()
+stats.showPanel(0) 
+document.body.appendChild(stats.dom)
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -174,6 +179,7 @@ const objectsToTest = sceneManager.getInteractiveModels()
  */
 const tick = () =>
 {
+    stats.begin();
     // Update controls
     controls.update()
 
@@ -247,6 +253,9 @@ const tick = () =>
 
     // Render
     renderer.render(scene, camera)
+
+    // End the stats
+    stats.end();
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)

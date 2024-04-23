@@ -7,6 +7,7 @@ import { gsap } from 'gsap'
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 const loadingBarElement = document.querySelector('.loading-bar')
 
@@ -72,6 +73,9 @@ const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
 const gltfLoader = new GLTFLoader(loadingManager)
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('/draco/')
+gltfLoader.setDRACOLoader(dracoLoader)
 
 export default class ModelLoader
 {
@@ -95,6 +99,17 @@ export default class ModelLoader
         if(type == "gltf"){
             gltfLoader.load(
                 path+name+'.gltf',
+                (gltf) =>
+                {
+                    const model = gltf.scene
+                    this.scene.add(model)
+                    callback(model)
+                }
+            )
+        }
+        else if(type == "glb"){
+            gltfLoader.load(
+                path+name+'.glb',
                 (gltf) =>
                 {
                     const model = gltf.scene
