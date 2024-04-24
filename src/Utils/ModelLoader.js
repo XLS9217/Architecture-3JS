@@ -9,6 +9,8 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
+let instance = null
+
 const loadingBarElement = document.querySelector('.loading-bar')
 
 let sceneReady = false
@@ -19,6 +21,8 @@ const loadingManager = new THREE.LoadingManager(
         // Wait a little
         window.setTimeout(() =>
         {
+            console.log("loading manager")
+
             // Animate overlay
             gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
 
@@ -41,6 +45,12 @@ const loadingManager = new THREE.LoadingManager(
         loadingBarElement.style.transform = `scaleX(${progressRatio})`
     }
 )
+
+loadingManager.onStart = function () {
+	console.log("loading manager start")
+    loadingBarElement.classList.remove('ended')
+    overlay.material.uniforms.uAlpha.value = 1.0; 
+};
 
 /**
  * Overlay
@@ -68,7 +78,7 @@ const overlayMaterial = new THREE.ShaderMaterial({
         }
     `
 })
-const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
+let overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
@@ -81,7 +91,10 @@ export default class ModelLoader
 {
 
     constructor(scene){
-
+        if(instance){
+            return instance
+        }
+        instance = this
         this.scene = scene
         this.loadedModel = null//reset after load each object
         scene.add(overlay)

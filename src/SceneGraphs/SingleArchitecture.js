@@ -4,6 +4,7 @@
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
 import SceneManager from "../SceneManager";
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 let instance = null
 let modelLoader = null
@@ -12,6 +13,10 @@ let sceneManager = new SceneManager()
 //props inside scene
 let points = null
 let models = []
+
+//for baking
+const textureLoader = new THREE.TextureLoader()
+const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 
 export default class SingleArchitecture{
@@ -24,35 +29,47 @@ export default class SingleArchitecture{
             return instance
         }
         instance = this
-
         /**
          * Start creating scene
          */
         this.scene = inputScene;
+        
+        console.log(this)
+    }
 
+    loadScene(){
+        console.log("loading single arch")
         //Scene Props
         this.CreateLights()
         this.CreateModels()
         this.Create2DPoints()
-        
-        console.log(this)
     }
 
     CreateLights(){
         /**
          * Lights
          */
-        const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
         this.scene.add(ambientLight)
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
+        const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
         directionalLight.castShadow = true 
         directionalLight.shadow.mapSize.set(1024, 1024)
-        directionalLight.position.set(5, 5, 5)
         this.scene.add(directionalLight)
     }
 
     Create2DPoints(){
+        // const earthMassDiv = document.createElement( 'div' );
+        // earthMassDiv.className = 'label';
+        // earthMassDiv.textContent = '5.97237e24 kg';
+        // earthMassDiv.style.backgroundColor = 'transparent';
+
+        // const earthMassLabel = new CSS2DObject( earthMassDiv );
+        // earthMassLabel.position.set( 0, 0, 0 );
+        // earthMassLabel.center.set( 0, 0 );
+        // this.scene.add( earthMassLabel );
+        // earthMassLabel.layers.set( 1 );
+
         /**
          * Points
          */
@@ -81,11 +98,14 @@ export default class SingleArchitecture{
          * Building
          */
         let architecture_shenzhen =  null;
-        const setArchitecture = (modelPtr) => {
+        
+        //Loader
+        modelLoader = new ModelLoader(this.scene)
+        modelLoader.Load2Scene('models/sz_simplify/', 'sz_simp2', 'glb',(modelPtr) => {
             console.log(modelPtr)
             architecture_shenzhen = modelPtr;
-            architecture_shenzhen.scale.set(10,10,10)
-            architecture_shenzhen.position.set(650,0,0)
+            architecture_shenzhen.scale.set(5,5,5)
+            architecture_shenzhen.position.set(300,0,200)
             modelPtr.traverse((child) => {
                 //console.log(child)
                 //sceneManager.addInteractiveModel(child)
@@ -94,12 +114,11 @@ export default class SingleArchitecture{
                 //     console.log("find interact " + child.name)
                 //     sceneManager.addInteractiveModel(child)
                 // }
+                child.castShadow = true
+                child.receiveShadow = true
             })
-        }
-        
-        //Loader
-        modelLoader = new ModelLoader(this.scene)
-        modelLoader.Load2Scene('models/sz_simplify/', 'sz_simp', 'glb',setArchitecture)
+
+        })
 
 
         let interactiveToken = "room"//what should the first token be, to indicate interactive
@@ -112,6 +131,7 @@ export default class SingleArchitecture{
                     console.log("find room!!!")
                     sceneManager.addInteractiveModel(child)
                 }
+                model.position.set(200,0,300)
                 this.scene.add(model)
             })
             //console.log(sceneManager.getInteractiveModel())
@@ -123,24 +143,41 @@ export default class SingleArchitecture{
          * Floor
          */
         const floor = new THREE.Mesh(
-            new THREE.PlaneGeometry(2000, 2000),
+            new THREE.PlaneGeometry(6000, 6000),
             new THREE.MeshStandardMaterial({
-                color: '#444444',
-                metalness: 0,
-                roughness: 0.5
+                color: '#4F7942',
+                metalness: 0.5,
+                roughness: 0.9
             })
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -250
+        floor.position.y = -53
         this.scene.add(floor)
+
+
+        const sphereShadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(300,350),
+            new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                transparent: true,
+                alphaMap: simpleShadow
+            })
+        )
+        sphereShadow.rotation.x = - Math.PI * 0.5
+        sphereShadow.position.x = 30
+        sphereShadow.position.y = floor.position.y + 1
+        this.scene.add(sphereShadow)
+
+        console.log(window.debug_ui)
+        this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
     }
 
     /**
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(774, 67, -571)
+        camera.position.set(-102, 61, 343)
     }
 
     isSceneReady(){

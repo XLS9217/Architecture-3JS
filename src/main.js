@@ -1,12 +1,16 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { gsap } from 'gsap'
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import ModelLoader from './Utils/ModelLoader';
 import SingleArchitecture from './SceneGraphs/SingleArchitecture';
 import GUI from 'lil-gui'
 import SceneManager from './SceneManager';
 import Stats from 'stats.js'
-
+import ShenZhen_Level1 from './SceneGraphs/ShenZhen_Level1';
+import ShenZhen_Level2 from './SceneGraphs/ShenZhen_Level2';
+import ShenZhen_Level3 from './SceneGraphs/ShenZhen_Level3';
+import ShenZhen_Basement from './SceneGraphs/ShenZhen_Basement';
 
 
 
@@ -19,6 +23,14 @@ const stats = new Stats()
 stats.showPanel(0) 
 document.body.appendChild(stats.dom)
 
+//Debug Gui
+const debug_ui = new GUI()
+window.debug_ui = debug_ui
+let gui_obj = {
+    
+}
+//debug_ui.hide();//hide UI
+
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
@@ -29,19 +41,41 @@ const scene = new THREE.Scene()
 const sceneManager = new SceneManager()
 
 //SceneGraph
-const singleArch = new SingleArchitecture(scene)
+//start up at shenzhen graph
+let shenzhenArch = new SingleArchitecture(scene)
+let shenzhenL1 = new ShenZhen_Level1(scene)
+let shenzhenL2 = new ShenZhen_Level2(scene)
+let shenzhenL3 = new ShenZhen_Level3(scene)
+let shenzhenBase = new ShenZhen_Basement(scene)
+
+let currentSceneGraph = shenzhenArch
+currentSceneGraph.loadScene()
 
 
-/**
- * debug
- */
-//Debug Gui
-const debug_ui = new GUI()
-//debug_ui.hide();//hide UI
+let currentScene = "singleArch"
+
+gui_obj.currentScene = currentScene
+gui_obj.changeScene = ()=>{
+    currentScene = gui_obj.currentScene
+    alert("current scene is " + currentScene)
+
+    if(currentScene == "singleArch"){
+        scene.clear();
+        currentSceneGraph = shenzhenArch
+    }
+    else if(currentScene == "szl1"){
+        scene.clear();
+        currentSceneGraph = shenzhenL1
+    }
+
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+}
+window.debug_ui.add(gui_obj, "currentScene")
+window.debug_ui.add(gui_obj, "changeScene")
 
 const axesHelper = new THREE.AxesHelper( 1000 );
 scene.add( axesHelper );
-
 
 
 /**
@@ -71,15 +105,15 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 3000)
-//camera.position.set(774, 67, -571)
-singleArch.setIdealCameraLocation(camera)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
+currentSceneGraph.setIdealCameraLocation(camera)
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-
+controls.rotateSpeed = 0.15;
+controls.PanSpeed = 0.5;
 /**
  * Renderer
  */
@@ -87,10 +121,12 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true
 })
+renderer.setClearColor(0xcccccc)
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
 
 /**
  * Interactive logic-------------------------------------------------
@@ -101,7 +137,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const raycaster = new THREE.Raycaster()
 let currentIntersect = null
-let minimunPointDistance = 200
+let minimunPointDistance = 350
 
 /**
  * Mouse
@@ -133,19 +169,15 @@ const select_material = new THREE.MeshBasicMaterial({
 })
 
 document.body.onkeyup = function(e) {
-    if (e.key == " " ||
-        e.code == "Space" ||      
-        e.keyCode == 32      
-    ) {
+    if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
       alert(camera.position.x + "\n" + camera.position.y + "\n" +  camera.position.z)
     }
-  }
+}
 
 //left button
 window.addEventListener('click', () =>
 {
-    if(currentIntersect)
-    {
+    if(currentIntersect){
         sceneManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
@@ -153,8 +185,7 @@ window.addEventListener('click', () =>
 
 //right button
 window.addEventListener('contextmenu', () => {
-    if(currentIntersect)
-    {
+    if(currentIntersect){
         sceneManager.revertInteractiveModelMaterial(currentIntersect.object, true)
     }
 });
@@ -167,6 +198,59 @@ window.addEventListener('mousedown', (event) => {
             sceneManager.printInteractiveModel(currentIntersect)
     }
 });
+
+
+
+// Get each button by its ID
+const mainButton = document.getElementById('main');
+const level1Button = document.getElementById('level1');
+const level2Button = document.getElementById('level2');
+const level3Button = document.getElementById('level3');
+const basementButton = document.getElementById('level4'); // Renamed to match the button text
+
+// Hook functions to buttons using event listeners
+mainButton.addEventListener('click', () => {
+    console.log("Single Arch button clicked!");
+    scene.clear();
+    currentSceneGraph = shenzhenArch
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+});
+
+level1Button.addEventListener('click', () => {
+    console.log("Level 1 button clicked!");
+    scene.clear();
+    currentSceneGraph = shenzhenL1
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+});
+
+level2Button.addEventListener('click', () => {
+    console.log("Level 2 button clicked!");
+    scene.clear();
+    currentSceneGraph = shenzhenL2
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+});
+
+level3Button.addEventListener('click', () => {
+    console.log("Level 3 button clicked!");
+    scene.clear();
+    currentSceneGraph = shenzhenL3
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+});
+
+basementButton.addEventListener('click', () => {
+    console.log("Basement button clicked!");
+    scene.clear();
+    currentSceneGraph = shenzhenBase
+    currentSceneGraph.loadScene()
+    currentSceneGraph.setIdealCameraLocation(camera)
+});
+
+
+
 
 
 
@@ -204,10 +288,10 @@ const tick = () =>
     
 
     // Update points only when the scene is ready
-    if(singleArch.isSceneReady())
+    if(currentSceneGraph.isSceneReady())
     {
         // Go through each point
-        for(const point of singleArch.getPoints())
+        for(const point of currentSceneGraph.getPoints())
         {
             // Get 2D screen position
             const screenPosition = point.position.clone()

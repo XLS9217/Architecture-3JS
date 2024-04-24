@@ -37,6 +37,30 @@ body
     transition: transform 1.5s ease-in-out;
 }
 
+
+.button_holder{
+    position: absolute;
+    top: 10%; /* Adjust the starting position of the div */
+    left: 1%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start of the flex container */
+}
+
+.button {
+    width: 100px; /* Adjust width as needed */
+    margin-bottom: 10px; /* Adjust spacing between buttons */
+    z-index: 999; /* Ensure buttons are visible */
+}
+
+/* .button {    
+    position: absolute;
+    width: 100px;
+    top: 10%;
+    left: 1%;
+    z-index: 999; 
+} */
+
 .point
 {
     position: absolute;
@@ -50,16 +74,16 @@ body
     position: absolute;
     top: -20px;
     left: -20px;
-    width: 40px;
+    width: 80px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 25%;
     background: #00000077;
     border: 1px solid #ffffff77;
     color: #ffffff;
     font-family: Helvetica, Arial, sans-serif;
     text-align: center;
     line-height: 40px;
-    font-weight: 100;
+    font-weight: 10;
     font-size: 14px;
     cursor: help;
     transform: scale(0, 0);
