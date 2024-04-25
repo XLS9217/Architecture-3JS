@@ -13,7 +13,7 @@ let interactiveModels = []
  */
 let interactiveModel_data = []
 
-export default class SceneManager{
+export default class InteractiveModelMangaer{
 
     constructor(){
         // Singleton

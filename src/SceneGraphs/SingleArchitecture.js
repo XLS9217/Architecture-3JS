@@ -3,12 +3,12 @@
  */
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
-import SceneManager from "../SceneManager";
+import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 let instance = null
 let modelLoader = null
-let sceneManager = new SceneManager()
+let sceneManager = new InteractiveModelMangaer()
 
 //props inside scene
 let points = null

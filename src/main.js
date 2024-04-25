@@ -1,14 +1,20 @@
+//three js classes
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { gsap } from 'gsap'
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import ModelLoader from './Utils/ModelLoader';
-import SingleArchitecture from './SceneGraphs/SingleArchitecture';
+
+//performance and debug
 import GUI from 'lil-gui'
-import SceneManager from './SceneManager';
 import Stats from 'stats.js'
 
+//my classes
+import InteractiveModelMangaer from './Utils/InteractiveModelMangaer';
+import FloatTag2D from './2DElements/FloatTag2D';
+import ModelLoader from './Utils/ModelLoader';
+
 //scene graphes
+import SingleArchitecture from './SceneGraphs/SingleArchitecture';
 import ShenZhen_Level1 from './SceneGraphs/ShenZhen_Level1';
 import ShenZhen_Level2 from './SceneGraphs/ShenZhen_Level2';
 import ShenZhen_Level3 from './SceneGraphs/ShenZhen_Level3';
@@ -40,7 +46,7 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 //SceneManager
-const sceneManager = new SceneManager()
+const sceneManager = new InteractiveModelMangaer()
 
 //SceneGraph
 //start up at shenzhen graph
@@ -261,28 +267,10 @@ labelRenderer.domElement.style.top = '0px';
 labelRenderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(labelRenderer.domElement)
 
-const point2D = document.createElement( 'div' );
-point2D.textContent = 'hello 2js'
-
-point2D.style.position = 'absolute';
-point2D.style.top = '-20px';
-point2D.style.left = '-20px';
-point2D.style.width = '80px';
-point2D.style.height = '40px';
-point2D.style.borderRadius = '25%';
-point2D.style.background = '#00000077';
-point2D.style.border = '1px solid #ffffff77';
-point2D.style.color = '#ffffff';
-point2D.style.fontFamily = 'Helvetica, Arial, sans-serif';
-point2D.style.textAlign = 'center';
-point2D.style.lineHeight = '40px';
-point2D.style.fontWeight = 'normal'; // Changed from 10 to normal
-point2D.style.fontSize = '14px';
-point2D.style.cursor = 'help';
-
-const pLabel = new CSS2DObject(point2D)
-scene.add( pLabel );
-pLabel.position.set(-40,24,136)
+// Create an instance of FloatHelper2D
+let floatHelper = new FloatTag2D("test helper",new THREE.Vector3(-40,24,136))
+floatHelper.setPosition(new THREE.Vector3(0,100,0))
+scene.add(floatHelper.getLabel())
 
 
 
