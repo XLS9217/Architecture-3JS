@@ -7,6 +7,8 @@ import SingleArchitecture from './SceneGraphs/SingleArchitecture';
 import GUI from 'lil-gui'
 import SceneManager from './SceneManager';
 import Stats from 'stats.js'
+
+//scene graphes
 import ShenZhen_Level1 from './SceneGraphs/ShenZhen_Level1';
 import ShenZhen_Level2 from './SceneGraphs/ShenZhen_Level2';
 import ShenZhen_Level3 from './SceneGraphs/ShenZhen_Level3';
@@ -99,6 +101,8 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    labelRenderer.setSize( window.innerWidth, window.innerHeight );
 })
 
 /**
@@ -151,10 +155,6 @@ window.addEventListener('mousemove', (event) =>
 
     //console.log(mouse)
 })
-
-
-
-
 
 /**
  * Interaction Logic
@@ -252,6 +252,42 @@ basementButton.addEventListener('click', () => {
 
 
 
+//test ground --------------------------------------------------------------------------------------------
+
+let labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize( window.innerWidth, window.innerHeight );
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement)
+
+const point2D = document.createElement( 'div' );
+point2D.textContent = 'hello 2js'
+
+point2D.style.position = 'absolute';
+point2D.style.top = '-20px';
+point2D.style.left = '-20px';
+point2D.style.width = '80px';
+point2D.style.height = '40px';
+point2D.style.borderRadius = '25%';
+point2D.style.background = '#00000077';
+point2D.style.border = '1px solid #ffffff77';
+point2D.style.color = '#ffffff';
+point2D.style.fontFamily = 'Helvetica, Arial, sans-serif';
+point2D.style.textAlign = 'center';
+point2D.style.lineHeight = '40px';
+point2D.style.fontWeight = 'normal'; // Changed from 10 to normal
+point2D.style.fontSize = '14px';
+point2D.style.cursor = 'help';
+
+const pLabel = new CSS2DObject(point2D)
+scene.add( pLabel );
+pLabel.position.set(-40,24,136)
+
+
+
+//test ground end-----------------------------------------------------------------------------------------
+
 
 
 
@@ -337,6 +373,7 @@ const tick = () =>
 
     // Render
     renderer.render(scene, camera)
+    labelRenderer.render( scene, camera );
 
     // End the stats
     stats.end();

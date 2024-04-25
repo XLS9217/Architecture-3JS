@@ -53,14 +53,6 @@ body
     z-index: 999; /* Ensure buttons are visible */
 }
 
-/* .button {    
-    position: absolute;
-    width: 100px;
-    top: 10%;
-    left: 1%;
-    z-index: 999; 
-} */
-
 .point
 {
     position: absolute;

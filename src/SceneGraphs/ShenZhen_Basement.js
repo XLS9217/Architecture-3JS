@@ -166,25 +166,6 @@ export default class ShenZhen_Basement{
         floor.position.y = -53
         this.scene.add(floor)
 
-
-        // const sphereShadow = new THREE.Mesh(
-        //     new THREE.PlaneGeometry(300,350),
-        //     new THREE.MeshBasicMaterial({
-        //         color: 0x000000,
-        //         transparent: true,
-        //         alphaMap: simpleShadow
-        //     })
-        // )
-        // sphereShadow.rotation.x = - Math.PI * 0.5
-        // sphereShadow.position.x = 30
-        // sphereShadow.position.y = floor.position.y + 1
-        // sphereShadow.scale.x = 1.5
-        // sphereShadow.scale.y = 1.5
-
-        // // window.debug_ui.add(sphereShadow.scale,"x").min(0).max(5).step(0.1)
-        // // window.debug_ui.add(sphereShadow.scale,"y").min(0).max(5).step(0.1)
-        // this.scene.add(sphereShadow)
-
         console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
 
