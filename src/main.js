@@ -46,7 +46,7 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 //SceneManager
-const sceneManager = new InteractiveModelMangaer()
+const interactiveModelManager = new InteractiveModelMangaer()
 
 //SceneGraph
 //start up at shenzhen graph
@@ -184,7 +184,7 @@ document.body.onkeyup = function(e) {
 window.addEventListener('click', () =>
 {
     if(currentIntersect){
-        sceneManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
+        interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
 })
@@ -192,7 +192,7 @@ window.addEventListener('click', () =>
 //right button
 window.addEventListener('contextmenu', () => {
     if(currentIntersect){
-        sceneManager.revertInteractiveModelMaterial(currentIntersect.object, true)
+        interactiveModelManager.revertInteractiveModelMaterial(currentIntersect.object, true)
     }
 });
 
@@ -201,7 +201,7 @@ window.addEventListener('mousedown', (event) => {
     // Check if the button clicked is the mouse wheel button (button code 1)
     if (event.button === 1) {
         if(currentIntersect)
-            sceneManager.printInteractiveModel(currentIntersect)
+            interactiveModelManager.printInteractiveModel(currentIntersect)
     }
 });
 
@@ -280,7 +280,7 @@ scene.add(floatHelper.getLabel())
 
 
 
-const objectsToTest = sceneManager.getInteractiveModels()
+const objectsToTest = interactiveModelManager.getInteractiveModels()
 
 /**
  * Core Loop for animation and rendering
@@ -298,13 +298,13 @@ const tick = () =>
     // Reset all objects to red
     for (const object of objectsToTest) {
         //object.material.color.set('#ff0000');
-        sceneManager.revertInteractiveModelMaterial(object,false)
+        interactiveModelManager.revertInteractiveModelMaterial(object,false)
     }
 
     // Change color of the closest intersected object to blue
     if (intersects.length > 0) {
         currentIntersect = intersects[0]
-        sceneManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
+        interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
     }else{
         currentIntersect = null
     }
