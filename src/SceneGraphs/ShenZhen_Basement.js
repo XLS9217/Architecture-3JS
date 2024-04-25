@@ -15,6 +15,9 @@ let models = []
 const textureLoader = new THREE.TextureLoader()
 const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
+//lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
 
 export default class ShenZhen_Basement{
 
@@ -47,13 +50,19 @@ export default class ShenZhen_Basement{
         /**
          * Lights
          */
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
         this.scene.add(ambientLight)
 
-        const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
+        directionalLight.position.set(-175, 122, -4)
+        directionalLight.target.position.set(191,-55,-38)
         directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(1024, 1024)
+        directionalLight.shadow.mapSize.set(512, 512)
+        directionalLight.shadow.camera.scale.x = 40
+        directionalLight.shadow.camera.scale.y = 50
+        console.log(directionalLight.shadow.camera)
         this.scene.add(directionalLight)
+
+        const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+        this.scene.add(directionalLightCameraHelper)
     }
 
     Create2DPoints(){
@@ -105,18 +114,34 @@ export default class ShenZhen_Basement{
         //Loader
         modelLoader = new ModelLoader(this.scene)
 
-        modelLoader.Load2Scene('models/sz_level/', 'shenzhen_base', 'glb',(modelPtr) => {
-            // window.debug_ui.add(modelPtr.position,"x").min(-1000).max(600).step(1)
-            // window.debug_ui.add(modelPtr.position,"y").min(-1000).max(600).step(1)
-            // window.debug_ui.add(modelPtr.position,"z").min(-1000).max(600).step(1)
+        // modelLoader.Load2Scene('models/sz_level/', 'shenzhen_base', 'glb',(modelPtr) => {
+        //     // window.debug_ui.add(modelPtr.position,"x").min(-1000).max(600).step(1)
+        //     // window.debug_ui.add(modelPtr.position,"y").min(-1000).max(600).step(1)
+        //     // window.debug_ui.add(modelPtr.position,"z").min(-1000).max(600).step(1)
+
+        //     console.log(modelPtr)
+        //     arch_level1 = modelPtr;
+        //     arch_level1.scale.set(5,5,5)
+        //     arch_level1.position.set(-307,-22,44)
+        //     modelPtr.traverse((child) => {
+        //         if(child.isMesh)child.material.doublesided = true;
+                
+        //         child.castShadow = true
+        //         child.receiveShadow = true
+        //     })
+
+        // })
+
+        modelLoader.Load2Scene('models/sz_level/', 'basement_ultraSimp', 'glb',(modelPtr) => {
+            // window.debug_ui.add(modelPtr.position,"x").min(-300).max(300).step(1)
+            // window.debug_ui.add(modelPtr.position,"y").min(-300).max(300).step(1)
+            // window.debug_ui.add(modelPtr.position,"z").min(-300).max(300).step(1)
 
             console.log(modelPtr)
             arch_level1 = modelPtr;
             arch_level1.scale.set(5,5,5)
-            arch_level1.position.set(-307,-22,44)
+            arch_level1.position.set(-167,-41,107)
             modelPtr.traverse((child) => {
-                if(child.isMesh)child.material.doublesided = true;
-                
                 child.castShadow = true
                 child.receiveShadow = true
             })
@@ -142,23 +167,23 @@ export default class ShenZhen_Basement{
         this.scene.add(floor)
 
 
-        const sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(300,350),
-            new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                transparent: true,
-                alphaMap: simpleShadow
-            })
-        )
-        sphereShadow.rotation.x = - Math.PI * 0.5
-        sphereShadow.position.x = 30
-        sphereShadow.position.y = floor.position.y + 1
-        sphereShadow.scale.x = 1.5
-        sphereShadow.scale.y = 1.5
+        // const sphereShadow = new THREE.Mesh(
+        //     new THREE.PlaneGeometry(300,350),
+        //     new THREE.MeshBasicMaterial({
+        //         color: 0x000000,
+        //         transparent: true,
+        //         alphaMap: simpleShadow
+        //     })
+        // )
+        // sphereShadow.rotation.x = - Math.PI * 0.5
+        // sphereShadow.position.x = 30
+        // sphereShadow.position.y = floor.position.y + 1
+        // sphereShadow.scale.x = 1.5
+        // sphereShadow.scale.y = 1.5
 
-        // window.debug_ui.add(sphereShadow.scale,"x").min(0).max(5).step(0.1)
-        // window.debug_ui.add(sphereShadow.scale,"y").min(0).max(5).step(0.1)
-        this.scene.add(sphereShadow)
+        // // window.debug_ui.add(sphereShadow.scale,"x").min(0).max(5).step(0.1)
+        // // window.debug_ui.add(sphereShadow.scale,"y").min(0).max(5).step(0.1)
+        // this.scene.add(sphereShadow)
 
         console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
@@ -171,7 +196,7 @@ export default class ShenZhen_Basement{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(201,72,75)
+        camera.position.set(71,143,159)
     }
 
     isSceneReady(){
