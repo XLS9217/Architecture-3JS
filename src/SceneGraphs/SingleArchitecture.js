@@ -5,6 +5,9 @@ import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
 import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import FloatTag2D from "../2DElements/FloatTag2D";
+import { element } from "three/examples/jsm/nodes/Nodes.js";
+import SceneGraph from "./SceneGraph";
 
 let instance = null
 let modelLoader = null
@@ -12,17 +15,21 @@ let sceneManager = new InteractiveModelMangaer()
 
 //props inside scene
 let points = null
+let tags = []
 let models = []
+
+tags.push(new FloatTag2D("tag in arch",new THREE.Vector3(-40,35,136)))
+//tags[0].setBackgroundColor('#ff0000bb')
 
 //for baking
 const textureLoader = new THREE.TextureLoader()
 const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 
-export default class SingleArchitecture{
+export default class SingleArchitecture extends SceneGraph{
 
     constructor(inputScene){
-
+        super()
         // Singleton
         if(instance)
         {
@@ -59,16 +66,10 @@ export default class SingleArchitecture{
     }
 
     Create2DPoints(){
-        // const earthMassDiv = document.createElement( 'div' );
-        // earthMassDiv.className = 'label';
-        // earthMassDiv.textContent = '5.97237e24 kg';
-        // earthMassDiv.style.backgroundColor = 'transparent';
-
-        // const earthMassLabel = new CSS2DObject( earthMassDiv );
-        // earthMassLabel.position.set( 0, 0, 0 );
-        // earthMassLabel.center.set( 0, 0 );
-        // this.scene.add( earthMassLabel );
-        // earthMassLabel.layers.set( 1 );
+        
+        
+        for(const element of tags)
+            this.scene.add(element.getLabel())
 
         /**
          * Points
@@ -186,5 +187,9 @@ export default class SingleArchitecture{
 
     getPoints(){
         return points;
+    }
+
+    getTags(){
+        return tags;
     }
 }

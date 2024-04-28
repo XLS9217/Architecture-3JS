@@ -19,11 +19,12 @@ import ShenZhen_Level1 from './SceneGraphs/ShenZhen_Level1';
 import ShenZhen_Level2 from './SceneGraphs/ShenZhen_Level2';
 import ShenZhen_Level3 from './SceneGraphs/ShenZhen_Level3';
 import ShenZhen_Basement from './SceneGraphs/ShenZhen_Basement';
+import SceneManager from './Utils/SceneManager';
 
 
 
 /*
- * Base
+ * Begin init scene prop -------------------------------------------------
  */
 
 //Statistics 
@@ -45,21 +46,65 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-//SceneManager
+//iteractive model Manager
 const interactiveModelManager = new InteractiveModelMangaer()
 
-//SceneGraph
-//start up at shenzhen graph
+//SceneGraphs
 let shenzhenArch = new SingleArchitecture(scene)
 let shenzhenL1 = new ShenZhen_Level1(scene)
 let shenzhenL2 = new ShenZhen_Level2(scene)
 let shenzhenL3 = new ShenZhen_Level3(scene)
 let shenzhenBase = new ShenZhen_Basement(scene)
 
-let currentSceneGraph = shenzhenArch
-currentSceneGraph.loadScene()
+let currentSceneGraph = null
 
+const axesHelper = new THREE.AxesHelper( 1000 );
+scene.add( axesHelper );
 
+/**
+ * Sizes
+ */
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
+}
+/**
+ * Camera
+ */
+// Base camera
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
+scene.add(camera)
+
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+controls.rotateSpeed = 0.15;
+controls.PanSpeed = 0.5;
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true
+})
+renderer.setClearColor(0xcccccc)
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+//SceneMangaer
+const sceneManager = new SceneManager(scene, camera)
+currentSceneGraph = shenzhenArch
+sceneManager.LoadGraph(shenzhenArch)
+
+/**
+ * End init scene prop-------------------------------------------------
+ */
+
+/**
+ * Debug
+ */
 let currentScene = "singleArch"
 
 gui_obj.currentScene = currentScene
@@ -81,62 +126,6 @@ gui_obj.changeScene = ()=>{
 }
 window.debug_ui.add(gui_obj, "currentScene")
 window.debug_ui.add(gui_obj, "changeScene")
-
-const axesHelper = new THREE.AxesHelper( 1000 );
-scene.add( axesHelper );
-
-
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-}
-
-window.addEventListener('resize', () =>
-{
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
-
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
-
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-    labelRenderer.setSize( window.innerWidth, window.innerHeight );
-})
-
-/**
- * Camera
- */
-// Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
-currentSceneGraph.setIdealCameraLocation(camera)
-scene.add(camera)
-
-// Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
-controls.rotateSpeed = 0.15;
-controls.PanSpeed = 0.5;
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
-})
-renderer.setClearColor(0xcccccc)
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
 
 /**
  * Interactive logic-------------------------------------------------
@@ -180,6 +169,25 @@ document.body.onkeyup = function(e) {
     }
 }
 
+//resize
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    labelRenderer.setSize( window.innerWidth, window.innerHeight );
+})
+
+
 //left button
 window.addEventListener('click', () =>
 {
@@ -194,6 +202,7 @@ window.addEventListener('contextmenu', () => {
     if(currentIntersect){
         interactiveModelManager.revertInteractiveModelMaterial(currentIntersect.object, true)
     }
+    
 });
 
 //mouse wheel
@@ -217,42 +226,31 @@ const basementButton = document.getElementById('level4'); // Renamed to match th
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
     console.log("Single Arch button clicked!");
-    scene.clear();
-    currentSceneGraph = shenzhenArch
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
+    sceneManager.LoadGraph(shenzhenArch)
 });
 
 level1Button.addEventListener('click', () => {
     console.log("Level 1 button clicked!");
-    scene.clear();
+    sceneManager.LoadGraph(shenzhenL1)
     currentSceneGraph = shenzhenL1
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
 });
 
 level2Button.addEventListener('click', () => {
     console.log("Level 2 button clicked!");
-    scene.clear();
+    sceneManager.LoadGraph(shenzhenL2)
     currentSceneGraph = shenzhenL2
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
 });
 
 level3Button.addEventListener('click', () => {
     console.log("Level 3 button clicked!");
-    scene.clear();
+    sceneManager.LoadGraph(shenzhenL3)
     currentSceneGraph = shenzhenL3
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
 });
 
 basementButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
-    scene.clear();
+    sceneManager.LoadGraph(shenzhenBase)
     currentSceneGraph = shenzhenBase
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
 });
 
 
@@ -267,11 +265,9 @@ labelRenderer.domElement.style.top = '0px';
 labelRenderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(labelRenderer.domElement)
 
-// Create an instance of FloatHelper2D
-let floatHelper = new FloatTag2D("test helper",new THREE.Vector3(-40,24,136))
-floatHelper.setPosition(new THREE.Vector3(0,100,0))
-scene.add(floatHelper.getLabel())
-
+// // Create an instance of FloatHelper2D
+// let floatHelper = new FloatTag2D("test helper",new THREE.Vector3(-40,24,136))
+// scene.add(floatHelper.getLabel())
 
 
 //test ground end-----------------------------------------------------------------------------------------
@@ -309,55 +305,8 @@ const tick = () =>
         currentIntersect = null
     }
 
-    
-
-    // Update points only when the scene is ready
-    if(currentSceneGraph.isSceneReady())
-    {
-        // Go through each point
-        for(const point of currentSceneGraph.getPoints())
-        {
-            // Get 2D screen position
-            const screenPosition = point.position.clone()
-            screenPosition.project(camera)
-    
-            // Set the raycaster
-            raycaster.setFromCamera(screenPosition, camera)
-            const intersects = raycaster.intersectObjects(scene.children, true)
-    
-            // No intersect found
-            if(intersects.length === 0)
-            {
-                // Show
-                point.element.classList.add('visible')
-            }
-
-            // Intersect found
-            else
-            {
-                // Get the distance of the intersection and the distance of the point
-                const intersectionDistance = intersects[0].distance
-                const pointDistance = point.position.distanceTo(camera.position)
-    
-                // Intersection is close than the point
-                if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
-                {
-                    // Hide
-                    point.element.classList.remove('visible')
-                }
-                // Intersection is further than the point
-                else
-                {
-                    // Show
-                    point.element.classList.add('visible')
-                }
-            }
-    
-            const translateX = screenPosition.x * sizes.width * 0.5
-            const translateY = - screenPosition.y * sizes.height * 0.5
-            point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
-        }
-    }
+    //update the 2d tags in scene
+    sceneManager.Update2DTagVisibility(sizes)
 
     // Render
     renderer.render(scene, camera)

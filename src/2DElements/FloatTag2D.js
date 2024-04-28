@@ -11,21 +11,23 @@ export default class FloatTag2D {
         point2D.style.position = 'absolute';
         point2D.style.top = '-20px';
         point2D.style.left = '-20px';
-        point2D.style.width = '80px';
-        point2D.style.height = '40px';
+        point2D.style.width = '70px';
+        point2D.style.height = '30px';
         point2D.style.borderRadius = '25%';
-        point2D.style.background = '#00000077';
+        point2D.style.background = '#880808bb';
         point2D.style.border = '1px solid #ffffff77';
         point2D.style.color = '#ffffff';
         point2D.style.fontFamily = 'Helvetica, Arial, sans-serif';
         point2D.style.textAlign = 'center';
-        point2D.style.lineHeight = '40px';
+        point2D.style.lineHeight = '30px';
         point2D.style.fontWeight = 'normal';
-        point2D.style.fontSize = '14px';
+        point2D.style.fontSize = '12px';
         point2D.style.cursor = 'help';
+        point2D.style.transition = 'transform 0.1s';
 
         // Create a CSS2DObject using the point2D element
         this.label = new CSS2DObject(point2D);
+        this.point = point2D
         
         // Set the initial position of the label
         this.position = position;
@@ -47,4 +49,25 @@ export default class FloatTag2D {
         this.position.copy(newPosition);
         this.label.position.copy(newPosition);
     }
+
+    // Function to hide the label
+    hide() {
+        //console.log(this.label.element.style)
+        this.label.element.style.opacity = '0';
+    }
+
+    // Function to unhide the label
+    // pass in the opacity
+    unhide(opacity) {
+        if(opacity == null){
+            this.label.element.style.opacity = 1 ;
+        }else{
+            this.label.element.style.opacity = opacity ;
+        }
+    }
+
+    setBackgroundColor(newColor){
+        this.label.element.style.background = newColor;
+    }
+
 }

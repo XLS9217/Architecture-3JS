@@ -3,6 +3,7 @@
  */
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
+import SceneGraph from "./SceneGraph";
 
 let instance = null
 let modelLoader = null
@@ -16,10 +17,11 @@ const textureLoader = new THREE.TextureLoader()
 const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 
-export default class ShenZhen_Level3{
+export default class ShenZhen_Level3 extends SceneGraph{
 
     constructor(inputScene){
 
+        super()
         // Singleton
         if(instance)
         {
@@ -125,7 +127,7 @@ export default class ShenZhen_Level3{
 
         /**
          * Floor
-         */
+         */ 
         const floor = new THREE.Mesh(
             new THREE.PlaneGeometry(6000, 6000),
             new THREE.MeshStandardMaterial({

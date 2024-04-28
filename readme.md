@@ -1,26 +1,25 @@
 # LingSheng Xu
 
-scene graph class should follow strandard
 
-```js
-//load stuff in constrcutor model, points
-constructor(inputScene)
+# ./2DElements  
+    2d html elements in the scene
 
-//make thit singulton
-let instance = null;
 
-//define priviate variable on top of the class
+# ./SceneGraphs
+    graphs that represent a scene
+    * load model
+    * help set camera location
 
-//setters and getters
- setIdealCameraLocation(camera) {
-    camera.position.set(774, 67, -571)
-}
 
-isSceneReady(){
-    return modelLoader.isSceneReady()
-}
+# ./Utils
+    helper classes
 
-getPoints(){
-    return points;
-}
-```
+# ./Utils/InteractiveModelManager.js
+    manage models that can be clicked
+
+# ./Utils/ModelLoader.js
+    manage the loading effects and load models
+
+# ./Utils/SceneManger.js
+    manage the change of the scenes
+

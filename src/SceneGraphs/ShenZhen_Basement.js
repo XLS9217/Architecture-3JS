@@ -3,13 +3,40 @@
  */
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
+import SceneGraph from "./SceneGraph";
+import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
+import FloatTag2D from "../2DElements/FloatTag2D";
 
 let instance = null
 let modelLoader = null
 
 //props inside scene
 let points = null
+let tags = []
 let models = []
+tags.push(new FloatTag2D("负一层",new THREE.Vector3(20,28,-13))) 
+tags[0].getLabel().element.style.width = '70px'
+tags[0].getLabel().element.style.fontSize = '20px'
+tags[0].getLabel().element.style.background = '#ff1111'
+
+tags.push(new FloatTag2D("B03阶梯教室",new THREE.Vector3(51,0,-111))) 
+tags.push(new FloatTag2D("B02阶梯教室",new THREE.Vector3(-41,-5,63)))
+tags.push(new FloatTag2D("B01阶梯教室",new THREE.Vector3(-115,-5,54)))
+
+tags.push(new FloatTag2D("B14讨论室",new THREE.Vector3(59,-7,42))) 
+tags.push(new FloatTag2D("B13讨论室",new THREE.Vector3(59,-7,22))) 
+tags.push(new FloatTag2D("B12讨论室",new THREE.Vector3(59,-7,2))) 
+
+tags.push(new FloatTag2D("B05讨论室",new THREE.Vector3(-114,-7,-55))) 
+tags.push(new FloatTag2D("B06讨论室",new THREE.Vector3(-84,-7,-55))) 
+tags.push(new FloatTag2D("B07讨论室",new THREE.Vector3(-54,-7,-55))) 
+for(let i=1; i<tags.length; i++){
+    if(i <= 3)    tags[i].getLabel().element.style.width = '90px'
+    else{
+        tags[i].getLabel().element.style.width = '70px'
+        tags[i].getLabel().element.style.background = '#00b4d8bb'
+    }    
+}
 
 //for baking
 const textureLoader = new THREE.TextureLoader()
@@ -19,10 +46,13 @@ const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
 
-export default class ShenZhen_Basement{
+let interactiveModelManager = new InteractiveModelMangaer();
+
+export default class ShenZhen_Basement extends SceneGraph{
 
     constructor(inputScene){
 
+        super()
         // Singleton
         if(instance)
         {
@@ -61,11 +91,14 @@ export default class ShenZhen_Basement{
         console.log(directionalLight.shadow.camera)
         this.scene.add(directionalLight)
 
-        const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-        this.scene.add(directionalLightCameraHelper)
+        // const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
+        // this.scene.add(directionalLightCameraHelper)
     }
 
     Create2DPoints(){
+        for(const element of tags)
+        this.scene.add(element.getLabel())
+
         /**
          * Points
          */
@@ -132,18 +165,38 @@ export default class ShenZhen_Basement{
 
         // })
 
-        modelLoader.Load2Scene('models/sz_level/', 'basement_ultraSimp', 'glb',(modelPtr) => {
-            // window.debug_ui.add(modelPtr.position,"x").min(-300).max(300).step(1)
-            // window.debug_ui.add(modelPtr.position,"y").min(-300).max(300).step(1)
-            // window.debug_ui.add(modelPtr.position,"z").min(-300).max(300).step(1)
+        modelLoader.Load2Scene('models/sz_level/', 'basement_ultraSimp_i', 'glb',(modelPtr) => {
+
+            // Create MeshBasicMaterial for the classMat (red)
+            const classMat = new THREE.MeshBasicMaterial({ color: 0xff0000 , opacity: 0.2, transparent: true });
+
+            // Create MeshBasicMaterial for the meetMat (blue)
+            const meetMat = new THREE.MeshBasicMaterial({ color: 0x00b4d8, opacity: 0.2, transparent: true });
 
             console.log(modelPtr)
             arch_level1 = modelPtr;
             arch_level1.scale.set(5,5,5)
             arch_level1.position.set(-167,-41,107)
             modelPtr.traverse((child) => {
-                child.castShadow = true
-                child.receiveShadow = true
+                let tokens = child.name.split('_');
+                if(tokens[0] == "interactive"){
+                    console.log("found " + child.name)
+                    if(tokens[1] == "meeting"){
+                        child.material = meetMat
+                    }
+                    else if(tokens[1] == "class"){
+                        child.material = classMat
+                    }
+                    interactiveModelManager.addInteractiveModel(child)
+                }
+                else if(tokens[0] == "LevelIndicator"){
+                    child.material = new THREE.MeshBasicMaterial({ color: 0xff1111, opacity: 0.7, transparent: true });
+                }
+                else{
+                    child.castShadow = true
+                    child.receiveShadow = true
+                }
+                
             })
 
         })
@@ -186,5 +239,10 @@ export default class ShenZhen_Basement{
 
     getPoints(){
         return points;
+    }
+
+    getTags(){
+        //console.log(tags)
+        return tags;
     }
 }
