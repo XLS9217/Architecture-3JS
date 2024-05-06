@@ -1,4 +1,4 @@
-import { mod } from "three/examples/jsm/nodes/Nodes.js"
+import { mod, reference } from "three/examples/jsm/nodes/Nodes.js"
 
 let instance = null
 
@@ -37,12 +37,18 @@ export default class InteractiveModelMangaer{
      */
     addInteractiveModel(model){
         this.interactiveModels.push(model)
-        this.interactiveModel_data.push({
+        let reference = {
             name: model.name,
             material: model.material,
             hasChanged: false,
-            isSelected: false
-        })
+            isSelected: false,
+            //variables for furthere customization
+            hoverAction: null,
+            clickAction: null,
+            memory: null
+        }
+        this.interactiveModel_data.push(reference)
+        return reference
     }
 
     getInteractiveModels(){

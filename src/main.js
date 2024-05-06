@@ -46,14 +46,7 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-//SceneGraphs
-let shenzhenArch = new SingleArchitecture(scene)
-let shenzhenL1 = new ShenZhen_Level1(scene)
-let shenzhenL2 = new ShenZhen_Level2(scene)
-let shenzhenL3 = new ShenZhen_Level3(scene)
-let shenzhenBase = new ShenZhen_Basement(scene)
-
-let currentSceneGraph = null
+//let sceneManager.currentGraph = null
 
 const axesHelper = new THREE.AxesHelper( 1000 );
 scene.add( axesHelper );
@@ -92,11 +85,10 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera)
-currentSceneGraph = shenzhenArch
-sceneManager.LoadGraph(shenzhenArch)
+sceneManager.LoadScene('Arch')
 
 //iteractive model Manager
-let interactiveModelManager =  currentSceneGraph.interactiveModelManager
+let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
 
 /**
  * End init scene prop-------------------------------------------------
@@ -105,27 +97,7 @@ let interactiveModelManager =  currentSceneGraph.interactiveModelManager
 /**
  * Debug
  */
-// let currentScene = "singleArch"
 
-// gui_obj.currentScene = currentScene
-// gui_obj.changeScene = ()=>{
-//     currentScene = gui_obj.currentScene
-//     alert("current scene is " + currentScene)
-
-//     if(currentScene == "singleArch"){
-//         scene.clear();
-//         currentSceneGraph = shenzhenArch
-//     }
-//     else if(currentScene == "szl1"){
-//         scene.clear();
-//         currentSceneGraph = shenzhenL1
-//     }
-
-//     currentSceneGraph.loadScene()
-//     currentSceneGraph.setIdealCameraLocation(camera)
-// }
-// window.debug_ui.add(gui_obj, "currentScene")
-// window.debug_ui.add(gui_obj, "changeScene")
 
 /**
  * Interactive logic-------------------------------------------------
@@ -195,7 +167,7 @@ window.addEventListener('click', () =>
         interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
-    console.log(currentSceneGraph)
+    console.log(sceneManager.currentGraph)
     console.log(objectsToTest)
 })
 
@@ -228,32 +200,27 @@ const basementButton = document.getElementById('level4'); // Renamed to match th
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
     console.log("Single Arch button clicked!");
-    sceneManager.LoadGraph(shenzhenArch)
-    currentSceneGraph = shenzhenArch
+    sceneManager.LoadScene('Arch')
 });
 
 level1Button.addEventListener('click', () => {
     console.log("Level 1 button clicked!");
-    sceneManager.LoadGraph(shenzhenL1)
-    currentSceneGraph = shenzhenL1
+    sceneManager.LoadScene('L1')
 });
 
 level2Button.addEventListener('click', () => {
     console.log("Level 2 button clicked!");
-    sceneManager.LoadGraph(shenzhenL2)
-    currentSceneGraph = shenzhenL2
+    sceneManager.LoadScene('L2')
 });
 
 level3Button.addEventListener('click', () => {
     console.log("Level 3 button clicked!");
-    sceneManager.LoadGraph(shenzhenL3)
-    currentSceneGraph = shenzhenL3
+    sceneManager.LoadScene('L3')
 });
 
 basementButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
-    sceneManager.LoadGraph(shenzhenBase)
-    currentSceneGraph = shenzhenBase
+    sceneManager.LoadScene('Base')
 });
 
 
@@ -295,8 +262,8 @@ const tick = () =>
     const intersects = raycaster.intersectObjects(objectsToTest)
     
     //if there are interactive stuff in the scene 
-    if(currentSceneGraph.interactiveModelManager){
-        interactiveModelManager = currentSceneGraph.interactiveModelManager
+    if(sceneManager.currentGraph.interactiveModelManager){
+        interactiveModelManager = sceneManager.currentGraph.interactiveModelManager
         objectsToTest = interactiveModelManager.getInteractiveModels()
 
         // Reset all objects to red

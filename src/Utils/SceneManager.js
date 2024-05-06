@@ -1,7 +1,10 @@
 import * as THREE from 'three'
-import InteractiveModelMangaer from './InteractiveModelMangaer'
+import SingleArchitecture from '../SceneGraphs/SingleArchitecture'
+import ShenZhen_Level1 from '../SceneGraphs/ShenZhen_Level1'
+import ShenZhen_Level2 from '../SceneGraphs/ShenZhen_Level2'
+import ShenZhen_Level3 from '../SceneGraphs/ShenZhen_Level3'
+import ShenZhen_Basement from '../SceneGraphs/ShenZhen_Basement'
 
-let interactiveModelManager = new InteractiveModelMangaer()
 let instance = null
 let scene = null
 let camera = null
@@ -19,6 +22,31 @@ export default class SceneManager{
         scene = inputScene
         camera = inputCamera
         this.currentGraph = null
+
+        //SceneGraphs
+        this.shenzhenArch = new SingleArchitecture(scene)
+        this.shenzhenL1 = new ShenZhen_Level1(scene)
+        this.shenzhenL2 = new ShenZhen_Level2(scene)
+        this.shenzhenL3 = new ShenZhen_Level3(scene)
+        this.shenzhenBase = new ShenZhen_Basement(scene)
+    }
+
+    LoadScene(sceneName){
+        if(sceneName == 'Arch'){
+            this.LoadGraph(this.shenzhenArch)
+        }
+        else if(sceneName == 'Base'){
+            this.LoadGraph(this.shenzhenBase)
+        }
+        else if(sceneName == 'L1'){
+            this.LoadGraph(this.shenzhenL1)
+        }
+        else if(sceneName == 'L2'){
+            this.LoadGraph(this.shenzhenL2)
+        }
+        else if(sceneName == 'L3'){
+            this.LoadGraph(this.shenzhenL3)
+        }
     }
 
     LoadGraph(sceneGraph){
