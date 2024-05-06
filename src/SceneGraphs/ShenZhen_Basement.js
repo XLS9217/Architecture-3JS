@@ -46,8 +46,6 @@ const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
 
-let interactiveModelManager = new InteractiveModelMangaer();
-
 export default class ShenZhen_Basement extends SceneGraph{
 
     constructor(inputScene){
@@ -64,12 +62,14 @@ export default class ShenZhen_Basement extends SceneGraph{
          * Start creating scene
          */
         this.scene = inputScene;
-        
+        this.interactiveModelManager = new InteractiveModelMangaer();
         console.log(this)
+
     }
 
     loadScene(){
         console.log("loading shenzhen level 1")
+        this.interactiveModelManager.clearSceneData()
         //Scene Props
         this.CreateLights()
         this.CreateModels()
@@ -166,6 +166,7 @@ export default class ShenZhen_Basement extends SceneGraph{
         // })
 
         modelLoader.Load2Scene('models/sz_level/', 'basement_ultraSimp_i', 'glb',(modelPtr) => {
+            
 
             // Create MeshBasicMaterial for the classMat (red)
             const classMat = new THREE.MeshBasicMaterial({ color: 0xff0000 , opacity: 0.2, transparent: true });
@@ -187,7 +188,7 @@ export default class ShenZhen_Basement extends SceneGraph{
                     else if(tokens[1] == "class"){
                         child.material = classMat
                     }
-                    interactiveModelManager.addInteractiveModel(child)
+                    this.interactiveModelManager.addInteractiveModel(child)
                 }
                 else if(tokens[0] == "LevelIndicator"){
                     child.material = new THREE.MeshBasicMaterial({ color: 0xff1111, opacity: 0.7, transparent: true });
@@ -198,7 +199,7 @@ export default class ShenZhen_Basement extends SceneGraph{
                 }
                 
             })
-
+            console.log(this.interactiveModelManager)
         })
         
         models.push(arch_level1)

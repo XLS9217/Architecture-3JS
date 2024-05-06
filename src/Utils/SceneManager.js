@@ -1,5 +1,7 @@
 import * as THREE from 'three'
+import InteractiveModelMangaer from './InteractiveModelMangaer'
 
+let interactiveModelManager = new InteractiveModelMangaer()
 let instance = null
 let scene = null
 let camera = null

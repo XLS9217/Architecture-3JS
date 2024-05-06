@@ -11,7 +11,6 @@ import SceneGraph from "./SceneGraph";
 
 let instance = null
 let modelLoader = null
-let sceneManager = new InteractiveModelMangaer()
 
 //props inside scene
 let points = null
@@ -40,12 +39,14 @@ export default class SingleArchitecture extends SceneGraph{
          * Start creating scene
          */
         this.scene = inputScene;
-        
+        this.interactiveModelManager = new InteractiveModelMangaer()
         console.log(this)
     }
 
     loadScene(){
         console.log("loading single arch")
+
+        this.interactiveModelManager.clearSceneData()
         //Scene Props
         this.CreateLights()
         this.CreateModels()
@@ -102,7 +103,7 @@ export default class SingleArchitecture extends SceneGraph{
         
         //Loader
         modelLoader = new ModelLoader(this.scene)
-        modelLoader.Load2Scene('models/sz_simplify/', 'sz_simp2', 'glb',(modelPtr) => {
+        modelLoader.Load2Scene('models/sz_simplify/', 'sz_whole_interactive', 'glb',(modelPtr) => {
             console.log(modelPtr)
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(5,5,5)
@@ -110,11 +111,11 @@ export default class SingleArchitecture extends SceneGraph{
             modelPtr.traverse((child) => {
                 //console.log(child)
                 //sceneManager.addInteractiveModel(child)
-                // const tokens = child.name.split("_");
-                // if(tokens[0] == 'interact'){
-                //     console.log("find interact " + child.name)
-                //     sceneManager.addInteractiveModel(child)
-                // }
+                const tokens = child.name.split("_");
+                if(tokens[0] == 'interactive'){
+                    console.log("find interact " + child.name)
+                    this.interactiveModelManager.addInteractiveModel(child)
+                }
                 child.castShadow = true
                 child.receiveShadow = true
             })
@@ -130,7 +131,7 @@ export default class SingleArchitecture extends SceneGraph{
                 const tokens = child.name.split("-");
                 if(tokens[0] == interactiveToken){
                     console.log("find room!!!")
-                    sceneManager.addInteractiveModel(child)
+                    this.interactiveModelManager.addInteractiveModel(child)
                 }
                 model.position.set(200,0,300)
                 this.scene.add(model)

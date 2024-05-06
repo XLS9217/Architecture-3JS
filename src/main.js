@@ -46,9 +46,6 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-//iteractive model Manager
-const interactiveModelManager = new InteractiveModelMangaer()
-
 //SceneGraphs
 let shenzhenArch = new SingleArchitecture(scene)
 let shenzhenL1 = new ShenZhen_Level1(scene)
@@ -98,6 +95,9 @@ const sceneManager = new SceneManager(scene, camera)
 currentSceneGraph = shenzhenArch
 sceneManager.LoadGraph(shenzhenArch)
 
+//iteractive model Manager
+let interactiveModelManager =  currentSceneGraph.interactiveModelManager
+
 /**
  * End init scene prop-------------------------------------------------
  */
@@ -105,27 +105,27 @@ sceneManager.LoadGraph(shenzhenArch)
 /**
  * Debug
  */
-let currentScene = "singleArch"
+// let currentScene = "singleArch"
 
-gui_obj.currentScene = currentScene
-gui_obj.changeScene = ()=>{
-    currentScene = gui_obj.currentScene
-    alert("current scene is " + currentScene)
+// gui_obj.currentScene = currentScene
+// gui_obj.changeScene = ()=>{
+//     currentScene = gui_obj.currentScene
+//     alert("current scene is " + currentScene)
 
-    if(currentScene == "singleArch"){
-        scene.clear();
-        currentSceneGraph = shenzhenArch
-    }
-    else if(currentScene == "szl1"){
-        scene.clear();
-        currentSceneGraph = shenzhenL1
-    }
+//     if(currentScene == "singleArch"){
+//         scene.clear();
+//         currentSceneGraph = shenzhenArch
+//     }
+//     else if(currentScene == "szl1"){
+//         scene.clear();
+//         currentSceneGraph = shenzhenL1
+//     }
 
-    currentSceneGraph.loadScene()
-    currentSceneGraph.setIdealCameraLocation(camera)
-}
-window.debug_ui.add(gui_obj, "currentScene")
-window.debug_ui.add(gui_obj, "changeScene")
+//     currentSceneGraph.loadScene()
+//     currentSceneGraph.setIdealCameraLocation(camera)
+// }
+// window.debug_ui.add(gui_obj, "currentScene")
+// window.debug_ui.add(gui_obj, "changeScene")
 
 /**
  * Interactive logic-------------------------------------------------
@@ -195,6 +195,8 @@ window.addEventListener('click', () =>
         interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
+    console.log(currentSceneGraph)
+    console.log(objectsToTest)
 })
 
 //right button
@@ -227,6 +229,7 @@ const basementButton = document.getElementById('level4'); // Renamed to match th
 mainButton.addEventListener('click', () => {
     console.log("Single Arch button clicked!");
     sceneManager.LoadGraph(shenzhenArch)
+    currentSceneGraph = shenzhenArch
 });
 
 level1Button.addEventListener('click', () => {
@@ -276,7 +279,7 @@ document.body.appendChild(labelRenderer.domElement)
 
 
 
-const objectsToTest = interactiveModelManager.getInteractiveModels()
+let objectsToTest = interactiveModelManager.getInteractiveModels()
 
 /**
  * Core Loop for animation and rendering
@@ -290,20 +293,28 @@ const tick = () =>
     //Raycast with mouse click
     raycaster.setFromCamera(mouse, camera)
     const intersects = raycaster.intersectObjects(objectsToTest)
+    
+    //if there are interactive stuff in the scene 
+    if(currentSceneGraph.interactiveModelManager){
+        interactiveModelManager = currentSceneGraph.interactiveModelManager
+        objectsToTest = interactiveModelManager.getInteractiveModels()
 
-    // Reset all objects to red
-    for (const object of objectsToTest) {
-        //object.material.color.set('#ff0000');
-        interactiveModelManager.revertInteractiveModelMaterial(object,false)
+        // Reset all objects to red
+        for (const object of objectsToTest) {
+            //object.material.color.set('#ff0000');
+            interactiveModelManager.revertInteractiveModelMaterial(object,false)
+        }
+
+        // Change color of the closest intersected object to blue
+        if (intersects.length > 0) {
+            currentIntersect = intersects[0]
+            interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
+        }else{
+            currentIntersect = null
+        }
     }
 
-    // Change color of the closest intersected object to blue
-    if (intersects.length > 0) {
-        currentIntersect = intersects[0]
-        interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
-    }else{
-        currentIntersect = null
-    }
+
 
     //update the 2d tags in scene
     sceneManager.Update2DTagVisibility(sizes)
