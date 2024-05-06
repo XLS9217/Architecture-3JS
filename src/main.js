@@ -164,11 +164,12 @@ window.addEventListener('resize', () =>
 window.addEventListener('click', () =>
 {
     if(currentIntersect){
-        interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
+        if(!interactiveModelManager.triggerClickAction(currentIntersect.object))
+            interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
-    console.log(sceneManager.currentGraph)
-    console.log(objectsToTest)
+    // console.log(sceneManager.currentGraph)
+    // console.log(objectsToTest)
 })
 
 //right button
@@ -275,7 +276,8 @@ const tick = () =>
         // Change color of the closest intersected object to blue
         if (intersects.length > 0) {
             currentIntersect = intersects[0]
-            interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
+            if(!interactiveModelManager.triggerHoverAction(currentIntersect.object))
+                interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
         }else{
             currentIntersect = null
         }

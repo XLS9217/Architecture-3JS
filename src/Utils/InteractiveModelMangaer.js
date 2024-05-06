@@ -32,6 +32,8 @@ export default class InteractiveModelMangaer{
         this.interactiveModel_data = []
     }
 
+
+
     /**
      * add the interactive model to interactiveModels for fast return, and to interactiveModel_data for data processing
      */
@@ -43,12 +45,33 @@ export default class InteractiveModelMangaer{
             hasChanged: false,
             isSelected: false,
             //variables for furthere customization
-            hoverAction: null,
-            clickAction: null,
+            hoverAction: null, //has to take memory as first variable
+            clickAction: null, //has to take memory as first variable
             memory: null
         }
         this.interactiveModel_data.push(reference)
         return reference
+    }
+
+    triggerHoverAction(obj){
+        for(const metaData of this.interactiveModel_data){
+            if(obj.name == metaData.name && metaData.hoverAction){
+                metaData.hoverAction(metaData.memory)
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    triggerClickAction(obj){
+        for(const metaData of this.interactiveModel_data){
+            if(obj.name == metaData.name && metaData.clickAction){
+                metaData.clickAction(metaData.memory)
+                return true;
+            }
+        }
+        return false;
     }
 
     getInteractiveModels(){

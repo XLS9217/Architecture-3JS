@@ -8,6 +8,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import FloatTag2D from "../2DElements/FloatTag2D";
 import { element } from "three/examples/jsm/nodes/Nodes.js";
 import SceneGraph from "./SceneGraph";
+import SceneManager from "../Utils/SceneManager";
 
 let instance = null
 let modelLoader = null
@@ -108,13 +109,44 @@ export default class SingleArchitecture extends SceneGraph{
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(5,5,5)
             architecture_shenzhen.position.set(300,0,200)
+        
+            let frameModel = null;
+            let invisiableMat = new THREE.MeshBasicMaterial({color: 0x000000, transparent:true, opacity:0.02})
+            let blackMat = new THREE.MeshBasicMaterial({color: 0x000000})
             modelPtr.traverse((child) => {
                 //console.log(child)
                 //sceneManager.addInteractiveModel(child)
                 const tokens = child.name.split("_");
                 if(tokens[0] == 'interactive'){
                     console.log("find interact " + child.name)
-                    this.interactiveModelManager.addInteractiveModel(child)
+                    
+                    if(tokens[1] == 'cube'){
+                        child.material = invisiableMat
+                        let interactOption = this.interactiveModelManager.addInteractiveModel(child)
+                        interactOption.memory = {
+                            frame: frameModel,
+                            isLoading: false,//prevent user click multiple times
+                        }
+                        interactOption.clickAction = (memory) => {
+                            if(memory.isLoading) return
+                            console.log("click" + memory.frame.name)
+                            let sceneManager = new SceneManager()
+                            sceneManager.LoadScene(tokens[2])
+                            memory.isLoading = true;
+                        }
+                        interactOption.hoverAction = (memory) => {
+                            this.interactiveModelManager.setInteractiveModelMaterial( memory.frame, blackMat, false)
+                        }
+                    }
+                    else if(tokens[1] == 'frame'){
+                        frameModel = child
+                        frameModel.material = invisiableMat
+                        let interactOption = this.interactiveModelManager.addInteractiveModel(child)
+                        interactOption.hoverAction = (memory) => {
+                            
+                        }
+                    }
+                    
                 }
                 child.castShadow = true
                 child.receiveShadow = true
@@ -123,21 +155,21 @@ export default class SingleArchitecture extends SceneGraph{
         })
 
 
-        let interactiveToken = "room"//what should the first token be, to indicate interactive
+        // let interactiveToken = "room"//what should the first token be, to indicate interactive
 
-        modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
-            console.log(model)
-            model.traverse((child) => {
-                const tokens = child.name.split("-");
-                if(tokens[0] == interactiveToken){
-                    console.log("find room!!!")
-                    this.interactiveModelManager.addInteractiveModel(child)
-                }
-                model.position.set(200,0,300)
-                this.scene.add(model)
-            })
-            //console.log(sceneManager.getInteractiveModel())
-        }) 
+        // modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
+        //     console.log(model)
+        //     model.traverse((child) => {
+        //         const tokens = child.name.split("-");
+        //         if(tokens[0] == interactiveToken){
+        //             console.log("find room!!!")
+        //             this.interactiveModelManager.addInteractiveModel(child)
+        //         }
+        //         model.position.set(200,0,300)
+        //         this.scene.add(model)
+        //     })
+        //     //console.log(sceneManager.getInteractiveModel())
+        // }) 
         
         models.push(architecture_shenzhen)
 

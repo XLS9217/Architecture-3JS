@@ -4,6 +4,7 @@
 import ModelLoader from "../Utils/ModelLoader";
 import * as THREE from 'three'
 import SceneGraph from "./SceneGraph";
+import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 
 let instance = null
 let modelLoader = null
@@ -33,7 +34,7 @@ export default class ShenZhen_Level1 extends SceneGraph{
          * Start creating scene
          */
         this.scene = inputScene;
-        
+        this.interactiveModelManager = new InteractiveModelMangaer()
         console.log(this)
     }
 
