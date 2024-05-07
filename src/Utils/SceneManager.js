@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { gsap } from 'gsap'
 import SingleArchitecture from '../SceneGraphs/SingleArchitecture'
 import ShenZhen_Level1 from '../SceneGraphs/ShenZhen_Level1'
 import ShenZhen_Level2 from '../SceneGraphs/ShenZhen_Level2'
@@ -50,6 +51,7 @@ export default class SceneManager{
     }
 
     LoadGraph(sceneGraph){
+
         //clear the scene and add a new graph
         scene.clear();
         this.currentGraph = sceneGraph
@@ -115,6 +117,7 @@ export default class SceneManager{
             // Go through each point
             for(const point of this.currentGraph.getPoints())
             {
+
                 // Get 2D screen position
                 const screenPosition = point.position.clone()
                 screenPosition.project(camera)
@@ -154,6 +157,13 @@ export default class SceneManager{
                 const translateX = screenPosition.x * sizes.width * 0.5
                 const translateY = - screenPosition.y * sizes.height * 0.5
                 point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
+            }
+        }else{
+            //console.log("not ready")
+            //hide tags and points first
+            if(this.currentGraph && this.currentGraph.isSceneReady()){
+                for(const tag of this.currentGraph.getTags()) tag.unhide(opacity)
+                for(const point of this.currentGraph.getPoints()) point.element.classList.remove('visible')
             }
         }
     }

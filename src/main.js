@@ -14,11 +14,6 @@ import FloatTag2D from './2DElements/FloatTag2D';
 import ModelLoader from './Utils/ModelLoader';
 
 //scene graphes
-import SingleArchitecture from './SceneGraphs/SingleArchitecture';
-import ShenZhen_Level1 from './SceneGraphs/ShenZhen_Level1';
-import ShenZhen_Level2 from './SceneGraphs/ShenZhen_Level2';
-import ShenZhen_Level3 from './SceneGraphs/ShenZhen_Level3';
-import ShenZhen_Basement from './SceneGraphs/ShenZhen_Basement';
 import SceneManager from './Utils/SceneManager';
 
 
@@ -82,6 +77,7 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.sortObjects = true
 
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera)
@@ -124,7 +120,7 @@ window.addEventListener('mousemove', (event) =>
 })
 
 /**
- * Interaction Logic
+ * Interaction Logic----------------------------------------------------------------
  */
 const hover_material = new THREE.MeshBasicMaterial({
     color: new THREE.Color('#ff0055')
@@ -225,6 +221,21 @@ basementButton.addEventListener('click', () => {
 });
 
 
+// Get references to the button and iframe elements
+const cameraButton = document.getElementById('RickRoll');
+const cameraFrame = document.getElementById('cameraFrame');
+let isCameraViewDisplaying = false;
+cameraButton.addEventListener('click', function() {
+    // Show the iframe below the buttons
+    isCameraViewDisplaying = !isCameraViewDisplaying
+    if(isCameraViewDisplaying){
+        cameraFrame.style.display = 'block';
+        cameraFrame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace VIDEO_ID with your YouTube video ID
+    }else{
+        cameraFrame.style.display = 'none';
+        cameraFrame.src = ''
+    }
+});
 
 
 //test ground --------------------------------------------------------------------------------------------

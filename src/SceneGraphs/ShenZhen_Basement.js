@@ -169,10 +169,12 @@ export default class ShenZhen_Basement extends SceneGraph{
             
 
             // Create MeshBasicMaterial for the classMat (red)
-            const classMat = new THREE.MeshBasicMaterial({ color: 0xff0000 , opacity: 0.2, transparent: true });
+            const classMat = new THREE.MeshStandardMaterial({ color: 0xff0000 , opacity: 0.2, transparent: true , depthWrite:false, side: THREE.DoubleSide,
+                alphaTest: 0.1,format: THREE.RGBAFormat});
 
             // Create MeshBasicMaterial for the meetMat (blue)
-            const meetMat = new THREE.MeshBasicMaterial({ color: 0x00b4d8, opacity: 0.2, transparent: true });
+            const meetMat = new THREE.MeshStandardMaterial({ color: 0x00b4d8, opacity: 0.2, transparent: true , depthWrite:false, side: THREE.DoubleSide,
+                alphaTest: 0.1,format: THREE.RGBAFormat});
 
             console.log(modelPtr)
             arch_level1 = modelPtr;

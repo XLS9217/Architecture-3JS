@@ -18,6 +18,7 @@ const loadingManager = new THREE.LoadingManager(
     // Loaded
     () =>
     {
+        
         // Wait a little
         window.setTimeout(() =>
         {
@@ -49,9 +50,22 @@ const loadingManager = new THREE.LoadingManager(
 loadingManager.onStart = function () {
 	console.log("loading manager start")
     loadingBarElement.classList.remove('ended')
-    overlay.material.uniforms.uAlpha.value = 1.0; 
+    //overlay.material.uniforms.uAlpha.value = 1.0; 
 };
-
+// // Add event listener to the document
+// document.addEventListener('keydown', function(event) {
+//     // Check if the pressed key is "q"
+//     if (event.key === 'q') {
+//         // Execute your callback function here
+//         console.log('The "q" key was pressed!');
+//         // Call your function here
+//         overlay.material.uniforms.uAlpha.value = 1.0; 
+//     }
+// });
+// Call the function every 0.1 second using setInterval
+// setInterval(()=>{
+//     console.log("u alpha is " + overlay.material.uniforms.uAlpha.value)
+// }, 200); 
 /**
  * Overlay
  */
@@ -83,7 +97,7 @@ let overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
 const objLoader = new OBJLoader(loadingManager);
 const mtlLoader = new MTLLoader(loadingManager);
 const gltfLoader = new GLTFLoader(loadingManager)
-const dracoLoader = new DRACOLoader()
+const dracoLoader = new DRACOLoader(loadingManager)
 dracoLoader.setDecoderPath('/draco/')
 gltfLoader.setDRACOLoader(dracoLoader)
 
@@ -108,6 +122,10 @@ export default class ModelLoader
      * @param {function} callback what to do with the model, immediately after it is loaded
      */
     Load2Scene(path, name, type, callback){
+        
+        this.scene.add(overlay)
+        overlay.material.uniforms.uAlpha.value = 1.0; 
+        sceneReady = false
 
         if(type == "gltf"){
             gltfLoader.load(

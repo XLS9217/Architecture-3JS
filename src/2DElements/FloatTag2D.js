@@ -32,6 +32,8 @@ export default class FloatTag2D {
         // Set the initial position of the label
         this.position = position;
         this.label.position.copy(position);
+
+        this.hide()
     }
 
     // Getter for the label element

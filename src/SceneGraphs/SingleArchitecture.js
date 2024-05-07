@@ -70,9 +70,10 @@ export default class SingleArchitecture extends SceneGraph{
     Create2DPoints(){
         
         
-        for(const element of tags)
+        for(const element of tags){
+            element.hide()
             this.scene.add(element.getLabel())
-
+        }
         /**
          * Points
          */
@@ -212,6 +213,10 @@ export default class SingleArchitecture extends SceneGraph{
      */
     setIdealCameraLocation(camera) {
         camera.position.set(-102, 61, 343)
+    }
+
+    getIdealCameraLocation(camera){
+        return new THREE.Vector3(-102, 61, 343)
     }
 
     isSceneReady(){
