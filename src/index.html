@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.0/flv.min.js"></script>
     <div class="HUD">
         <div class="button_holder">
             <button id="main" class="button">Single Arch</button>
@@ -14,10 +15,16 @@
             <button id="level2" class="button">Level 2</button>
             <button id="level3" class="button">Level 3</button>
             <button id="level4" class="button">Basement</button>
+            <button id="Room" class="button">Room</button>
             <button id="RickRoll" style="background-color: rgb(193, 106, 0);" class="button">RickRoll</button>            
             <button id="cameraView" style="background-color: rgb(193, 106, 0);" class="button">camera</button>            
         </div>
         <iframe id="cameraFrame" class="camera-frame"></iframe>
+        <video id="cameraFeed" class="camera-frame" autoplay>
+            <!-- Add source element for the video -->
+            <source id="cameraSource" type="video/x-flv">
+            Your browser does not support the video tag.
+          </video>
     </div>
     
 

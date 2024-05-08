@@ -5,6 +5,7 @@ import ShenZhen_Level1 from '../SceneGraphs/ShenZhen_Level1'
 import ShenZhen_Level2 from '../SceneGraphs/ShenZhen_Level2'
 import ShenZhen_Level3 from '../SceneGraphs/ShenZhen_Level3'
 import ShenZhen_Basement from '../SceneGraphs/ShenZhen_Basement'
+import Classroom from '../SceneGraphs/Classroom'
 
 let instance = null
 let scene = null
@@ -30,6 +31,7 @@ export default class SceneManager{
         this.shenzhenL2 = new ShenZhen_Level2(scene)
         this.shenzhenL3 = new ShenZhen_Level3(scene)
         this.shenzhenBase = new ShenZhen_Basement(scene)
+        this.classRoom = new Classroom(scene)
     }
 
     LoadScene(sceneName){
@@ -47,6 +49,9 @@ export default class SceneManager{
         }
         else if(sceneName == 'L3'){
             this.LoadGraph(this.shenzhenL3)
+        }
+        else if(sceneName == 'Room'){
+            this.LoadGraph(this.classRoom)
         }
     }
 

@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import SceneGraph from "./SceneGraph";
 import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 import FloatTag2D from "../2DElements/FloatTag2D";
+import SceneManager from "../Utils/SceneManager";
 
 let instance = null
 let modelLoader = null
@@ -186,11 +187,20 @@ export default class ShenZhen_Basement extends SceneGraph{
                     console.log("found " + child.name)
                     if(tokens[1] == "meeting"){
                         child.material = meetMat
+                        this.interactiveModelManager.addInteractiveModel(child)
                     }
                     else if(tokens[1] == "class"){
                         child.material = classMat
+                        let modelData = this.interactiveModelManager.addInteractiveModel(child)
+                        modelData.clickAction = () =>{
+                            console.log("go to classroom")
+                            let sceneManager = new SceneManager()
+                            sceneManager.LoadScene('Room')
+                        }
                     }
-                    this.interactiveModelManager.addInteractiveModel(child)
+                    
+                    //child.frustumCulled = false
+                    child.renderOrder = -1
                 }
                 else if(tokens[0] == "LevelIndicator"){
                     child.material = new THREE.MeshBasicMaterial({ color: 0xff1111, opacity: 0.7, transparent: true });

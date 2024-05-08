@@ -81,7 +81,9 @@ body
     position: absolute;
     bottom: 1%;
     left: 1%;
-    border: 2px solid green;
+    border: 3px solid white;
+    width: 320px; /* Set width as needed */
+    height: 185px; /* Set height as needed */
 }
 
 

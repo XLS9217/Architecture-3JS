@@ -192,7 +192,8 @@ const mainButton = document.getElementById('main');
 const level1Button = document.getElementById('level1');
 const level2Button = document.getElementById('level2');
 const level3Button = document.getElementById('level3');
-const basementButton = document.getElementById('level4'); // Renamed to match the button text
+const basementButton = document.getElementById('level4');
+const roomButton = document.getElementById('Room');
 
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
@@ -220,12 +221,18 @@ basementButton.addEventListener('click', () => {
     sceneManager.LoadScene('Base')
 });
 
+roomButton.addEventListener('click', () => {
+    console.log("Basement button clicked!");
+    sceneManager.LoadScene('Room')
+});
+
 
 // Get references to the button and iframe elements
-const cameraButton = document.getElementById('RickRoll');
+const rickRollButton = document.getElementById('RickRoll');
+const cameraButton = document.getElementById('cameraView');
 const cameraFrame = document.getElementById('cameraFrame');
 let isCameraViewDisplaying = false;
-cameraButton.addEventListener('click', function() {
+rickRollButton.addEventListener('click', function() {
     // Show the iframe below the buttons
     isCameraViewDisplaying = !isCameraViewDisplaying
     if(isCameraViewDisplaying){
@@ -237,6 +244,90 @@ cameraButton.addEventListener('click', function() {
     }
 });
 
+
+
+
+
+
+
+//the camera video
+// Create flvPlayer as a global variable
+let flvPlayer;
+
+// Function to initialize the player and attach it to the video element
+function initializePlayer() {
+    flvPlayer = flvjs.createPlayer({
+        type: 'flv',
+        url: 'http://172.16.40.58:8080/live/test2.flv', // Replace with your RTMP stream URL
+    });
+
+    // Attach the player to the video element
+    flvPlayer.attachMediaElement(document.getElementById('cameraFeed'));
+}
+
+// Function to toggle camera feed
+function toggleCameraFeed() {
+    isCameraViewDisplaying = !isCameraViewDisplaying;
+
+    if (isCameraViewDisplaying) {
+        // Show the camera feed
+        cameraFeed.style.display = 'block';
+
+        // Reinitialize the player if it's not already initialized
+        if (!flvPlayer) {
+            initializePlayer();
+        }
+
+        // Load and play the video
+        flvPlayer.load();
+        flvPlayer.play();
+    } else {
+        // Hide the camera feed
+        cameraFeed.style.display = 'none';
+
+        // Pause the video
+        flvPlayer.pause();
+
+        // Reset source and unload the player
+        flvPlayer.unload();
+        flvPlayer.detachMediaElement();
+        flvPlayer.destroy();
+        flvPlayer = null;
+    }
+}
+
+// Add event listener to toggle camera feed
+cameraButton.addEventListener('click', toggleCameraFeed);
+
+
+
+
+
+
+// cameraButton.addEventListener('click', async () => {
+//     isCameraViewDisplaying = !isCameraViewDisplaying;
+
+//     try {
+//         if (isCameraViewDisplaying) {
+//             // Get access to the camera stream
+//             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            
+//             // Set the camera stream as the source for the video element
+//             cameraFeed.srcObject = stream;
+
+//             // Show the camera feed
+//             cameraFeed.style.display = 'block';
+//         } else {
+//             // Stop the camera stream and hide the video element
+//             const tracks = cameraFeed.srcObject.getTracks();
+//             tracks.forEach(track => track.stop());
+//             cameraFeed.srcObject = null;
+//             cameraFeed.style.display = 'none';
+//         }
+//     } catch (error) {
+//         console.error('Error accessing camera:', error);
+//     }
+// });
 
 //test ground --------------------------------------------------------------------------------------------
 
