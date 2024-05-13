@@ -6,6 +6,7 @@ import ShenZhen_Level2 from '../SceneGraphs/ShenZhen_Level2'
 import ShenZhen_Level3 from '../SceneGraphs/ShenZhen_Level3'
 import ShenZhen_Basement from '../SceneGraphs/ShenZhen_Basement'
 import Classroom from '../SceneGraphs/Classroom'
+import RealCameraManager from './RealCameraManager'
 
 let instance = null
 let scene = null
@@ -24,6 +25,7 @@ export default class SceneManager{
         scene = inputScene
         camera = inputCamera
         this.currentGraph = null
+        this.currentControl = null
 
         //SceneGraphs
         this.shenzhenArch = new SingleArchitecture(scene)
@@ -32,6 +34,10 @@ export default class SceneManager{
         this.shenzhenL3 = new ShenZhen_Level3(scene)
         this.shenzhenBase = new ShenZhen_Basement(scene)
         this.classRoom = new Classroom(scene)
+    }
+
+    GetCamera(){
+        return camera
     }
 
     LoadScene(sceneName){
@@ -56,12 +62,15 @@ export default class SceneManager{
     }
 
     LoadGraph(sceneGraph){
-
+        if(this.currentGraph) this.currentGraph.unloadScene()
+        let realCameraManager = new RealCameraManager()
+        realCameraManager.TurnOffCameras()
         //clear the scene and add a new graph
         scene.clear();
         this.currentGraph = sceneGraph
         this.currentGraph.loadScene()
         this.currentGraph.setIdealCameraLocation(camera)
+        this.currentControl.target.set(0, 0, 0);
     }
 
     Update2DTagVisibility(sizes){

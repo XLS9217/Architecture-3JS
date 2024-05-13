@@ -18,7 +18,7 @@ let points = null
 let tags = []
 let models = []
 
-tags.push(new FloatTag2D("tag in arch",new THREE.Vector3(-40,35,136)))
+//tags.push(new FloatTag2D("main architecture",new THREE.Vector3(0,35,0)))
 //tags[0].setBackgroundColor('#ff0000bb')
 
 //for baking
@@ -212,11 +212,7 @@ export default class SingleArchitecture extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-102, 61, 343)
-    }
-
-    getIdealCameraLocation(camera){
-        return new THREE.Vector3(-102, 61, 343)
+        camera.position.set(-100, 58, 240)
     }
 
     isSceneReady(){

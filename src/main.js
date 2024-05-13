@@ -15,6 +15,9 @@ import ModelLoader from './Utils/ModelLoader';
 
 //scene graphes
 import SceneManager from './Utils/SceneManager';
+import SurveillanceCamera from './Utils/SurveillanceCamera';
+import RealCameraManager from './Utils/RealCameraManager';
+import Canvas2D from './Utils/Canvas2D';
 
 
 
@@ -37,6 +40,7 @@ let gui_obj = {
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
+const canvas2D = new Canvas2D();//the 2d Canvas
 
 // Scene
 const scene = new THREE.Scene()
@@ -79,8 +83,16 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.sortObjects = true
 
+let labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize( window.innerWidth, window.innerHeight );
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0px';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement)
+
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera)
+sceneManager.currentControl = controls
 sceneManager.LoadScene('Arch')
 
 //iteractive model Manager
@@ -93,7 +105,20 @@ let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
 /**
  * Debug
  */
-
+// Add a button to the GUI
+gui_obj.cameraMove = () =>
+{
+    gsap.to(camera.position, { 
+        duration: 1, 
+        x: 1, 
+        y: 1, 
+        z: 1,
+        onComplete: () => {
+            console.log('Finished');
+        }
+    });
+}
+debug_ui.add(gui_obj, 'cameraMove')
 
 /**
  * Interactive logic-------------------------------------------------
@@ -104,7 +129,6 @@ let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
  */
 const raycaster = new THREE.Raycaster()
 let currentIntersect = null
-let minimunPointDistance = 350
 
 /**
  * Mouse
@@ -140,6 +164,8 @@ document.body.onkeyup = function(e) {
 //resize
 window.addEventListener('resize', () =>
 {
+    canvas2D.resizeCanvas2D()
+
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -164,6 +190,10 @@ window.addEventListener('click', () =>
             interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         //console.log(currentIntersect.object)
     }
+    
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+    //console.log('Mouse position (screen coordinates):', mouseX, mouseY);
     // console.log(sceneManager.currentGraph)
     // console.log(objectsToTest)
 })
@@ -245,102 +275,51 @@ rickRollButton.addEventListener('click', function() {
 });
 
 
-
-
-
-
-
-//the camera video
-// Create flvPlayer as a global variable
-let flvPlayer;
-
-// Function to initialize the player and attach it to the video element
-function initializePlayer() {
-    flvPlayer = flvjs.createPlayer({
-        type: 'flv',
-        url: 'http://172.16.40.58:8080/live/test2.flv', // Replace with your RTMP stream URL
-    });
-
-    // Attach the player to the video element
-    flvPlayer.attachMediaElement(document.getElementById('cameraFeed'));
-}
-
-// Function to toggle camera feed
-function toggleCameraFeed() {
-    isCameraViewDisplaying = !isCameraViewDisplaying;
-
-    if (isCameraViewDisplaying) {
-        // Show the camera feed
-        cameraFeed.style.display = 'block';
-
-        // Reinitialize the player if it's not already initialized
-        if (!flvPlayer) {
-            initializePlayer();
-        }
-
-        // Load and play the video
-        flvPlayer.load();
-        flvPlayer.play();
-    } else {
-        // Hide the camera feed
-        cameraFeed.style.display = 'none';
-
-        // Pause the video
-        flvPlayer.pause();
-
-        // Reset source and unload the player
-        flvPlayer.unload();
-        flvPlayer.detachMediaElement();
-        flvPlayer.destroy();
-        flvPlayer = null;
-    }
-}
+let realCameraManager = new RealCameraManager()
+let surveillanceCamera = new SurveillanceCamera('http://172.16.40.58:8080/live/test2.flv', document.getElementById('cameraFeed'))
+realCameraManager.AddCamera('shgbit_door',surveillanceCamera)
 
 // Add event listener to toggle camera feed
-cameraButton.addEventListener('click', toggleCameraFeed);
+cameraButton.addEventListener('click', ()=>{
+    realCameraManager.ToggleSurveillanceCamera('shgbit_door')
+});
 
 
-
-
-
-
-// cameraButton.addEventListener('click', async () => {
-//     isCameraViewDisplaying = !isCameraViewDisplaying;
-
-//     try {
-//         if (isCameraViewDisplaying) {
-//             // Get access to the camera stream
-//             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            
-//             // Set the camera stream as the source for the video element
-//             cameraFeed.srcObject = stream;
-
-//             // Show the camera feed
-//             cameraFeed.style.display = 'block';
-//         } else {
-//             // Stop the camera stream and hide the video element
-//             const tracks = cameraFeed.srcObject.getTracks();
-//             tracks.forEach(track => track.stop());
-//             cameraFeed.srcObject = null;
-//             cameraFeed.style.display = 'none';
-//         }
-//     } catch (error) {
-//         console.error('Error accessing camera:', error);
-//     }
-// });
+let unrealButton = document.getElementById('AdvencedView')
+// Add event listener to toggle camera feed
+unrealButton.addEventListener('click', ()=>{
+    window.open('http://172.16.16.163', 'smallWindow', 'width=960,height=510');
+});
 
 //test ground --------------------------------------------------------------------------------------------
 
-let labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize( window.innerWidth, window.innerHeight );
-labelRenderer.domElement.style.position = 'absolute';
-labelRenderer.domElement.style.top = '0px';
-labelRenderer.domElement.style.pointerEvents = 'none';
-document.body.appendChild(labelRenderer.domElement)
 
-// // Create an instance of FloatHelper2D
-// let floatHelper = new FloatTag2D("test helper",new THREE.Vector3(-40,24,136))
-// scene.add(floatHelper.getLabel())
+// Check if the device is a mobile device
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
+// Check if the device is a tablet
+function isTablet() {
+    return /iPad|Android/i.test(navigator.userAgent);
+}
+
+// Check if the device is a desktop/laptop
+function isDesktop() {
+    return !isMobileDevice() && !isTablet();
+}
+
+// Example usage
+if (isMobileDevice()) {
+    alert("This is a mobile device.");
+} else if (isTablet()) {
+    alert("This is a tablet device.");
+} else if (isDesktop()) {
+    console.log("This is a desktop or laptop.");
+} else {
+    console.log("Device type not identified.");
+}
+
 
 
 //test ground end-----------------------------------------------------------------------------------------
@@ -359,6 +338,9 @@ const tick = () =>
     stats.begin();
     // Update controls
     controls.update()
+
+    //Update 2d canvas
+    canvas2D.updateCanvas2D()
 
     //Raycast with mouse click
     raycaster.setFromCamera(mouse, camera)
@@ -384,8 +366,6 @@ const tick = () =>
             currentIntersect = null
         }
     }
-
-
 
     //update the 2d tags in scene
     sceneManager.Update2DTagVisibility(sizes)

@@ -9,6 +9,7 @@ export default class SceneGraph{
     CreateModels(){}
     setIdealCameraLocation(camera) {}
     isSceneReady(){}
+    unloadScene(){}
 
     getPoints(){
         //console.log("getPoints")

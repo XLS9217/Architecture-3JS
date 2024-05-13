@@ -7,6 +7,11 @@ import SceneGraph from "./SceneGraph";
 import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 import FloatTag2D from "../2DElements/FloatTag2D";
 import SceneManager from "../Utils/SceneManager";
+import SurveillanceCamera from "../Utils/SurveillanceCamera";
+import RealCameraManager from "../Utils/RealCameraManager";
+import Canvas2D from "../Utils/Canvas2D";
+
+let canvas2D = new Canvas2D()
 
 let instance = null
 let modelLoader = null
@@ -64,7 +69,7 @@ export default class Classroom extends SceneGraph{
         directionalLight.shadow.mapSize.set(512, 512)
         directionalLight.shadow.camera.scale.x = 40
         directionalLight.shadow.camera.scale.y = 50
-        console.log(directionalLight.shadow.camera)
+        //console.log(directionalLight.shadow.camera)
         this.scene.add(directionalLight)
 
         // const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
@@ -108,8 +113,24 @@ export default class Classroom extends SceneGraph{
                         }
                     }
                     else if(tokens[1] == 'camera'){
-                        modelData.clickAction = () => {
-                            console.log("open camera")
+                        modelData.memory = {
+                            isToggled: false
+                        }
+
+                        modelData.clickAction = (memory) => {
+                            //console.log("open camera")
+
+                            memory.isToggled = !memory.isToggled
+
+                            const videoElement = document.getElementById('cameraFeed');
+
+                            if( memory.isToggled )
+                                //canvas2D.addDynamicLine("BaseCamera",child,new THREE.Vector2(window.innerWidth * 0.20, window.innerHeight * 0.70))
+                                canvas2D.addDynamicLine("BaseCamera",child,videoElement)
+                            else
+                                canvas2D.removeDynamicLine("BaseCamera")
+                            let realCameraManager = new RealCameraManager()
+                            realCameraManager.ToggleSurveillanceCamera('shgbit_door')
                         }
                     }
                 }
@@ -132,7 +153,7 @@ export default class Classroom extends SceneGraph{
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -53
+        floor.position.y = -0.1
         this.scene.add(floor)
 
         console.log(window.debug_ui)
@@ -140,6 +161,11 @@ export default class Classroom extends SceneGraph{
 
         const axesHelper = new THREE.AxesHelper( 1000 );
         this.scene.add( axesHelper );
+    }
+
+    unloadScene(){
+        canvas2D.removeDynamicLine("BaseCamera")
+        
     }
 
     /**
