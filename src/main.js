@@ -91,7 +91,7 @@ labelRenderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(labelRenderer.domElement)
 
 //SceneMangaer
-const sceneManager = new SceneManager(scene, camera)
+const sceneManager = new SceneManager(scene, camera, controls)
 sceneManager.currentControl = controls
 sceneManager.LoadScene('Arch')
 
@@ -224,6 +224,7 @@ const level2Button = document.getElementById('level2');
 const level3Button = document.getElementById('level3');
 const basementButton = document.getElementById('level4');
 const roomButton = document.getElementById('Room');
+const mainDisplayButton = document.getElementById('Main_Display');
 
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
@@ -256,6 +257,10 @@ roomButton.addEventListener('click', () => {
     sceneManager.LoadScene('Room')
 });
 
+mainDisplayButton.addEventListener('click', () => {
+    console.log("Main display button clicked!");
+    sceneManager.LoadScene('MainDisplay')
+});
 
 // Get references to the button and iframe elements
 const rickRollButton = document.getElementById('RickRoll');

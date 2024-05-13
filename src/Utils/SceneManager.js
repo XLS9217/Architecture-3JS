@@ -7,6 +7,7 @@ import ShenZhen_Level3 from '../SceneGraphs/ShenZhen_Level3'
 import ShenZhen_Basement from '../SceneGraphs/ShenZhen_Basement'
 import Classroom from '../SceneGraphs/Classroom'
 import RealCameraManager from './RealCameraManager'
+import ShenZhen_MainDisplay from '../SceneGraphs/ShenZhen_MainDisplay'
 
 let instance = null
 let scene = null
@@ -14,7 +15,7 @@ let camera = null
 const raycaster = new THREE.Raycaster()
 
 export default class SceneManager{
-    constructor(inputScene, inputCamera){
+    constructor(inputScene, inputCamera, inputControl){
         // Singleton
         if(instance)
         {
@@ -25,7 +26,7 @@ export default class SceneManager{
         scene = inputScene
         camera = inputCamera
         this.currentGraph = null
-        this.currentControl = null
+        this.currentControl = inputControl
 
         //SceneGraphs
         this.shenzhenArch = new SingleArchitecture(scene)
@@ -34,12 +35,14 @@ export default class SceneManager{
         this.shenzhenL3 = new ShenZhen_Level3(scene)
         this.shenzhenBase = new ShenZhen_Basement(scene)
         this.classRoom = new Classroom(scene)
+        this.mainDisplay = new ShenZhen_MainDisplay(scene,inputControl)
     }
 
     GetCamera(){
         return camera
     }
 
+    //in charge of linking the string to the scene
     LoadScene(sceneName){
         if(sceneName == 'Arch'){
             this.LoadGraph(this.shenzhenArch)
@@ -59,12 +62,26 @@ export default class SceneManager{
         else if(sceneName == 'Room'){
             this.LoadGraph(this.classRoom)
         }
+        else if(sceneName == 'MainDisplay'){
+            this.LoadGraph(this.mainDisplay, this.currentControl)
+        }
     }
 
+    //in charge of what to do when loading a new scene graph
     LoadGraph(sceneGraph){
-        if(this.currentGraph) this.currentGraph.unloadScene()
+        //clear the graph
+        if(this.currentGraph){
+            for(const point of this.currentGraph.getPoints())
+            {
+                point.element.classList.remove('visible')
+            }
+            this.currentGraph.unloadScene()
+        }
+
+        //turn off camera
         let realCameraManager = new RealCameraManager()
         realCameraManager.TurnOffCameras()
+
         //clear the scene and add a new graph
         scene.clear();
         this.currentGraph = sceneGraph
