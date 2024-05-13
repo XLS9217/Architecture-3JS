@@ -25,7 +25,7 @@ export default class ControlsManager{
         //right button drug to rotate sight
         this.canvas.addEventListener('mousedown', function(event) {
             if (event.button === 2) {
-                console.log( currentControl)
+                //console.log( currentControl)
                 if ( currentControl instanceof PointerLockControls && !currentControl.isLocked) {
                     currentControl.lock();
                 }

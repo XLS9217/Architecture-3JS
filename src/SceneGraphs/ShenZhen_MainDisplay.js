@@ -122,7 +122,24 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr.position.y += 15
             modelPtr.position.x += 17
             
+            modelPtr.traverse((child)=>{
+                let tokens = child.name.split('_');
+                console.log(child.name)
 
+                if(tokens[0] == 'Anchor'){
+                    let modelData = this.interactiveModelManager.addInteractiveModel(child)
+                    modelData.clickAction = () =>{
+                        console.log("click ball")
+
+                    }
+                }
+                if(tokens[0] == 'Interactives'){
+                    child.material =  new THREE.MeshStandardMaterial({ color: 0x000000 , opacity: 0.0, transparent: true});
+                }
+                else if(tokens[0] == 'Camera'){
+                    let modelData = this.interactiveModelManager.addInteractiveModel(child)
+                }
+            })
         })
 
 
