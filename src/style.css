@@ -67,7 +67,7 @@ body
     z-index: 999; /* Ensure buttons are visible */
     border: 2px solid white;
     color: white; /* Set text color to white */
-    background-color: #00000099; /* Set background color to black */
+    background-color: #4c4c4c; /* Set background color to black */
     padding: 2px;
 }
 

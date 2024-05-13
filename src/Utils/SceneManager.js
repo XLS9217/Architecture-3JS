@@ -8,6 +8,7 @@ import ShenZhen_Basement from '../SceneGraphs/ShenZhen_Basement'
 import Classroom from '../SceneGraphs/Classroom'
 import RealCameraManager from './RealCameraManager'
 import ShenZhen_MainDisplay from '../SceneGraphs/ShenZhen_MainDisplay'
+import ControlsManager from './ControlsManager'
 
 let instance = null
 let scene = null
@@ -35,7 +36,7 @@ export default class SceneManager{
         this.shenzhenL3 = new ShenZhen_Level3(scene)
         this.shenzhenBase = new ShenZhen_Basement(scene)
         this.classRoom = new Classroom(scene)
-        this.mainDisplay = new ShenZhen_MainDisplay(scene,inputControl)
+        this.mainDisplay = new ShenZhen_MainDisplay(scene)
     }
 
     GetCamera(){

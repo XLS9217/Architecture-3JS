@@ -9,6 +9,7 @@ import FloatTag2D from "../2DElements/FloatTag2D";
 import { element } from "three/examples/jsm/nodes/Nodes.js";
 import SceneGraph from "./SceneGraph";
 import SceneManager from "../Utils/SceneManager";
+import ControlsManager from "../Utils/ControlsManager";
 
 let instance = null
 let modelLoader = null
@@ -25,7 +26,7 @@ const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 export default class ShenZhen_MainDisplay extends SceneGraph{
 
-    constructor(inputScene, inputControl){
+    constructor(inputScene){
         super()
         // Singleton
         if(instance)
@@ -38,15 +39,15 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
          */
         
         this.scene = inputScene;
-        this.control = inputControl;
-        this.control.enablePan = false;
-        this.control.enableZoom = false;
         this.interactiveModelManager = new InteractiveModelMangaer()
+        this.controlManager = new ControlsManager()
         console.log(this)
     }
 
     loadScene(){
-        console.log("loading single arch")
+        console.log("loading main display")
+        
+        this.controlManager.switch2PointerLock()
 
         this.interactiveModelManager.clearSceneData()
         //Scene Props
@@ -56,8 +57,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
     }
 
     unloadScene(){
-        this.control.enablePan = true;
-        this.control.enableZoom = true;
+        this.controlManager.switch2Orbit()
     }
 
     CreateLights(){
@@ -105,6 +105,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr = modelPtr;
         
             modelPtr.scale.set(5,5,5)
+            modelPtr.position.y += 15
+            modelPtr.position.x += 17
             
             modelPtr.traverse((child) => {
                 child.castShadow = true
@@ -117,6 +119,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr = modelPtr;
         
             modelPtr.scale.set(5,5,5)
+            modelPtr.position.y += 15
+            modelPtr.position.x += 17
             
 
         })
@@ -150,7 +154,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-100, 58, 240)
+        camera.position.set(0, 5, 24)
     }
 
     isSceneReady(){

@@ -41,7 +41,7 @@ export default class SingleArchitecture extends SceneGraph{
          */
         this.scene = inputScene;
         this.interactiveModelManager = new InteractiveModelMangaer()
-        console.log(this)
+        //console.log(this)
     }
 
     loadScene(){
@@ -106,7 +106,7 @@ export default class SingleArchitecture extends SceneGraph{
         //Loader
         modelLoader = new ModelLoader(this.scene)
         modelLoader.Load2Scene('models/sz_simplify/', 'sz_whole_interactive', 'glb',(modelPtr) => {
-            console.log(modelPtr)
+            //console.log(modelPtr)
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(5,5,5)
             architecture_shenzhen.position.set(300,0,200)
@@ -119,7 +119,7 @@ export default class SingleArchitecture extends SceneGraph{
                 //sceneManager.addInteractiveModel(child)
                 const tokens = child.name.split("_");
                 if(tokens[0] == 'interactive'){
-                    console.log("find interact " + child.name)
+                    //console.log("find interact " + child.name)
                     
                     if(tokens[1] == 'cube'){
                         child.material = invisiableMat
@@ -154,23 +154,6 @@ export default class SingleArchitecture extends SceneGraph{
             })
 
         })
-
-
-        // let interactiveToken = "room"//what should the first token be, to indicate interactive
-
-        // modelLoader.Load2Scene('models/obj_testRoom2/', 'testStructure', 'obj',(model) => {
-        //     console.log(model)
-        //     model.traverse((child) => {
-        //         const tokens = child.name.split("-");
-        //         if(tokens[0] == interactiveToken){
-        //             console.log("find room!!!")
-        //             this.interactiveModelManager.addInteractiveModel(child)
-        //         }
-        //         model.position.set(200,0,300)
-        //         this.scene.add(model)
-        //     })
-        //     //console.log(sceneManager.getInteractiveModel())
-        // }) 
         
         models.push(architecture_shenzhen)
 

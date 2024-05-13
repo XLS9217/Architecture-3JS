@@ -18,6 +18,7 @@ import SceneManager from './Utils/SceneManager';
 import SurveillanceCamera from './Utils/SurveillanceCamera';
 import RealCameraManager from './Utils/RealCameraManager';
 import Canvas2D from './Utils/Canvas2D';
+import ControlsManager from './Utils/ControlsManager';
 
 
 
@@ -65,10 +66,10 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 
 scene.add(camera)
 
 // Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
-controls.rotateSpeed = 0.15;
-controls.PanSpeed = 0.5;
+const controlsManager = new ControlsManager(camera,canvas)
+
+//const controls = controlsManager.currentControl
+
 /**
  * Renderer
  */
@@ -91,8 +92,8 @@ labelRenderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(labelRenderer.domElement)
 
 //SceneMangaer
-const sceneManager = new SceneManager(scene, camera, controls)
-sceneManager.currentControl = controls
+const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())
+sceneManager.currentControl = controlsManager.getCurrentControl()
 sceneManager.LoadScene('Arch')
 
 //iteractive model Manager
@@ -342,7 +343,7 @@ const tick = () =>
 {
     stats.begin();
     // Update controls
-    controls.update()
+    controlsManager.update()
 
     //Update 2d canvas
     canvas2D.updateCanvas2D()
