@@ -12,7 +12,9 @@ import SceneManager from "../Utils/SceneManager";
 import ControlsManager from "../Utils/ControlsManager";
 import SceneCameraManager from "../Utils/CameraManager";
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-
+import Canvas2D from "../Utils/Canvas2D";
+import RealCameraManager from "../Utils/RealCameraManager";
+let canvas2D = new Canvas2D()
 const rgbeLoader = new RGBELoader()
 
 let instance = null
@@ -166,6 +168,25 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                 }
                 else if(tokens[0] == 'Camera'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
+                    modelData.memory = {
+                        isToggled: false
+                    }
+
+                    modelData.clickAction = (memory) => {
+                        //console.log("open camera")
+
+                        memory.isToggled = !memory.isToggled
+
+                        const videoElement = document.getElementById('cameraFeed');
+
+                        if( memory.isToggled )
+                            //canvas2D.addDynamicLine("BaseCamera",child,new THREE.Vector2(window.innerWidth * 0.20, window.innerHeight * 0.70))
+                            canvas2D.addDynamicLine("BaseCamera",child,videoElement)
+                        else
+                            canvas2D.removeDynamicLine("BaseCamera")
+                        let realCameraManager = new RealCameraManager()
+                        realCameraManager.ToggleSurveillanceCamera('shgbit_door')
+                    }
                 }
             })
         })
