@@ -11,6 +11,9 @@ import SceneGraph from "./SceneGraph";
 import SceneManager from "../Utils/SceneManager";
 import ControlsManager from "../Utils/ControlsManager";
 import SceneCameraManager from "../Utils/CameraManager";
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+
+const rgbeLoader = new RGBELoader()
 
 let instance = null
 let modelLoader = null
@@ -50,28 +53,47 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
         this.CreateLights()
         this.CreateModels()
         this.Create2DPoints()
+        this.CreateEnvironmentMap()
     }
 
     unloadScene(){
         this.controlManager.switch2Orbit()
+
+        this.scene.background = null
+        this.scene.environment = null
+    }
+
+    CreateEnvironmentMap(){
+        rgbeLoader.load('/EnvMap/sky.hdr', (environmentMap) =>
+        {
+            environmentMap.mapping = THREE.EquirectangularReflectionMapping
+            
+            this.scene.background = environmentMap
+            this.scene.environment = environmentMap
+
+            console.log(this.scene.environment)
+        })
     }
 
     CreateLights(){
         /**
          * Lights
          */
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-        this.scene.add(ambientLight)
+        // const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+        // this.scene.add(ambientLight)
 
-        const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
-        directionalLight.position.set(-175, 122, -4)
-        directionalLight.target.position.set(191,-55,-38)
+        const directionalLight = new THREE.DirectionalLight(0xfffff0, 1.0)
+        directionalLight.position.set(275, 122, -4)
+        directionalLight.target.position.set(-191,-25,-38)
         directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(512, 512)
+        directionalLight.shadow.mapSize.set(1024, 1024)
         directionalLight.shadow.camera.scale.x = 40
         directionalLight.shadow.camera.scale.y = 50
         console.log(directionalLight.shadow.camera)
         this.scene.add(directionalLight)
+
+        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        // this.scene.add( helper );
     }
 
     Create2DPoints(){
@@ -105,10 +127,15 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr.position.x += 17
             
             modelPtr.traverse((child) => {
+                if(child.isMesh && child.material.isMeshStandardMaterial)
+                {
+                    child.material.envMapIntensity = 0.4
+                }
+
                 child.castShadow = true
                 child.receiveShadow = true
             })
-
+            
         })
         modelLoader.Load2Scene('models/sz_display/', 'main_diaplay_interactives', 'glb',(modelPtr) => {
             console.log(modelPtr)
@@ -121,7 +148,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr.traverse((child)=>{
                 let tokens = child.name.split('_');
                 //console.log(child.name)
-
+                
                 if(tokens[0] == 'Anchor'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
                     //console.log(child)
@@ -168,7 +195,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -53
+        floor.position.y = -43
         this.scene.add(floor)
 
         console.log(window.debug_ui)

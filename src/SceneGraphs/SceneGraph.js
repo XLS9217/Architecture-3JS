@@ -7,6 +7,7 @@ export default class SceneGraph{
     CreateLights(){}
     Create2DPoints(){}
     CreateModels(){}
+    CreateEnvironmentMap(){}
     setIdealCameraLocation(camera) {}
     isSceneReady(){}
     unloadScene(){}
