@@ -10,6 +10,7 @@ import { element } from "three/examples/jsm/nodes/Nodes.js";
 import SceneGraph from "./SceneGraph";
 import SceneManager from "../Utils/SceneManager";
 import ControlsManager from "../Utils/ControlsManager";
+import SceneCameraManager from "../Utils/CameraManager";
 
 let instance = null
 let modelLoader = null
@@ -17,11 +18,6 @@ let modelLoader = null
 //props inside scene
 let points = null
 let tags = []
-let models = []
-
-//for baking
-const textureLoader = new THREE.TextureLoader()
-const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 
 export default class ShenZhen_MainDisplay extends SceneGraph{
@@ -124,13 +120,25 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             
             modelPtr.traverse((child)=>{
                 let tokens = child.name.split('_');
-                console.log(child.name)
+                //console.log(child.name)
 
                 if(tokens[0] == 'Anchor'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
-                    modelData.clickAction = () =>{
-                        console.log("click ball")
+                    //console.log(child)
+                    modelData.memory = {
+                        position: new THREE.Vector3() 
+                    }
 
+                    child.getWorldPosition(modelData.memory.position);
+
+                    modelData.clickAction = (memory) =>{
+                        //console.log(memory.position)
+                        let cameraManager = new SceneCameraManager()
+                        cameraManager.hopToPosition(
+                            memory.position.x,
+                            memory.position.y,
+                            memory.position.z,
+                        )
                     }
                 }
                 if(tokens[0] == 'Interactives'){

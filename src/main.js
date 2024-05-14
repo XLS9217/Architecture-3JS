@@ -19,6 +19,7 @@ import SurveillanceCamera from './Utils/SurveillanceCamera';
 import RealCameraManager from './Utils/RealCameraManager';
 import Canvas2D from './Utils/Canvas2D';
 import ControlsManager from './Utils/ControlsManager';
+import SceneCameraManager from './Utils/CameraManager';
 
 
 
@@ -62,7 +63,8 @@ const sizes = {
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
+const sceneCameraManager = new SceneCameraManager()
+const camera = sceneCameraManager.getCamera()
 scene.add(camera)
 
 // Controls
@@ -109,17 +111,19 @@ let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
 // Add a button to the GUI
 gui_obj.cameraMove = () =>
 {
-    gsap.to(camera.position, { 
-        duration: 1, 
-        x: 1, 
-        y: 1, 
-        z: 1,
-        onComplete: () => {
-            console.log('Finished');
-        }
-    });
+    sceneCameraManager.hopToPosition(1,1,1)
 }
 debug_ui.add(gui_obj, 'cameraMove')
+
+let orbit = true;
+gui_obj.controlChange = () =>
+{
+    if(orbit) controlsManager.switch2PointerLock()
+    else controlsManager.switch2Orbit()
+
+    orbit = !orbit
+}
+debug_ui.add(gui_obj, 'controlChange')
 
 /**
  * Interactive logic-------------------------------------------------
