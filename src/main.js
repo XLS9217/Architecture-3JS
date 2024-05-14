@@ -20,6 +20,7 @@ import RealCameraManager from './Utils/RealCameraManager';
 import Canvas2D from './Utils/Canvas2D';
 import ControlsManager from './Utils/ControlsManager';
 import SceneCameraManager from './Utils/CameraManager';
+import { RGBELoader } from 'three/examples/jsm/Addons.js';
 
 
 
@@ -124,6 +125,12 @@ gui_obj.controlChange = () =>
     orbit = !orbit
 }
 debug_ui.add(gui_obj, 'controlChange')
+
+gui_obj.dayChange = () =>
+{
+    sceneManager.LoadEnvironmentMap('EnvMap/night4k.hdr')
+}
+debug_ui.add(gui_obj, 'dayChange')
 
 /**
  * Interactive logic-------------------------------------------------
@@ -329,6 +336,7 @@ if (isMobileDevice()) {
 } else {
     console.log("Device type not identified.");
 }
+
 
 
 

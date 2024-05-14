@@ -52,19 +52,34 @@ export default class SingleArchitecture extends SceneGraph{
         this.CreateLights()
         this.CreateModels()
         this.Create2DPoints()
+        this.CreateEnvironmentMap()
+    }
+
+    CreateEnvironmentMap(){
+        let sceneManager = new SceneManager();
+        sceneManager.LoadEnvironmentMap('EnvMap/sky.hdr');
     }
 
     CreateLights(){
         /**
          * Lights
          */
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-        this.scene.add(ambientLight)
+        // const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+        // this.scene.add(ambientLight)
 
         const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
+        directionalLight.position.set(275, 140, 140)
+        directionalLight.target.position.set(-300,-50,-200)
         directionalLight.castShadow = true 
         directionalLight.shadow.mapSize.set(1024, 1024)
+        directionalLight.shadow.camera.scale.x = 40
+        directionalLight.shadow.camera.scale.z = 30
+        directionalLight.shadow.camera.scale.y = 50
+        console.log(directionalLight.shadow.camera)
         this.scene.add(directionalLight)
+
+        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        // this.scene.add( helper );
     }
 
     Create2DPoints(){
@@ -147,6 +162,11 @@ export default class SingleArchitecture extends SceneGraph{
                             
                         }
                     }
+                    else{
+                        child.castShadow = true
+                        child.receiveShadow = true
+                        child.material.envMapIntensity = 0.3
+                    }
                     
                 }
                 child.castShadow = true
@@ -195,7 +215,7 @@ export default class SingleArchitecture extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-100, 58, 240)
+        camera.position.set(-124, 40, 220)
     }
 
     isSceneReady(){

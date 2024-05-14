@@ -59,20 +59,13 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
     unloadScene(){
         this.controlManager.switch2Orbit()
 
-        this.scene.background = null
-        this.scene.environment = null
+        // this.scene.background = null
+        // this.scene.environment = null
     }
 
     CreateEnvironmentMap(){
-        rgbeLoader.load('/EnvMap/sky.hdr', (environmentMap) =>
-        {
-            environmentMap.mapping = THREE.EquirectangularReflectionMapping
-            
-            this.scene.background = environmentMap
-            this.scene.environment = environmentMap
-
-            console.log(this.scene.environment)
-        })
+        let sceneManager = new SceneManager();
+        sceneManager.LoadEnvironmentMap('EnvMap/sky.hdr');
     }
 
     CreateLights(){
@@ -83,8 +76,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
         // this.scene.add(ambientLight)
 
         const directionalLight = new THREE.DirectionalLight(0xfffff0, 1.0)
-        directionalLight.position.set(275, 122, -4)
-        directionalLight.target.position.set(-191,-25,-38)
+        directionalLight.position.set(275, 90, 140)
+        directionalLight.target.position.set(-191,-25,-100)
         directionalLight.castShadow = true 
         directionalLight.shadow.mapSize.set(1024, 1024)
         directionalLight.shadow.camera.scale.x = 40

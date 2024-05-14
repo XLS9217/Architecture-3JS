@@ -9,11 +9,13 @@ import Classroom from '../SceneGraphs/Classroom'
 import RealCameraManager from './RealCameraManager'
 import ShenZhen_MainDisplay from '../SceneGraphs/ShenZhen_MainDisplay'
 import ControlsManager from './ControlsManager'
+import { RGBELoader } from 'three/examples/jsm/Addons.js'
 
 let instance = null
 let scene = null
 let camera = null
 const raycaster = new THREE.Raycaster()
+const rgbeLoader = new RGBELoader()
 
 export default class SceneManager{
     constructor(inputScene, inputCamera, inputControl){
@@ -43,6 +45,18 @@ export default class SceneManager{
         return camera
     }
 
+    LoadEnvironmentMap(src){
+        rgbeLoader.load(src, (environmentMap) =>
+        {
+            environmentMap.mapping = THREE.EquirectangularReflectionMapping
+            
+            scene.background = environmentMap
+            scene.environment = environmentMap
+
+            console.log(scene.environment)
+        })
+    }
+
     //in charge of linking the string to the scene
     LoadScene(sceneName){
         if(sceneName == 'Arch'){
@@ -70,7 +84,7 @@ export default class SceneManager{
 
     //in charge of what to do when loading a new scene graph
     LoadGraph(sceneGraph){
-        //clear the graph
+        //clear the 2d points
         if(this.currentGraph){
             for(const point of this.currentGraph.getPoints())
             {
@@ -78,6 +92,10 @@ export default class SceneManager{
             }
             this.currentGraph.unloadScene()
         }
+
+        //clear environment map
+        scene.background = null
+        scene.environment = null
 
         //turn off camera
         let realCameraManager = new RealCameraManager()
