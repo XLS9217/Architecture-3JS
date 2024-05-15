@@ -21,9 +21,7 @@ let models = []
 //tags.push(new FloatTag2D("main architecture",new THREE.Vector3(0,35,0)))
 //tags[0].setBackgroundColor('#ff0000bb')
 
-//for baking
-const textureLoader = new THREE.TextureLoader()
-//const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
+
 
 
 export default class SingleArchitecture extends SceneGraph{
@@ -37,6 +35,7 @@ export default class SingleArchitecture extends SceneGraph{
         }
         instance = this
         //console.log(this)
+
     }
 
     loadScene(){
@@ -44,27 +43,6 @@ export default class SingleArchitecture extends SceneGraph{
         super.loadScene()
     }
 
-    CreateLights(){
-        /**
-         * Lights
-         */
-        // const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-        // this.scene.add(ambientLight)
-
-        const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
-        directionalLight.position.set(275, 140, 140)
-        directionalLight.target.position.set(-300,-50,-200)
-        directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(1024, 1024)
-        directionalLight.shadow.camera.scale.x = 40
-        directionalLight.shadow.camera.scale.z = 30
-        directionalLight.shadow.camera.scale.y = 50
-        console.log(directionalLight.shadow.camera)
-        this.scene.add(directionalLight)
-
-        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
-        // this.scene.add( helper );
-    }
 
     Create2DPoints(){
         
@@ -146,20 +124,17 @@ export default class SingleArchitecture extends SceneGraph{
                             
                         }
                     }
-                    else{
-                        child.castShadow = true
-                        child.receiveShadow = true
-                        child.material.envMapIntensity = 0.3
-                    }
-                    
+                    return
                 }
+
+                if(tokens[0] == 'l1' || tokens[0] == 'l2' || tokens[0] == 'l3' || tokens[0] == 'top'|| tokens[0] == 'a_ssg') return //quick fix
+
                 child.castShadow = true
                 child.receiveShadow = true
             })
 
         })
         
-        models.push(architecture_shenzhen)
 
         /**
          * Floor

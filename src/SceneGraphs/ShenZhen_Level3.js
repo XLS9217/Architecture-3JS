@@ -37,34 +37,21 @@ export default class ShenZhen_Level3 extends SceneGraph{
         super.loadScene()
     }
 
-    CreateLights(){
-        /**
-         * Lights
-         */
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-        this.scene.add(ambientLight)
-
-        const directionalLight = new THREE.DirectionalLight(0xfffff0, 2.0)
-        directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(1024, 1024)
-        this.scene.add(directionalLight)
-    }
-
     Create2DPoints(){
         /**
          * Points
          */
         points = [
             {
-                position: new THREE.Vector3(-28,-23,69),
+                position: new THREE.Vector3(-28,33,69),
                 element: document.querySelector('.point-0')
             },
             {
-                position: new THREE.Vector3(47,-27,71),
+                position: new THREE.Vector3(47,33,71),
                 element: document.querySelector('.point-1')
             },
             {
-                position: new THREE.Vector3(86,1,5),
+                position: new THREE.Vector3(86,33,5),
                 element: document.querySelector('.point-2')
             } 
         ]
@@ -94,7 +81,6 @@ export default class ShenZhen_Level3 extends SceneGraph{
         /**
          * Building
          */
-        let arch_level1 =  null;
         
         //Loader
         modelLoader = new ModelLoader(this.scene)
@@ -105,17 +91,16 @@ export default class ShenZhen_Level3 extends SceneGraph{
             // window.debug_ui.add(modelPtr.position,"z").min(-1000).max(600).step(1)
 
             console.log(modelPtr)
-            arch_level1 = modelPtr;
-            arch_level1.scale.set(5,5,5)
-            arch_level1.position.set(-307,-22,244)
+            modelPtr = modelPtr;
+            modelPtr.scale.set(5,5,5)
+            modelPtr.position.set(-307,30,244)
             modelPtr.traverse((child) => {
                 child.castShadow = true
                 child.receiveShadow = true
             })
-
         })
         
-        models.push(arch_level1)
+            
 
         /**
          * Floor
@@ -130,27 +115,8 @@ export default class ShenZhen_Level3 extends SceneGraph{
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -53
+        floor.position.y = 0
         this.scene.add(floor)
-
-
-        const sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(300,350),
-            new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                transparent: true,
-                alphaMap: simpleShadow
-            })
-        )
-        sphereShadow.rotation.x = - Math.PI * 0.5
-        sphereShadow.position.x = 30
-        sphereShadow.position.y = floor.position.y + 1
-        sphereShadow.scale.x = 1.5
-        sphereShadow.scale.y = 1.5
-
-        // window.debug_ui.add(sphereShadow.scale,"x").min(0).max(5).step(0.1)
-        // window.debug_ui.add(sphereShadow.scale,"y").min(0).max(5).step(0.1)
-        this.scene.add(sphereShadow)
 
         console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
@@ -163,7 +129,7 @@ export default class ShenZhen_Level3 extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-40,52,135)
+        camera.position.set(-40,100,135)
     }
 
     isSceneReady(){

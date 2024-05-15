@@ -25,6 +25,8 @@ let points = null
 let tags = []
 
 
+let Anchors = {}//for storing other stuff along with anchor
+
 export default class ShenZhen_MainDisplay extends SceneGraph{
 
     constructor(inputScene){
@@ -55,26 +57,6 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
         // this.scene.environment = null
     }
 
-    CreateLights(){
-        /**
-         * Lights
-         */
-        // const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-        // this.scene.add(ambientLight)
-
-        const directionalLight = new THREE.DirectionalLight(0xfffff0, 1.0)
-        directionalLight.position.set(275, 90, 140)
-        directionalLight.target.position.set(-191,-25,-100)
-        directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(1024, 1024)
-        directionalLight.shadow.camera.scale.x = 40
-        directionalLight.shadow.camera.scale.y = 50
-        console.log(directionalLight.shadow.camera)
-        this.scene.add(directionalLight)
-
-        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
-        // this.scene.add( helper );
-    }
 
     Create2DPoints(){
         
@@ -98,7 +80,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
 
         //Loader
         modelLoader = new ModelLoader(this.scene)
-        modelLoader.Load2Scene('models/sz_display/', 'main_display_solve', 'glb',(modelPtr) => {
+        modelLoader.Load2Scene('models/sz_display/', 'main_display_solve_noTrans', 'glb',(modelPtr) => {
             console.log(modelPtr)
             modelPtr = modelPtr;
         
@@ -109,7 +91,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             modelPtr.traverse((child) => {
                 if(child.isMesh && child.material.isMeshStandardMaterial)
                 {
-                    child.material.envMapIntensity = 0.4
+                    child.material.envMapIntensity = 0.2
                 }
 
                 child.castShadow = true
@@ -131,27 +113,31 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                 //console.log(child.name)
                 let invisiableMat = new THREE.MeshStandardMaterial({ color: 0x000000 , opacity: 0.0, transparent: true});
                 if(tokens[0] == 'Anchor'){
+                    let identifier = tokens[1] + "_" + tokens[2]
+                    if(!Anchors[identifier]) Anchors[identifier] = {}
+                    Anchors[identifier]['Anchor'] = child
+
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
-                    //console.log(child)
-                    modelData.memory = {
-                        position: new THREE.Vector3() 
-                    }
-
-                    child.getWorldPosition(modelData.memory.position);
-
-                    modelData.clickAction = (memory) =>{
-                        //console.log(memory.position)
-                        let cameraManager = new SceneCameraManager()
-                        cameraManager.hopToPosition(
-                            memory.position.x,
-                            memory.position.y,
-                            memory.position.z,
-                        )
-                    }
+                    Anchors[identifier]['modelData'] = modelData
+                    
                 }
+
+                else if(tokens[0] == 'Plane'){
+                    let identifier = tokens[1] + "_" + tokens[2]
+                    if(!Anchors[identifier]) Anchors[identifier] = {}
+                    Anchors[identifier]['Plane'] = child
+                }
+
+                else if(tokens[0] == 'Arrow'){
+                    let identifier = tokens[1] + "_" + tokens[2]
+                    if(!Anchors[identifier]) Anchors[identifier] = {}
+                    Anchors[identifier]['Arrow'] = child
+                }
+
                 else if(tokens[0] == 'Interactives'){
                     child.material = invisiableMat
                 }
+
                 else if(tokens[0] == 'Camera'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
                     modelData.memory = {
@@ -174,6 +160,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                         realCameraManager.ToggleSurveillanceCamera('shgbit_door')
                     }
                 }
+
                 else if(tokens[0] == 'Door'){
                     child.material = invisiableMat
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
@@ -186,9 +173,36 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
                 }
             })
+
+            //after grouping anchor arrow and plane above set the callback logic of the anchor
+            for (const key in Anchors) {
+                console.log(key)
+                console.log(Anchors[key])
+
+                let modelData = Anchors[key].modelData
+                let anchor = Anchors[key].Anchor
+                //console.log(child)
+                modelData.memory = {
+                    position: new THREE.Vector3() 
+                }
+
+                anchor.getWorldPosition(modelData.memory.position);
+
+                modelData.clickAction = (memory) =>{
+                    //console.log(memory.position)
+                    let cameraManager = new SceneCameraManager()
+                    cameraManager.hopToPosition(
+                        memory.position.x,
+                        memory.position.y,
+                        memory.position.z,
+                    )
+                }
+
+            }
+    
         })
 
-
+        
         const axesHelper = new THREE.AxesHelper( 1000 );
         this.scene.add( axesHelper );
         

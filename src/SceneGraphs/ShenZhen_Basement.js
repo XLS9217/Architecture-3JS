@@ -64,30 +64,7 @@ export default class ShenZhen_Basement extends SceneGraph{
 
     loadScene(){
         console.log("loading shenzhen level 1")
-        this.interactiveModelManager.clearSceneData()
-        //Scene Props
-        this.CreateLights()
-        this.CreateModels()
-        this.Create2DPoints()
-    }
-
-    CreateLights(){
-        /**
-         * Lights
-         */
-        this.scene.add(ambientLight)
-
-        directionalLight.position.set(-175, 122, -4)
-        directionalLight.target.position.set(191,-55,-38)
-        directionalLight.castShadow = true 
-        directionalLight.shadow.mapSize.set(512, 512)
-        directionalLight.shadow.camera.scale.x = 40
-        directionalLight.shadow.camera.scale.y = 50
-        console.log(directionalLight.shadow.camera)
-        this.scene.add(directionalLight)
-
-        // const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-        // this.scene.add(directionalLightCameraHelper)
+        super.loadScene()
     }
 
     Create2DPoints(){

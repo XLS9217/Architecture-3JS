@@ -10,6 +10,7 @@ import RealCameraManager from './RealCameraManager'
 import ShenZhen_MainDisplay from '../SceneGraphs/ShenZhen_MainDisplay'
 import ControlsManager from './ControlsManager'
 import { RGBELoader } from 'three/examples/jsm/Addons.js'
+import SceneCameraManager from './CameraManager'
 
 let instance = null
 let scene = null
@@ -18,9 +19,7 @@ const raycaster = new THREE.Raycaster()
 const rgbeLoader = new RGBELoader()
 
 //when optimizing need this three variable
-let dayEnvMap = null;
-let afternoonEnvMap = null;
-let nightEnvMap = null;
+let envMaps = {};
 
 export default class SceneManager{
     constructor(inputScene, inputCamera, inputControl){
@@ -35,6 +34,7 @@ export default class SceneManager{
         camera = inputCamera
         this.currentGraph = null
         this.currentControl = inputControl
+        this.currrentEnvironment = 'afternoon'
 
         //SceneGraphs
         this.shenzhenArch = new SingleArchitecture(scene)
@@ -44,6 +44,8 @@ export default class SceneManager{
         this.shenzhenBase = new ShenZhen_Basement(scene)
         this.classRoom = new Classroom(scene)
         this.mainDisplay = new ShenZhen_MainDisplay(scene)
+
+        this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', 'afternoon')
     }
 
     GetCamera(){
@@ -56,11 +58,12 @@ export default class SceneManager{
         // Traverse through all elements in the scene
         scene.traverse((object) => {
             if (object instanceof THREE.Light) {
+                console.log(object)
                 // Add the light to the array
                 lightsToDelete.push(object);
             }
         });
-    
+        console.log(lightsToDelete)
         // Delete the lights from the scene
         lightsToDelete.forEach((light) => {
             scene.remove(light);
@@ -74,35 +77,61 @@ export default class SceneManager{
      * night -- night_1_4k.hdr
      */
     SwitchEnvironment( environment ){
-        if(environment == 'day'){
-            this.LoadEnvironmentMap('EnvMap/day_1_2k.hdr', dayEnvMap)
-        }
-        if(environment == 'afternoon'){
-            this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', afternoonEnvMap)
-        }
-        if(environment == 'night'){
-            this.LoadEnvironmentMap('EnvMap/night_1_4k.hdr', nightEnvMap)
-        }
+
+        this.currrentEnvironment = environment
+
+        gsap.to(scene, {
+            duration: 1.5,
+            backgroundBlurriness: 1.0,
+            backgroundIntensity: 0.0,
+            onComplete: () => {
+                if(envMaps[environment]){
+                    scene.background = envMaps[environment]
+                    scene.environment = envMaps[environment]
+                    
+                }else{
+                    if(environment == 'day'){
+                        this.LoadEnvironmentMap('EnvMap/day_1_2k.hdr', environment)
+                    }
+                    if(environment == 'afternoon'){
+                        this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', environment)
+                    }
+                    if(environment == 'night'){
+                        this.LoadEnvironmentMap('EnvMap/night_1_4k.hdr', environment)
+                    }
+                }
+                
+                this.currentGraph.SwitchLightGroup(environment)
+
+                gsap.to(scene, {
+                    duration: 1.5,
+                    backgroundBlurriness: 0.0,
+                    backgroundIntensity: 1.0,})
+            }
+        })
+
+
     }
 
-    LoadEnvironmentMap(src, mapPointer){
-        console.log(mapPointer)
-        if(mapPointer == null){
-            rgbeLoader.load(src, (environmentMap) =>
-            {
-                environmentMap.mapping = THREE.EquirectangularReflectionMapping
-                mapPointer = environmentMap
-                scene.background = mapPointer
-                scene.environment = mapPointer
+    LoadEnvironmentMap(src,environment){
+        rgbeLoader.load(src, (environmentMap) =>
+        {
+            environmentMap.mapping = THREE.EquirectangularReflectionMapping
+            environmentMap.rotation = new THREE.Matrix4().makeRotationY(Math.PI); // Example: Rotate 180 degrees around Y axis
 
-                console.log(scene.environment)
-            })
-        }else{
-            scene.background = mapPointer
-            scene.environment = mapPointer
-        }
+            scene.background = environmentMap
+            scene.environment = environmentMap
 
-        
+            envMaps[environment] = environmentMap
+
+            // // Generate a rotation matrix for rotating around the Y-axis by 90 degrees
+            // const rotationMatrix = new THREE.Matrix4().makeRotationY(Math.PI);
+
+            // // Apply the new rotation matrix to the existing rotation matrix
+            // environmentMap.rotation.multiply(rotationMatrix);
+
+            console.log(scene.environment)
+        })
     }
 
     //in charge of linking the string to the scene
@@ -143,9 +172,8 @@ export default class SceneManager{
             this.currentGraph.unloadScene()
         }
 
-        // //clear environment map
-        // scene.background = null
-        // scene.environment = null
+        //set light group
+        //this.currentGraph.SwitchLightGroup(this.currrentEnvironment)
 
         //turn off camera
         let realCameraManager = new RealCameraManager()

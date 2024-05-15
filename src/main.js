@@ -85,6 +85,7 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.alpha = true; // Enable alpha blending
 renderer.sortObjects = true
 
 let labelRenderer = new CSS2DRenderer();
@@ -97,7 +98,6 @@ document.body.appendChild(labelRenderer.domElement)
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())
 sceneManager.currentControl = controlsManager.getCurrentControl()
-sceneManager.SwitchEnvironment('afternoon')
 sceneManager.LoadScene('Arch')
 
 //iteractive model Manager
@@ -135,15 +135,22 @@ gui_obj.switchHDR_MAP = () =>
 }
 debug_ui.add(gui_obj, 'switchHDR_MAP')
 
+gui_obj.trunOffEnvMap = () =>
+{
+    scene.environment = null;
+    scene.background = null;
+}
+debug_ui.add(gui_obj, 'trunOffEnvMap')
 
-
-
+gui_obj.printScene = () => {
+    console.log(scene)
+};
+debug_ui.add(gui_obj, 'printScene')
 
 // Define the deleteLight function
 gui_obj.deleteLight = () => {
     sceneManager.DeleteLight()
 };
-
 debug_ui.add(gui_obj, 'deleteLight')
 
 /**
