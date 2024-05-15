@@ -28,19 +28,13 @@ let tags = []
 export default class ShenZhen_MainDisplay extends SceneGraph{
 
     constructor(inputScene){
-        super()
+        super(inputScene)
         // Singleton
         if(instance)
         {
             return instance
         }
         instance = this
-        /**
-         * Start creating scene
-         */
-        
-        this.scene = inputScene;
-        this.interactiveModelManager = new InteractiveModelMangaer()
         this.controlManager = new ControlsManager()
         console.log(this)
     }
@@ -50,12 +44,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
         
         this.controlManager.switch2PointerLock()
 
-        this.interactiveModelManager.clearSceneData()
-        //Scene Props
-        this.CreateLights()
-        this.CreateModels()
-        this.Create2DPoints()
-        this.CreateEnvironmentMap()
+        super.loadScene()
+
     }
 
     unloadScene(){
@@ -63,11 +53,6 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
 
         // this.scene.background = null
         // this.scene.environment = null
-    }
-
-    CreateEnvironmentMap(){
-        let sceneManager = new SceneManager();
-        sceneManager.LoadEnvironmentMap('EnvMap/sky.hdr');
     }
 
     CreateLights(){
@@ -132,7 +117,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             })
             
         })
-        modelLoader.Load2Scene('models/sz_display/', 'main_diaplay_interactives', 'glb',(modelPtr) => {
+        modelLoader.Load2Scene('models/sz_display/', 'main_diaplay_advence_interactives', 'glb',(modelPtr) => {
             console.log(modelPtr)
             modelPtr = modelPtr;
         
@@ -142,8 +127,9 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
             
             modelPtr.traverse((child)=>{
                 let tokens = child.name.split('_');
+                console.log(child.name)
                 //console.log(child.name)
-                
+                let invisiableMat = new THREE.MeshStandardMaterial({ color: 0x000000 , opacity: 0.0, transparent: true});
                 if(tokens[0] == 'Anchor'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
                     //console.log(child)
@@ -163,8 +149,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                         )
                     }
                 }
-                if(tokens[0] == 'Interactives'){
-                    child.material =  new THREE.MeshStandardMaterial({ color: 0x000000 , opacity: 0.0, transparent: true});
+                else if(tokens[0] == 'Interactives'){
+                    child.material = invisiableMat
                 }
                 else if(tokens[0] == 'Camera'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
@@ -187,6 +173,17 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                         let realCameraManager = new RealCameraManager()
                         realCameraManager.ToggleSurveillanceCamera('shgbit_door')
                     }
+                }
+                else if(tokens[0] == 'Door'){
+                    child.material = invisiableMat
+                    let modelData = this.interactiveModelManager.addInteractiveModel(child)
+                    modelData.clickAction = () => {
+                        let sceneManager = new SceneManager()
+                        sceneManager.LoadScene('Room')
+                    }
+                }
+                else if(tokens[0] == 'DownStair'){
+                    let modelData = this.interactiveModelManager.addInteractiveModel(child)
                 }
             })
         })

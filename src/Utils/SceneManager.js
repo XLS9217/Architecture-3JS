@@ -17,6 +17,11 @@ let camera = null
 const raycaster = new THREE.Raycaster()
 const rgbeLoader = new RGBELoader()
 
+//when optimizing need this three variable
+let dayEnvMap = null;
+let afternoonEnvMap = null;
+let nightEnvMap = null;
+
 export default class SceneManager{
     constructor(inputScene, inputCamera, inputControl){
         // Singleton
@@ -45,16 +50,59 @@ export default class SceneManager{
         return camera
     }
 
-    LoadEnvironmentMap(src){
-        rgbeLoader.load(src, (environmentMap) =>
-        {
-            environmentMap.mapping = THREE.EquirectangularReflectionMapping
-            
-            scene.background = environmentMap
-            scene.environment = environmentMap
+    DeleteLight(){
+        const lightsToDelete = [];
+    
+        // Traverse through all elements in the scene
+        scene.traverse((object) => {
+            if (object instanceof THREE.Light) {
+                // Add the light to the array
+                lightsToDelete.push(object);
+            }
+        });
+    
+        // Delete the lights from the scene
+        lightsToDelete.forEach((light) => {
+            scene.remove(light);
+        });
+    }
 
-            console.log(scene.environment)
-        })
+    /**
+     * environment is a string that can be
+     * day -- day_1_2k.hdr
+     * afternoon -- afternoon_1_1k.hdr
+     * night -- night_1_4k.hdr
+     */
+    SwitchEnvironment( environment ){
+        if(environment == 'day'){
+            this.LoadEnvironmentMap('EnvMap/day_1_2k.hdr', dayEnvMap)
+        }
+        if(environment == 'afternoon'){
+            this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', afternoonEnvMap)
+        }
+        if(environment == 'night'){
+            this.LoadEnvironmentMap('EnvMap/night_1_4k.hdr', nightEnvMap)
+        }
+    }
+
+    LoadEnvironmentMap(src, mapPointer){
+        console.log(mapPointer)
+        if(mapPointer == null){
+            rgbeLoader.load(src, (environmentMap) =>
+            {
+                environmentMap.mapping = THREE.EquirectangularReflectionMapping
+                mapPointer = environmentMap
+                scene.background = mapPointer
+                scene.environment = mapPointer
+
+                console.log(scene.environment)
+            })
+        }else{
+            scene.background = mapPointer
+            scene.environment = mapPointer
+        }
+
+        
     }
 
     //in charge of linking the string to the scene
@@ -80,6 +128,8 @@ export default class SceneManager{
         else if(sceneName == 'MainDisplay'){
             this.LoadGraph(this.mainDisplay, this.currentControl)
         }
+
+        
     }
 
     //in charge of what to do when loading a new scene graph
@@ -93,9 +143,9 @@ export default class SceneManager{
             this.currentGraph.unloadScene()
         }
 
-        //clear environment map
-        scene.background = null
-        scene.environment = null
+        // //clear environment map
+        // scene.background = null
+        // scene.environment = null
 
         //turn off camera
         let realCameraManager = new RealCameraManager()

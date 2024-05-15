@@ -97,6 +97,7 @@ document.body.appendChild(labelRenderer.domElement)
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())
 sceneManager.currentControl = controlsManager.getCurrentControl()
+sceneManager.SwitchEnvironment('afternoon')
 sceneManager.LoadScene('Arch')
 
 //iteractive model Manager
@@ -126,11 +127,24 @@ gui_obj.controlChange = () =>
 }
 debug_ui.add(gui_obj, 'controlChange')
 
-gui_obj.dayChange = () =>
+gui_obj.HDR_Name = 'sky'
+debug_ui.add(gui_obj,'HDR_Name')
+gui_obj.switchHDR_MAP = () =>
 {
-    sceneManager.LoadEnvironmentMap('EnvMap/night4k.hdr')
+    sceneManager.LoadEnvironmentMap('EnvMap/' + gui_obj.HDR_Name + '.hdr')
 }
-debug_ui.add(gui_obj, 'dayChange')
+debug_ui.add(gui_obj, 'switchHDR_MAP')
+
+
+
+
+
+// Define the deleteLight function
+gui_obj.deleteLight = () => {
+    sceneManager.DeleteLight()
+};
+
+debug_ui.add(gui_obj, 'deleteLight')
 
 /**
  * Interactive logic-------------------------------------------------
@@ -306,6 +320,38 @@ let unrealButton = document.getElementById('AdvencedView')
 // Add event listener to toggle camera feed
 unrealButton.addEventListener('click', ()=>{
     window.open('http://172.16.16.163', 'smallWindow', 'width=960,height=510');
+});
+
+// Get references to the buttons
+const dayButton = document.getElementById('day');
+const afternoonButton = document.getElementById('afternoon');
+const nightButton = document.getElementById('night');
+
+// Add event listener to the day button
+dayButton.addEventListener('click', () => {
+    console.log('Day button clicked!');
+    sceneManager.SwitchEnvironment('day')
+    dayButton.style.opacity = '1.0';
+    afternoonButton.style.opacity = '0.5';
+    nightButton.style.opacity = '0.5';
+});
+
+// Add event listener to the afternoon button
+afternoonButton.addEventListener('click', () => {
+    console.log('Afternoon button clicked!');
+    sceneManager.SwitchEnvironment('afternoon')
+    afternoonButton.style.opacity = '1.0';
+    dayButton.style.opacity = '0.5';
+    nightButton.style.opacity = '0.5';
+});
+
+// Add event listener to the night button
+nightButton.addEventListener('click', () => {
+    console.log('Night button clicked!');
+    sceneManager.SwitchEnvironment('night')
+    nightButton.style.opacity = '1.0';
+    afternoonButton.style.opacity = '0.5';
+    dayButton.style.opacity = '0.5';
 });
 
 //test ground --------------------------------------------------------------------------------------------

@@ -23,41 +23,25 @@ let models = []
 
 //for baking
 const textureLoader = new THREE.TextureLoader()
-const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
+//const simpleShadow = textureLoader.load('/textures/simpleShadow.jpg')
 
 
 export default class SingleArchitecture extends SceneGraph{
 
     constructor(inputScene){
-        super()
+        super(inputScene)
         // Singleton
         if(instance)
         {
             return instance
         }
         instance = this
-        /**
-         * Start creating scene
-         */
-        this.scene = inputScene;
-        this.interactiveModelManager = new InteractiveModelMangaer()
         //console.log(this)
     }
 
     loadScene(){
         console.log("loading single arch")
-
-        this.interactiveModelManager.clearSceneData()
-        //Scene Props
-        this.CreateLights()
-        this.CreateModels()
-        this.Create2DPoints()
-        this.CreateEnvironmentMap()
-    }
-
-    CreateEnvironmentMap(){
-        let sceneManager = new SceneManager();
-        sceneManager.LoadEnvironmentMap('EnvMap/sky.hdr');
+        super.loadScene()
     }
 
     CreateLights(){
@@ -93,22 +77,22 @@ export default class SingleArchitecture extends SceneGraph{
          * Points
          */
         points = [
-            {
-                position: new THREE.Vector3(1.55, 0.3, - 0.6),
-                element: document.querySelector('.point-0')
-            },
-            {
-                position: new THREE.Vector3(0.5, 0.8, - 1.6),
-                element: document.querySelector('.point-1')
-            },
-            {
-                position: new THREE.Vector3(1.6, - 1.3, - 0.7),
-                element: document.querySelector('.point-2')
-            },
-            {
-                position: new THREE.Vector3(63, 9 , -7),
-                element: document.querySelector('.green-house')
-            }
+            // {
+            //     position: new THREE.Vector3(1.55, 0.3, - 0.6),
+            //     element: document.querySelector('.point-0')
+            // },
+            // {
+            //     position: new THREE.Vector3(0.5, 0.8, - 1.6),
+            //     element: document.querySelector('.point-1')
+            // },
+            // {
+            //     position: new THREE.Vector3(1.6, - 1.3, - 0.7),
+            //     element: document.querySelector('.point-2')
+            // },
+            // {
+            //     position: new THREE.Vector3(63, 9 , -7),
+            //     element: document.querySelector('.green-house')
+            // }
         ]
     }
 
@@ -124,10 +108,10 @@ export default class SingleArchitecture extends SceneGraph{
             //console.log(modelPtr)
             architecture_shenzhen = modelPtr;
             architecture_shenzhen.scale.set(5,5,5)
-            architecture_shenzhen.position.set(300,0,200)
+            architecture_shenzhen.position.set(300,20,200)
         
             let frameModel = null;
-            let invisiableMat = new THREE.MeshBasicMaterial({color: 0x000000, transparent:true, opacity:0.02})
+            let invisiableMat = new THREE.MeshBasicMaterial({color: 0x000000, transparent:true, opacity:0.01})
             let blackMat = new THREE.MeshBasicMaterial({color: 0x000000})
             modelPtr.traverse((child) => {
                 //console.log(child)
@@ -190,22 +174,8 @@ export default class SingleArchitecture extends SceneGraph{
         )
         floor.receiveShadow = true
         floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -53
+        floor.position.y = -33
         this.scene.add(floor)
-
-
-        const sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(300,350),
-            new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                transparent: true,
-                alphaMap: simpleShadow
-            })
-        )
-        sphereShadow.rotation.x = - Math.PI * 0.5
-        sphereShadow.position.x = 30
-        sphereShadow.position.y = floor.position.y + 1
-        this.scene.add(sphereShadow)
 
         console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
@@ -215,7 +185,7 @@ export default class SingleArchitecture extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-124, 40, 220)
+        camera.position.set(-130, 55, 189)
     }
 
     isSceneReady(){

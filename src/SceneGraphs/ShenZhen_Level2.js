@@ -22,28 +22,19 @@ export default class ShenZhen_Level2 extends SceneGraph{
 
     constructor(inputScene){
         
-        super()
+        super(inputScene)
         // Singleton
         if(instance)
         {
             return instance
         }
         instance = this
-
-        /**
-         * Start creating scene
-         */
-        this.scene = inputScene;
-        this.interactiveModelManager = new InteractiveModelMangaer()
         console.log(this)
     }
 
     loadScene(){
         console.log("loading shenzhen level 1")
-        //Scene Props
-        this.CreateLights()
-        this.CreateModels()
-        this.Create2DPoints()
+        super.loadScene()
     }
 
     CreateLights(){

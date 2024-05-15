@@ -1,10 +1,26 @@
-export default class SceneGraph{
-    constructor(){
+import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 
+export default class SceneGraph{
+    constructor(inputScene){
+        /**
+         * Start creating scene
+         */
+        this.scene = inputScene;
+        this.interactiveModelManager = new InteractiveModelMangaer()
     }
 
-    loadScene(){}
+    loadScene(){
+        this.interactiveModelManager.clearSceneData()
+        //Scene Props
+        this.CreateLights()
+        this.CreateModels()
+        this.Create2DPoints()
+        this.CreateEnvironmentMap()
+    }
+
+
     CreateLights(){}
+
     Create2DPoints(){}
     CreateModels(){}
     CreateEnvironmentMap(){}

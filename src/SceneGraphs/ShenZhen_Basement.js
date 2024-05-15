@@ -51,19 +51,13 @@ export default class ShenZhen_Basement extends SceneGraph{
 
     constructor(inputScene){
 
-        super()
+        super(inputScene)
         // Singleton
         if(instance)
         {
             return instance
         }
         instance = this
-
-        /**
-         * Start creating scene
-         */
-        this.scene = inputScene;
-        this.interactiveModelManager = new InteractiveModelMangaer();
         console.log(this)
 
     }
