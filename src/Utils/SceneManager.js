@@ -18,6 +18,8 @@ let camera = null
 const raycaster = new THREE.Raycaster()
 const rgbeLoader = new RGBELoader()
 
+let timeUniform = new THREE.Uniform(0.0)
+
 //when optimizing need this three variable
 let envMaps = {};
 
@@ -50,6 +52,14 @@ export default class SceneManager{
 
     GetCamera(){
         return camera
+    }
+
+    GetTimeUniform(){
+        return timeUniform;
+    }
+
+    UpdateTimeUniform( time ){
+        timeUniform.value = time
     }
 
     DeleteLight(){

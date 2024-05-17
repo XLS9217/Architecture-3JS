@@ -14,8 +14,19 @@ import SceneCameraManager from "../Utils/CameraManager";
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import Canvas2D from "../Utils/Canvas2D";
 import RealCameraManager from "../Utils/RealCameraManager";
+
+import ArrowFragment from "../Shaders/FragmentShaders/Arrow_Fragment.glsl"
+import ArrowVertex from "../Shaders/VertexShaders/Arrow_Vertex.glsl"
+
+import ArrowPlaneFragment from "../Shaders/FragmentShaders/ArrowPlane_Fragment.glsl"
+import ArrowPlaneVertex from "../Shaders/VertexShaders/ArrowPlane_Vertex.glsl"
+
+
+import UserState from "../UserState";
+
 let canvas2D = new Canvas2D()
 const rgbeLoader = new RGBELoader()
+const userState = new UserState()
 
 let instance = null
 let modelLoader = null
@@ -176,14 +187,55 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
 
             //after grouping anchor arrow and plane above set the callback logic of the anchor
             for (const key in Anchors) {
-                console.log(key)
-                console.log(Anchors[key])
+                // console.log(key)
+                // console.log(Anchors[key])
 
                 let modelData = Anchors[key].modelData
                 let anchor = Anchors[key].Anchor
+                let arrow = Anchors[key].Arrow
+                let plane = Anchors[key].Plane 
+
+                let sceneManager = new SceneManager();
+
+                let isHovering = new THREE.Uniform(0)
+                arrow.material = new THREE.ShaderMaterial({
+                    vertexShader: ArrowVertex,
+                    fragmentShader: ArrowFragment,
+                    uniforms: {
+                        uColor: new THREE.Uniform(new THREE.Color(0.0,1.0,0.0)),
+                        uAnchorPosition: new THREE.Uniform(new THREE.Vector3()),
+                        uTime: sceneManager.GetTimeUniform(),
+                        uHovering: isHovering
+                    },
+                    transparent: true, 
+                    depthWrite:false, 
+                    side: THREE.DoubleSide
+                })
+                arrow.randerOrder = -1
+                anchor.getWorldPosition(arrow.material.uniforms.uAnchorPosition.value)
+
+                const planeMat = new THREE.ShaderMaterial({
+                    vertexShader: ArrowPlaneVertex,
+                    fragmentShader: ArrowFragment,
+                    uniforms: {
+                        uColor: new THREE.Uniform(new THREE.Color(0.0,1.0,0.0)),
+                        uAnchorPosition: new THREE.Uniform(new THREE.Vector3()),
+                        uTime: sceneManager.GetTimeUniform(),
+                        uHovering: isHovering
+                    },
+                    transparent: true, 
+                    depthWrite:false, 
+                    side: THREE.DoubleSide
+                })
+                plane.material = planeMat
+                console.log(plane.material)
+                plane.randerOrder = -1
+                plane.getWorldPosition(arrow.material.uniforms.uAnchorPosition.value)
+
                 //console.log(child)
                 modelData.memory = {
-                    position: new THREE.Vector3() 
+                    position: new THREE.Vector3() ,
+                    hovering: isHovering
                 }
 
                 anchor.getWorldPosition(modelData.memory.position);
@@ -196,6 +248,16 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                         memory.position.y,
                         memory.position.z,
                     )
+                }
+
+                modelData.idleAction = (memory) => {
+                    //trigger shader function in arrow and plane
+                    memory.hovering.value = 0
+                }
+
+                modelData.hoverAction = (memory) => {
+                    //trigger shader function in arrow and plane
+                    memory.hovering.value = 1
                 }
 
             }
@@ -231,7 +293,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(0, 5, 24)
+        camera.position.set(-2, 0, 4)
     }
 
     isSceneReady(){

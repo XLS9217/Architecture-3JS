@@ -21,12 +21,16 @@ import Canvas2D from './Utils/Canvas2D';
 import ControlsManager from './Utils/ControlsManager';
 import SceneCameraManager from './Utils/CameraManager';
 import { RGBELoader } from 'three/examples/jsm/Addons.js';
+import UserState from './UserState';
 
 
 
 /*
  * Begin init scene prop -------------------------------------------------
  */
+
+//UserState
+const userState = new UserState()
 
 //Statistics 
 const stats = new Stats()
@@ -397,8 +401,7 @@ if (isMobileDevice()) {
 
 
 
-
-
+const clock = new THREE.Clock()
 let objectsToTest = interactiveModelManager.getInteractiveModels()
 
 /**
@@ -407,6 +410,9 @@ let objectsToTest = interactiveModelManager.getInteractiveModels()
 const tick = () =>
 {
     stats.begin();
+    //update elapsed time
+    sceneManager.UpdateTimeUniform(clock.getElapsedTime())
+
     // Update controls
     controlsManager.update()
 
@@ -425,6 +431,8 @@ const tick = () =>
         // Reset all objects to red
         for (const object of objectsToTest) {
             //object.material.color.set('#ff0000');
+            interactiveModelManager.triggerIdleAction(object)
+
             interactiveModelManager.revertInteractiveModelMaterial(object,false)
         }
 

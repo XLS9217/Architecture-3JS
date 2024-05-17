@@ -45,6 +45,7 @@ export default class InteractiveModelMangaer{
             hasChanged: false,
             isSelected: false,
             //variables for furthere customization
+            idleAction: null, //what to do when idling, before hover
             hoverAction: null, //has to take memory as first variable
             clickAction: null, //has to take memory as first variable
             memory: null
@@ -63,6 +64,16 @@ export default class InteractiveModelMangaer{
         return false;
     }
 
+    triggerIdleAction(obj){
+        if(obj == null) return
+        for(const metaData of this.interactiveModel_data){
+            if(obj.name == metaData.name && metaData.idleAction){
+                metaData.idleAction(metaData.memory)
+                return true;
+            }
+        }
+        return false;
+    }
 
     triggerClickAction(obj){
         for(const metaData of this.interactiveModel_data){
