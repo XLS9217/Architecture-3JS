@@ -209,14 +209,15 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                     },
                     transparent: true, 
                     depthWrite:false, 
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending
                 })
                 arrow.randerOrder = -1
                 anchor.getWorldPosition(arrow.material.uniforms.uAnchorPosition.value)
 
                 const planeMat = new THREE.ShaderMaterial({
-                    vertexShader: ArrowPlaneVertex,
-                    fragmentShader: ArrowFragment,
+                    // vertexShader: ArrowPlaneVertex,
+                    // fragmentShader: ArrowFragment,
                     uniforms: {
                         uColor: new THREE.Uniform(new THREE.Color(0.0,1.0,0.0)),
                         uAnchorPosition: new THREE.Uniform(new THREE.Vector3()),
@@ -225,10 +226,11 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                     },
                     transparent: true, 
                     depthWrite:false, 
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending
                 })
                 plane.material = planeMat
-                console.log(plane.material)
+                //console.log(plane.material)
                 plane.randerOrder = -1
                 plane.getWorldPosition(arrow.material.uniforms.uAnchorPosition.value)
 

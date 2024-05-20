@@ -31,7 +31,7 @@ export default class SceneGraph{
         afternoon_DLight.shadow.camera.scale.x = 40
         afternoon_DLight.shadow.camera.scale.z = 30
         afternoon_DLight.shadow.camera.scale.y = 50
-        console.log(afternoon_DLight.shadow.camera)
+        //console.log(afternoon_DLight.shadow.camera)
         // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // this.scene.add( helper );
         this.lightGroups['afternoon'].add(afternoon_DLight)
@@ -47,7 +47,7 @@ export default class SceneGraph{
         day_DLight.shadow.camera.scale.x = 40
         day_DLight.shadow.camera.scale.z = 30
         day_DLight.shadow.camera.scale.y = 50
-        console.log(day_DLight.shadow.camera)
+        //console.log(day_DLight.shadow.camera)
         // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // this.scene.add( helper );
         this.lightGroups['day'].add(day_DLight)
@@ -63,7 +63,7 @@ export default class SceneGraph{
         night_DLight.shadow.camera.scale.x = 40
         night_DLight.shadow.camera.scale.z = 30
         night_DLight.shadow.camera.scale.y = 50
-        console.log(night_DLight.shadow.camera)
+        //console.log(night_DLight.shadow.camera)
         // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // this.scene.add( helper );
         this.lightGroups['night'].add(night_DLight)

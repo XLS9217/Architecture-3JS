@@ -62,6 +62,30 @@ export default class SceneManager{
         timeUniform.value = time
     }
 
+    RecalculateRenderOrder() {
+        const meshes = [];
+    
+        // Traverse the scene to find all meshes
+        scene.traverse((object) => {
+            if (object.isMesh) {
+                meshes.push(object);
+            }
+        });
+    
+        // Update renderOrder based on distance to the camera
+        meshes.forEach((mesh) => {
+            mesh.renderOrder = mesh.position.distanceTo(camera.position);
+        });
+    
+        // Optional: Sort meshes by renderOrder
+        meshes.sort((a, b) => a.renderOrder - b.renderOrder);
+    
+        // Optionally, if you want to apply a specific order manually (if sorting is not enough)
+        meshes.forEach((mesh, index) => {
+            mesh.renderOrder = index;
+        });
+    }
+
     DeleteLight(){
         const lightsToDelete = [];
     

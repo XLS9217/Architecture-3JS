@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { gsap } from 'gsap'
+import SceneManager from './SceneManager'
 
 const sizes = {
     width: window.innerWidth,
@@ -32,6 +33,8 @@ export default class SceneCameraManager{
             z: zPos,
             onComplete: () => {
                 //console.log('Finished');
+                let sceneManager = new SceneManager()
+                sceneManager.RecalculateRenderOrder()
             }
         });
     }
