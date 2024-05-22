@@ -60,8 +60,11 @@ scene.add( axesHelper );
  */
 const sizes = {
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
+    pixelRatio: Math.min(window.devicePixelRatio, 2)
 }
+
+sizes.resolution = new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height* sizes.pixelRatio)
 /**
  * Camera
  */
@@ -100,7 +103,10 @@ document.body.appendChild(labelRenderer.domElement)
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())
 sceneManager.currentControl = controlsManager.getCurrentControl()
-sceneManager.LoadScene('Arch')
+//sceneManager.LoadScene('Arch')//======================================================
+sceneManager.LoadScene('test')
+sceneManager.UpdateResolutionUniform(sizes.resolution)
+sceneManager.ChangeWeather('snow')
 
 //iteractive model Manager
 let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
@@ -137,12 +143,12 @@ debug_ui.add(gui_obj, 'controlChange')
 // }
 // debug_ui.add(gui_obj, 'switchHDR_MAP')
 
-// gui_obj.trunOffEnvMap = () =>
-// {
-//     scene.environment = null;
-//     scene.background = null;
-// }
-// debug_ui.add(gui_obj, 'trunOffEnvMap')
+gui_obj.trunOffEnvMap = () =>
+{
+    scene.environment = null;
+    scene.background = null;
+}
+debug_ui.add(gui_obj, 'trunOffEnvMap')
 
 gui_obj.printScene = () => {
     console.log(scene)
@@ -204,6 +210,9 @@ window.addEventListener('resize', () =>
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
+    sizes.pixelRatio = Math.min(window.devicePixelRatio,2)
+    sizes.resolution.set(sizes.width * sizes.pixelRatio, sizes.height* sizes.pixelRatio)
+    sceneManager.UpdateResolutionUniform()
 
     // Update camera
     camera.aspect = sizes.width / sizes.height
@@ -291,9 +300,7 @@ basementButton.addEventListener('click', () => {
 const levelsButton = document.getElementById("levels");
 const panel = document.getElementById("level_buttons");
 let isLevelPanelHiding = true;
-
 levelsButton.addEventListener("click", () => {
-    //console.log("levels")
     isLevelPanelHiding = !isLevelPanelHiding
     if(isLevelPanelHiding){
         panel.classList.add("hide");
@@ -301,34 +308,19 @@ levelsButton.addEventListener("click", () => {
         panel.classList.remove("hide")
     }
 });
-
 roomButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
     sceneManager.LoadScene('Room')
 });
-
 mainDisplayButton.addEventListener('click', () => {
     console.log("Main display button clicked!");
     sceneManager.LoadScene('MainDisplay')
 });
 
 // Get references to the button and iframe elements
-//const rickRollButton = document.getElementById('RickRoll');
 const cameraButton = document.getElementById('cameraView');
 const cameraFrame = document.getElementById('cameraFrame');
 let isCameraViewDisplaying = false;
-// rickRollButton.addEventListener('click', function() {
-//     // Show the iframe below the buttons
-//     isCameraViewDisplaying = !isCameraViewDisplaying
-//     if(isCameraViewDisplaying){
-//         cameraFrame.style.display = 'block';
-//         cameraFrame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace VIDEO_ID with your YouTube video ID
-//     }else{
-//         cameraFrame.style.display = 'none';
-//         cameraFrame.src = ''
-//     }
-// });
-
 
 let realCameraManager = new RealCameraManager()
 let surveillanceCamera = new SurveillanceCamera('http://172.16.40.58:8080/live/test2.flv', document.getElementById('cameraFeed'))
@@ -344,6 +336,21 @@ let unrealButton = document.getElementById('AdvencedView')
 // Add event listener to toggle camera feed
 unrealButton.addEventListener('click', ()=>{
     window.open('http://172.16.16.163', 'smallWindow', 'width=960,height=510');
+});
+
+// Get the wind button and the wind panel elements
+const windButton = document.getElementById('wind');
+const windPanel = document.getElementById('wind_panel');
+windButton.addEventListener('click', () => {
+    windPanel.classList.toggle('hide');
+});
+// Get all the wind buttons inside the wind panel
+const windButtons = document.querySelectorAll('#wind_panel .wind_button');
+windButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        console.log(button.textContent);
+        sceneManager.ChangeWind(button.textContent)
+    });
 });
 
 // Get references to the buttons

@@ -12,25 +12,58 @@
     <script type="module" src="node_modules/spin.js/spin.js"></script>
     <div class="HUD">
         <div class="button_holder">
-            <div id="level_buttons" class="panel hide">
+
+            <!-- Main Buttons -->
+            <button id="levels" class="button">levels</button>
+            <button id="main" class="button">Main Architecture</button>
+            <button id="Room" class="button">Room</button>
+            <button id="Main_Display" class="button">Main Display</button>
+            <button id="wind" class="button" style="background-color: rgb(0, 120, 120);">Wind Direction</button>
+            <button id="cameraView" style="background-color: rgb(193, 106, 0);" class="button">camera</button>          
+            <button id="AdvencedView" style="background-color: rgb(49, 0, 92);" class="button">Unreal</button>       
+            
+            <!-- Support Buttons -->       
+            <div id="level_buttons" class="level_panel hide">
                 <button id="level1" class="button">Level 1</button>
                 <button id="level2" class="button">Level 2</button>
                 <button id="level3" class="button">Level 3</button>
                 <button id="level4" class="button">Basement</button>
             </div>
-            <button id="levels" class="button">levels</button>
-            <button id="main" class="button">Main Architecture</button>
-            <button id="Room" class="button">Room</button>
-            <button id="Main_Display" class="button">Main Display</button>
-            <!-- <button id="RickRoll" style="background-color: rgb(193, 106, 0);" class="button">RickRoll</button>             -->
-            <button id="cameraView" style="background-color: rgb(193, 106, 0);" class="button">camera</button>          
-            <button id="AdvencedView" style="background-color: rgb(49, 0, 92);" class="button">Unreal</button>              
+
+            <div id="wind_panel" class="hide wind_panel">
+                <button class="wind_button">NW</button>
+                <button class="wind_button">N</button>
+                <button class="wind_button">NE</button>
+                <button class="wind_button">W</button>
+                <button class="wind_button">Off</button>
+                <button class="wind_button">E</button>
+                <button class="wind_button">SW</button>
+                <button class="wind_button">S</button>
+                <button class="wind_button">SE</button>
+            </div>
         </div>
+
+
         <div class="environment_button_holder">
-            <button id="day" style="background-color: rgb(107, 235, 255);" class="environment_button"> </button>
+            <button id="day" style="background-color: #00f7ff;" class="environment_button"> </button>
             <button id="afternoon" style="background-color: rgb(255, 210, 64);" class="environment_button"> </button>
             <button id="night" style="background-color: rgb(0, 96, 180);" class="environment_button"> </button>
         </div>
+
+        <div class="weather_panel">
+            <button id="weather_snow" class="weather_button ">
+                <img src="/Icons/snow_icon.png" alt="Icon" >
+            </button>
+            <button id="weather_rain" class="weather_button">
+                <img src="/Icons/rain_icon.png" alt="Icon">
+            </button>
+            <button id="weather_no" class="weather_button">
+                <img src="/Icons/no_icon.png" alt="Icon">
+            </button>
+        </div>
+
+
+
         <iframe id="cameraFrame" class="camera-frame"></iframe>
         <video id="cameraFeed" class="camera-frame" autoplay>
             <!-- Add source element for the video -->

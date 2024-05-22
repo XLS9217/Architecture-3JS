@@ -88,34 +88,7 @@ body
 }
 
 
-.environment_button_holder {
-    position: absolute;
-    top: 2%;
-    left: 15%;
-    /* border: 3px solid blue; */
-    z-index: 999;
-    width: 130px; 
-    height: 40px; 
-    pointer-events: none;
-}
 
-.environment_button {
-    border: 3px solid black;
-    z-index: 999;
-    border-radius: 50%;
-    width: 35px; 
-    height: 35px; 
-    pointer-events: all;
-    opacity: 0.5; /* Initial opacity */
-    /* transition: width 0.1s ; 
-    transition: height 0.1s ;  */
-}
-
-.environment_button:hover {
-    
-    width: 40px; 
-    height: 40px;  
-}
 
 
 .point

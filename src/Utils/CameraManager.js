@@ -32,9 +32,9 @@ export default class SceneCameraManager{
             y: yPos, 
             z: zPos,
             onComplete: () => {
-                //console.log('Finished');
+                console.log('Finished');
                 let sceneManager = new SceneManager()
-                //sceneManager.RecalculateRenderOrder()
+                sceneManager.RecalculateRenderOrder()
             }
         });
     }

@@ -152,7 +152,7 @@ export default class SingleArchitecture extends SceneGraph{
         floor.position.y = -33
         this.scene.add(floor)
 
-        console.log(window.debug_ui)
+        //console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );
     }
 

@@ -13,6 +13,9 @@ import { RGBELoader } from 'three/examples/jsm/Addons.js'
 import SceneCameraManager from './CameraManager'
 import ModelLoader from './ModelLoader'
 import LoadingSpinner from '../2DElements/LoadingSpinner'
+import DropParticle3D from '../Particles/DropParticle3D'
+import TestScene from '../SceneGraphs/TestScene'
+import { color } from 'three/examples/jsm/nodes/Nodes.js'
 
 //spinner.stop();
 
@@ -23,6 +26,7 @@ const raycaster = new THREE.Raycaster()
 const rgbeLoader = new RGBELoader()
 
 let timeUniform = new THREE.Uniform(0.0)
+let resolutionUnifrom = new THREE.Uniform(new THREE.Vector2( window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2)))
 
 //when optimizing need this three variable
 let envMaps = {};
@@ -52,8 +56,13 @@ export default class SceneManager{
         this.shenzhenBase = new ShenZhen_Basement(scene)
         this.classRoom = new Classroom(scene)
         this.mainDisplay = new ShenZhen_MainDisplay(scene)
+        this.testScene = new TestScene(scene)
 
         this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', 'afternoon')
+
+        //weather
+        this.hasWeather = false
+        this.dropParticle = null
     }
 
     GetCamera(){
@@ -66,6 +75,41 @@ export default class SceneManager{
 
     UpdateTimeUniform( time ){
         timeUniform.value = time
+    }
+
+    UpdateResolutionUniform(){
+        let resolution = new THREE.Vector2( window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2))
+        resolutionUnifrom.value = resolution
+    }
+
+    ChangeWind(windDir){
+        this.dropParticle.changeWindStrength(0.45)
+        this.dropParticle.changeWindDirection(windDir)
+    }
+
+    //none or type that is listed in DropParticle.js
+    ChangeWeather(weather){
+        if(weather == 'none'){
+            this.hasWeather = false
+            this.dropParticle.deconstruct()
+            scene.remove(this.dropParticle.getParticles())
+        }
+        else if(weather == 'snow'){
+            this.dropParticle = new DropParticle3D(
+                100,//amount
+                2.0,//size
+                7.0,//speed
+                'snow',//type
+                100,//ceil
+                 0,//floor
+                50,//width
+                50,//depth
+                timeUniform,
+                resolutionUnifrom
+            )    
+            scene.add(this.dropParticle.getParticles())
+        }
+
     }
 
     RecalculateRenderOrder() {
@@ -174,7 +218,7 @@ export default class SceneManager{
             // // Apply the new rotation matrix to the existing rotation matrix
             // environmentMap.rotation.multiply(rotationMatrix);
 
-            console.log(scene.environment)
+            //console.log(scene.environment)
         })
     }
 
@@ -200,6 +244,9 @@ export default class SceneManager{
         }
         else if(sceneName == 'MainDisplay'){
             this.LoadGraph(this.mainDisplay, this.currentControl)
+        }
+        else if(sceneName == 'test'){
+            this.LoadGraph(this.testScene)
         }
 
         
