@@ -5,19 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThreeJS Architecture</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./panels.css">
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.0/flv.min.js"></script>
+    <script type="module" src="node_modules/spin.js/spin.js"></script>
     <div class="HUD">
         <div class="button_holder">
-            <button id="main" class="button">Single Arch</button>
-            <button id="level1" class="button">Level 1</button>
-            <button id="level2" class="button">Level 2</button>
-            <button id="level3" class="button">Level 3</button>
-            <button id="level4" class="button">Basement</button>
+            <div id="level_buttons" class="panel hide">
+                <button id="level1" class="button">Level 1</button>
+                <button id="level2" class="button">Level 2</button>
+                <button id="level3" class="button">Level 3</button>
+                <button id="level4" class="button">Basement</button>
+            </div>
+            <button id="levels" class="button">levels</button>
+            <button id="main" class="button">Main Architecture</button>
             <button id="Room" class="button">Room</button>
             <button id="Main_Display" class="button">Main Display</button>
-            <button id="RickRoll" style="background-color: rgb(193, 106, 0);" class="button">RickRoll</button>            
+            <!-- <button id="RickRoll" style="background-color: rgb(193, 106, 0);" class="button">RickRoll</button>             -->
             <button id="cameraView" style="background-color: rgb(193, 106, 0);" class="button">camera</button>          
             <button id="AdvencedView" style="background-color: rgb(49, 0, 92);" class="button">Unreal</button>              
         </div>
@@ -31,7 +36,10 @@
             <!-- Add source element for the video -->
             <source id="cameraSource" type="video/x-flv">
             Your browser does not support the video tag.
-          </video>
+        </video>
+        <div id="spin">
+
+        </div>
     </div>
     
 

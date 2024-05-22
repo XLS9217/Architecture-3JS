@@ -1,0 +1,15 @@
+.hide {
+    display: none !important; 
+}
+
+.panel {
+    position: absolute;
+    /* border: 3px solid blue; */
+    left: 100%;
+    top: 0%;
+    height: 35px;
+    display: flex;
+    z-index: 999;
+    width: auto;  
+    pointer-events: all;
+}

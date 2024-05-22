@@ -8,7 +8,11 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import {Spinner} from 'spin.js';
+import LoadingSpinner from '../2DElements/LoadingSpinner';
 
+
+let spinner = new LoadingSpinner()
 let instance = null
 
 const loadingBarElement = document.querySelector('.loading-bar')
@@ -35,6 +39,7 @@ const loadingManager = new THREE.LoadingManager(
         window.setTimeout(() =>
         {
             sceneReady = true
+            spinner.stop()
         }, 2000)
     },
 
@@ -50,6 +55,7 @@ const loadingManager = new THREE.LoadingManager(
 loadingManager.onStart = function () {
 	console.log("loading manager start")
     loadingBarElement.classList.remove('ended')
+    spinner.spin()
     //overlay.material.uniforms.uAlpha.value = 1.0; 
 };
 // // Add event listener to the document

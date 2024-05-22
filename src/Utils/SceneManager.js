@@ -11,6 +11,10 @@ import ShenZhen_MainDisplay from '../SceneGraphs/ShenZhen_MainDisplay'
 import ControlsManager from './ControlsManager'
 import { RGBELoader } from 'three/examples/jsm/Addons.js'
 import SceneCameraManager from './CameraManager'
+import ModelLoader from './ModelLoader'
+import LoadingSpinner from '../2DElements/LoadingSpinner'
+
+//spinner.stop();
 
 let instance = null
 let scene = null
@@ -37,6 +41,8 @@ export default class SceneManager{
         this.currentGraph = null
         this.currentControl = inputControl
         this.currrentEnvironment = 'afternoon'
+
+        this.spinner = new LoadingSpinner()
 
         //SceneGraphs
         this.shenzhenArch = new SingleArchitecture(scene)
@@ -113,6 +119,7 @@ export default class SceneManager{
     SwitchEnvironment( environment ){
 
         this.currrentEnvironment = environment
+        this.spinner.spin()
 
         gsap.to(scene, {
             duration: 1.5,
@@ -136,11 +143,14 @@ export default class SceneManager{
                 }
                 
                 this.currentGraph.SwitchLightGroup(environment)
-
                 gsap.to(scene, {
                     duration: 1.5,
                     backgroundBlurriness: 0.0,
-                    backgroundIntensity: 1.0,})
+                    backgroundIntensity: 1.0,
+                    onComplete: () => { 
+                        this.spinner.stop()
+                    }
+                })
             }
         })
 

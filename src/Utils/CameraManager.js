@@ -34,7 +34,7 @@ export default class SceneCameraManager{
             onComplete: () => {
                 //console.log('Finished');
                 let sceneManager = new SceneManager()
-                sceneManager.RecalculateRenderOrder()
+                //sceneManager.RecalculateRenderOrder()
             }
         });
     }

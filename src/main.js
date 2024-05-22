@@ -52,8 +52,6 @@ const canvas2D = new Canvas2D();//the 2d Canvas
 // Scene
 const scene = new THREE.Scene()
 
-//let sceneManager.currentGraph = null
-
 const axesHelper = new THREE.AxesHelper( 1000 );
 scene.add( axesHelper );
 
@@ -115,11 +113,11 @@ let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
  * Debug
  */
 // Add a button to the GUI
-gui_obj.cameraMove = () =>
-{
-    sceneCameraManager.hopToPosition(1,1,1)
-}
-debug_ui.add(gui_obj, 'cameraMove')
+// gui_obj.cameraMove = () =>
+// {
+//     sceneCameraManager.hopToPosition(1,1,1)
+// }
+// debug_ui.add(gui_obj, 'cameraMove')
 
 let orbit = true;
 gui_obj.controlChange = () =>
@@ -131,31 +129,31 @@ gui_obj.controlChange = () =>
 }
 debug_ui.add(gui_obj, 'controlChange')
 
-gui_obj.HDR_Name = 'sky'
-debug_ui.add(gui_obj,'HDR_Name')
-gui_obj.switchHDR_MAP = () =>
-{
-    sceneManager.LoadEnvironmentMap('EnvMap/' + gui_obj.HDR_Name + '.hdr')
-}
-debug_ui.add(gui_obj, 'switchHDR_MAP')
+// gui_obj.HDR_Name = 'sky'
+// debug_ui.add(gui_obj,'HDR_Name')
+// gui_obj.switchHDR_MAP = () =>
+// {
+//     sceneManager.LoadEnvironmentMap('EnvMap/' + gui_obj.HDR_Name + '.hdr')
+// }
+// debug_ui.add(gui_obj, 'switchHDR_MAP')
 
-gui_obj.trunOffEnvMap = () =>
-{
-    scene.environment = null;
-    scene.background = null;
-}
-debug_ui.add(gui_obj, 'trunOffEnvMap')
+// gui_obj.trunOffEnvMap = () =>
+// {
+//     scene.environment = null;
+//     scene.background = null;
+// }
+// debug_ui.add(gui_obj, 'trunOffEnvMap')
 
 gui_obj.printScene = () => {
     console.log(scene)
 };
 debug_ui.add(gui_obj, 'printScene')
 
-// Define the deleteLight function
-gui_obj.deleteLight = () => {
-    sceneManager.DeleteLight()
-};
-debug_ui.add(gui_obj, 'deleteLight')
+// // Define the deleteLight function
+// gui_obj.deleteLight = () => {
+//     sceneManager.DeleteLight()
+// };
+// debug_ui.add(gui_obj, 'deleteLight')
 
 /**
  * Interactive logic-------------------------------------------------
@@ -289,6 +287,21 @@ basementButton.addEventListener('click', () => {
     sceneManager.LoadScene('Base')
 });
 
+//button to toggle the levels
+const levelsButton = document.getElementById("levels");
+const panel = document.getElementById("level_buttons");
+let isLevelPanelHiding = true;
+
+levelsButton.addEventListener("click", () => {
+    //console.log("levels")
+    isLevelPanelHiding = !isLevelPanelHiding
+    if(isLevelPanelHiding){
+        panel.classList.add("hide");
+    }else{
+        panel.classList.remove("hide")
+    }
+});
+
 roomButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
     sceneManager.LoadScene('Room')
@@ -300,21 +313,21 @@ mainDisplayButton.addEventListener('click', () => {
 });
 
 // Get references to the button and iframe elements
-const rickRollButton = document.getElementById('RickRoll');
+//const rickRollButton = document.getElementById('RickRoll');
 const cameraButton = document.getElementById('cameraView');
 const cameraFrame = document.getElementById('cameraFrame');
 let isCameraViewDisplaying = false;
-rickRollButton.addEventListener('click', function() {
-    // Show the iframe below the buttons
-    isCameraViewDisplaying = !isCameraViewDisplaying
-    if(isCameraViewDisplaying){
-        cameraFrame.style.display = 'block';
-        cameraFrame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace VIDEO_ID with your YouTube video ID
-    }else{
-        cameraFrame.style.display = 'none';
-        cameraFrame.src = ''
-    }
-});
+// rickRollButton.addEventListener('click', function() {
+//     // Show the iframe below the buttons
+//     isCameraViewDisplaying = !isCameraViewDisplaying
+//     if(isCameraViewDisplaying){
+//         cameraFrame.style.display = 'block';
+//         cameraFrame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Replace VIDEO_ID with your YouTube video ID
+//     }else{
+//         cameraFrame.style.display = 'none';
+//         cameraFrame.src = ''
+//     }
+// });
 
 
 let realCameraManager = new RealCameraManager()

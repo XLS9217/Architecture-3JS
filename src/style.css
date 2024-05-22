@@ -63,6 +63,7 @@ body
 .button {
     width: 100px; /* Adjust width as needed */
     margin-bottom: 10px; /* Adjust spacing between buttons */
+    margin-left: 10px; /* Adjust spacing between buttons */
     z-index: 999; /* Ensure buttons are visible */
     border: 2px solid white;
     color: white; /* Set text color to white */
@@ -85,7 +86,6 @@ body
     width: 320px; /* Set width as needed */
     height: 185px; /* Set height as needed */
 }
-
 
 
 .environment_button_holder {
@@ -176,3 +176,42 @@ body
 {
     transform: scale(1, 1);
 }
+
+@keyframes spinner-line-fade-more {
+    0%, 100% {
+      opacity: 0; /* minimum opacity */
+    }
+    1% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes spinner-line-fade-quick {
+    0%, 39%, 100% {
+      opacity: 0.25; /* minimum opacity */
+    }
+    40% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes spinner-line-fade-default {
+    0%, 100% {
+      opacity: 0.22; /* minimum opacity */
+    }
+    1% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes spinner-line-shrink {
+    0%, 25%, 100% {
+      /* minimum scale and opacity */
+      transform: scale(0.5);
+      opacity: 0.25;
+    }
+    26% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }

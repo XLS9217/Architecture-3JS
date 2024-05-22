@@ -15,6 +15,7 @@
     "gsap": "^3.12.2",
     "lil-gui": "^0.19.0",
     "node-rtsp-stream": "^0.0.9",
+    "spin.js": "^4.1.1",
     "stats.js": "^0.17.0",
     "three": "^0.158.0",
     "vercel": "^34.1.1",

@@ -208,6 +208,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                         uHovering: isHovering
                     },
                     transparent: true, 
+                    //vertexColors: true,
                     depthWrite:false, 
                     side: THREE.DoubleSide,
                     blending: THREE.AdditiveBlending
@@ -226,8 +227,8 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                     },
                     transparent: true, 
                     depthWrite:false, 
-                    side: THREE.DoubleSide,
-                    blending: THREE.AdditiveBlending
+                    blending: THREE.AdditiveBlending,
+                    //vertexColors: true
                 })
                 plane.material = planeMat
                 //console.log(plane.material)
