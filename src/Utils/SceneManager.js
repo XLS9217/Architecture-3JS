@@ -61,7 +61,7 @@ export default class SceneManager{
         this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', 'afternoon')
 
         //weather
-        this.hasWeather = false
+        this.currentWeather = 'none'
         this.dropParticle = null
     }
 
@@ -83,27 +83,48 @@ export default class SceneManager{
     }
 
     ChangeWind(windDir){
-        this.dropParticle.changeWindStrength(0.45)
+        this.dropParticle.changeWindStrength(0.75)
         this.dropParticle.changeWindDirection(windDir)
     }
 
     //none or type that is listed in DropParticle.js
     ChangeWeather(weather){
-        if(weather == 'none'){
-            this.hasWeather = false
+        if(weather == this.currentWeather){
+            return
+        }
+        this.currentWeather = weather
+
+        if(this.dropParticle){     
+            console.log("remove")
             this.dropParticle.deconstruct()
             scene.remove(this.dropParticle.getParticles())
         }
-        else if(weather == 'snow'){
+        
+        if(weather == 'snow'){
             this.dropParticle = new DropParticle3D(
-                100,//amount
+                1500,//amount
                 2.0,//size
                 7.0,//speed
                 'snow',//type
-                100,//ceil
+                200,//ceil
                  0,//floor
-                50,//width
-                50,//depth
+                550,//width
+                550,//depth
+                timeUniform,
+                resolutionUnifrom
+            )    
+            scene.add(this.dropParticle.getParticles())
+        }
+        else if(weather == 'rain'){
+            this.dropParticle = new DropParticle3D(
+                1500,//amount
+                5.0,//size
+                110.0,//drop speed
+                'rain',//type
+                200,//ceil
+                 0,//floor
+                550,//width
+                550,//depth
                 timeUniform,
                 resolutionUnifrom
             )    
@@ -249,7 +270,7 @@ export default class SceneManager{
             this.LoadGraph(this.testScene)
         }
 
-        
+        this.ChangeWeather('none')
     }
 
     //in charge of what to do when loading a new scene graph

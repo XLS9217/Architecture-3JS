@@ -79,19 +79,24 @@
 }
 
 .weather_button {
-    z-index: 999;
+    border: transparent;
     background-color: transparent;
+    z-index: 999;
     border-radius: 50%;
-    border: 3px solid black;
-    padding: 2px;
-    border: none; /* Remove border */
-    pointer-events:all;
+    width: 40px; 
+    height: 40px; 
+    pointer-events: all;
+    opacity: 0.75;
 }
 
-.weather_button img {
+.weather_button:hover {
+    border: 3px solid black;
+}
+
+
+.weather_img {
     width: 30px; /* Set the width of the icon */
     height: auto; /* Maintain aspect ratio */
-    pointer-events:none;
 }
 
 @keyframes colorLoop {

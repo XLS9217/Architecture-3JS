@@ -28,6 +28,7 @@ export default class DropParticle3D{
 
         this.windDirectionUniform = new THREE.Uniform(new THREE.Vector2(0.0,0.0)) // no wind by default
         this.windStrengthUniform = new THREE.Uniform(0.0) // no wind by default
+        this.typeUniform = new THREE.Uniform(0) //0 is snow, 1 is rain, 2 is volcano
 
         this.geometry = null
         this.material = null
@@ -42,7 +43,6 @@ export default class DropParticle3D{
             return this.particles
         }
     }
-
 
     changeWindDirection(direction) {
         let targetValue = new THREE.Vector2();
@@ -68,7 +68,7 @@ export default class DropParticle3D{
         }
     
         gsap.to(this.windDirectionUniform.value, {
-            duration: 4.0,
+            duration: 3.0,
             x: targetValue.x,
             y: targetValue.y,
             ease: "sin.inOut"
@@ -89,6 +89,7 @@ export default class DropParticle3D{
 
     //return the generated particle
     generate(){
+
         const positionsArray = new Float32Array(this.amount * 3)
         const sizesArray = new Float32Array(this.amount)
         const speedArray = new Float32Array(this.amount)
@@ -100,9 +101,15 @@ export default class DropParticle3D{
             positionsArray[i3 + 1] = this.ceil
             positionsArray[i3 + 2] = - this.depth + Math.random() * this.depth * 2
     
-            sizesArray[i] = Math.random() * 0.5 + 0.5
-
-            speedArray[i] = Math.random() * this.speed
+            if(this.type == 'snow'){
+                sizesArray[i] = Math.random() * 0.5 + 0.5
+                speedArray[i] = Math.random() * this.speed
+            }
+            else if(this.type == 'rain'){
+                sizesArray[i] = Math.random() * 0.25 + 0.75
+                speedArray[i] = (Math.random() * 0.25 + 0.75) * this.speed
+                positionsArray[i3 + 1] -= Math.random() * (this.ceil - this.floor) //random height so the rain is differentiated
+            }
         }
 
         this.geometry = new THREE.BufferGeometry()
@@ -110,6 +117,17 @@ export default class DropParticle3D{
         this.geometry.setAttribute('aSize', new THREE.Float32BufferAttribute(sizesArray,1))
         this.geometry.setAttribute('aSpeed', new THREE.Float32BufferAttribute(speedArray,1))
 
+
+        //set type uniform
+        if (this.type === 'snow') {
+            this.typeUniform.value = 0; // 0 is snow
+        } else if (this.type === 'rain') {
+            this.typeUniform.value = 1; // 1 is rain
+        } else if (this.type === 'volcano') {
+            this.typeUniform.value = 2; // 2 is volcano
+        } else {
+            console.warn('Unknown particle type:', newType);
+        }
  
 
         this.material = new THREE.ShaderMaterial({
@@ -122,7 +140,8 @@ export default class DropParticle3D{
                 uCeil: new THREE.Uniform(this.ceil),
                 uFloor: new THREE.Uniform(this.floor),
                 uWindDirection: this.windDirectionUniform,
-                uWindStrength: this.windStrengthUniform
+                uWindStrength: this.windStrengthUniform,
+                uType: this.typeUniform
             },
             depthWrite:false,
             blending: THREE.AdditiveBlending

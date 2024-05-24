@@ -106,7 +106,7 @@ sceneManager.currentControl = controlsManager.getCurrentControl()
 //sceneManager.LoadScene('Arch')//======================================================
 sceneManager.LoadScene('test')
 sceneManager.UpdateResolutionUniform(sizes.resolution)
-sceneManager.ChangeWeather('snow')
+sceneManager.ChangeWeather('none')
 
 //iteractive model Manager
 let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
@@ -330,6 +330,31 @@ realCameraManager.AddCamera('shgbit_door',surveillanceCamera)
 cameraButton.addEventListener('click', ()=>{
     realCameraManager.ToggleSurveillanceCamera('shgbit_door')
 });
+
+
+// Get the weather buttons
+const snowButton = document.getElementById("weather_snow");
+const rainButton = document.getElementById("weather_rain");
+const noneButton = document.getElementById("weather_none");
+
+snowButton.addEventListener("click", () => {
+    // Handle snow button click
+    console.log("Snow button clicked");
+    sceneManager.ChangeWeather('snow')
+});
+
+rainButton.addEventListener("click", () => {
+    // Handle rain button click
+    console.log("Rain button clicked");
+    sceneManager.ChangeWeather('rain')
+});
+
+noneButton.addEventListener("click", () => {
+    // Handle no weather button click
+    console.log("No weather button clicked");
+    sceneManager.ChangeWeather('none')
+});
+
 
 
 let unrealButton = document.getElementById('AdvencedView')
