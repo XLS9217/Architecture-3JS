@@ -108,8 +108,8 @@ export default class DropParticle3D{
             else if(this.type == 'rain'){
                 sizesArray[i] = Math.random() * 0.25 + 0.75
                 speedArray[i] = (Math.random() * 0.25 + 0.75) * this.speed
-                positionsArray[i3 + 1] -= Math.random() * (this.ceil - this.floor) //random height so the rain is differentiated
             }
+            positionsArray[i3 + 1] -= Math.random() * (this.ceil - this.floor) //random height so the rain is differentiated
         }
 
         this.geometry = new THREE.BufferGeometry()

@@ -14,6 +14,7 @@ export default class SceneGraph{
             'day': new THREE.Group(),
             'afternoon': new THREE.Group(),
             'night': new THREE.Group(),
+            'weather': new THREE.Group()
         }
         this.currentLightGroup = this.lightGroups['afternoon']
         this.GenerateLight()
@@ -53,7 +54,7 @@ export default class SceneGraph{
         this.lightGroups['day'].add(day_DLight)
 
         /**
-        * day Lights
+        * night Lights
         */
         const night_DLight = new THREE.DirectionalLight(0xffffff, 1.0)
         night_DLight.position.set(269,229,255)
@@ -67,6 +68,22 @@ export default class SceneGraph{
         // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // this.scene.add( helper );
         this.lightGroups['night'].add(night_DLight)
+
+        /**
+        * weather Lights
+        */
+        const weather_DLight = new THREE.DirectionalLight(0xffffff, 0.7)
+        weather_DLight.position.set(269,229,255)
+        weather_DLight.target.position.set(-300,-50,-200)
+        weather_DLight.castShadow = true 
+        weather_DLight.shadow.mapSize.set(1024, 1024)
+        weather_DLight.shadow.camera.scale.x = 40
+        weather_DLight.shadow.camera.scale.z = 30
+        weather_DLight.shadow.camera.scale.y = 50
+        //console.log(night_DLight.shadow.camera)
+        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        // this.scene.add( helper );
+        this.lightGroups['weather'].add(weather_DLight)
     }
 
     loadScene(){
@@ -94,6 +111,12 @@ export default class SceneGraph{
     setIdealCameraLocation(camera) {}
 
     SwitchLightGroup(groupName){
+        //if there is no responding light group
+        if(!this.lightGroups[groupName]){
+            console.log('no responding light group in scene')
+            return
+        }
+
         this.scene.remove(this.currentLightGroup)
         this.currentLightGroup = this.lightGroups[groupName]
         this.scene.add(this.currentLightGroup)

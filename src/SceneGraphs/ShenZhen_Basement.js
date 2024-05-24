@@ -115,6 +115,22 @@ export default class ShenZhen_Basement extends SceneGraph{
         // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
         // this.scene.add( helper );
         this.lightGroups['night'].add(night_DLight)
+
+        /**
+        * weather Lights
+        */
+        const weather_DLight = new THREE.DirectionalLight(0xffffff, 0.7)
+        weather_DLight.position.set(269,229,255)
+        weather_DLight.target.position.set(-300,-50,-200)
+        weather_DLight.castShadow = true 
+        weather_DLight.shadow.mapSize.set(1024, 1024)
+        weather_DLight.shadow.camera.scale.x = 40
+        weather_DLight.shadow.camera.scale.z = 30
+        weather_DLight.shadow.camera.scale.y = 50
+        //console.log(night_DLight.shadow.camera)
+        // const helper = new THREE.CameraHelper( directionalLight.shadow.camera );
+        // this.scene.add( helper );
+        this.lightGroups['weather'].add(weather_DLight)
     }
 
     Create2DPoints(){

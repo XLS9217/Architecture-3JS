@@ -89,9 +89,9 @@ export default class SceneManager{
 
     //none or type that is listed in DropParticle.js
     ChangeWeather(weather){
-        if(weather == this.currentWeather){
-            return
-        }
+        // if(weather == this.currentWeather){
+        //     return
+        // }
         this.currentWeather = weather
 
         if(this.dropParticle){     
@@ -99,15 +99,21 @@ export default class SceneManager{
             this.dropParticle.deconstruct()
             scene.remove(this.dropParticle.getParticles())
         }
-        
+
+        if(weather != 'none'){
+            this.SwitchEnvironment('weather')
+        }else{
+            this.SwitchEnvironment('afternoon')
+        }
+
         if(weather == 'snow'){
             this.dropParticle = new DropParticle3D(
-                1500,//amount
+                2000,//amount
                 2.0,//size
                 7.0,//speed
                 'snow',//type
-                200,//ceil
-                 0,//floor
+                300,//ceil
+                0,//floor
                 550,//width
                 550,//depth
                 timeUniform,
@@ -117,12 +123,12 @@ export default class SceneManager{
         }
         else if(weather == 'rain'){
             this.dropParticle = new DropParticle3D(
-                1500,//amount
+                2000,//amount
                 5.0,//size
                 110.0,//drop speed
                 'rain',//type
-                200,//ceil
-                 0,//floor
+                300,//ceil
+                0,//floor
                 550,//width
                 550,//depth
                 timeUniform,
@@ -130,7 +136,7 @@ export default class SceneManager{
             )    
             scene.add(this.dropParticle.getParticles())
         }
-
+        
     }
 
     RecalculateRenderOrder() {
@@ -183,6 +189,11 @@ export default class SceneManager{
      */
     SwitchEnvironment( environment ){
 
+        if(this.currentWeather != 'none' && environment != 'weather'){
+            console.log('There is weather, change cancelled')
+            return
+        }
+
         this.currrentEnvironment = environment
         this.spinner.spin()
 
@@ -196,14 +207,19 @@ export default class SceneManager{
                     scene.environment = envMaps[environment]
                     
                 }else{
+
                     if(environment == 'day'){
                         this.LoadEnvironmentMap('EnvMap/day_1_2k.hdr', environment)
                     }
-                    if(environment == 'afternoon'){
+                    else if(environment == 'afternoon'){
                         this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', environment)
                     }
-                    if(environment == 'night'){
+                    else if(environment == 'night'){
                         this.LoadEnvironmentMap('EnvMap/night_1_4k.hdr', environment)
+                    }
+                    else if(environment == 'weather'){
+                        console.log("weather ")
+                        this.LoadEnvironmentMap('EnvMap/weather_2_2k.hdr', environment)
                     }
                 }
                 
@@ -232,14 +248,6 @@ export default class SceneManager{
             scene.environment = environmentMap
 
             envMaps[environment] = environmentMap
-
-            // // Generate a rotation matrix for rotating around the Y-axis by 90 degrees
-            // const rotationMatrix = new THREE.Matrix4().makeRotationY(Math.PI);
-
-            // // Apply the new rotation matrix to the existing rotation matrix
-            // environmentMap.rotation.multiply(rotationMatrix);
-
-            //console.log(scene.environment)
         })
     }
 
@@ -270,7 +278,8 @@ export default class SceneManager{
             this.LoadGraph(this.testScene)
         }
 
-        this.ChangeWeather('none')
+        this.SwitchEnvironment(this.currrentEnvironment)
+        this.ChangeWeather(this.currentWeather)
     }
 
     //in charge of what to do when loading a new scene graph
