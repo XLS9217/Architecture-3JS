@@ -22,6 +22,7 @@ import ControlsManager from './Utils/ControlsManager';
 import SceneCameraManager from './Utils/CameraManager';
 import { RGBELoader } from 'three/examples/jsm/Addons.js';
 import UserState from './UserState';
+import ShaderMaterialManager from './Utils/ShaderMaterialManager';
 
 
 
@@ -99,6 +100,9 @@ labelRenderer.domElement.style.position = 'absolute';
 labelRenderer.domElement.style.top = '0px';
 labelRenderer.domElement.style.pointerEvents = 'none';
 document.body.appendChild(labelRenderer.domElement)
+
+//material manager
+const shaderMaterialManager = new ShaderMaterialManager()
 
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())

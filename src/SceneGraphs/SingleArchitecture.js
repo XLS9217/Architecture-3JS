@@ -134,23 +134,33 @@ export default class SingleArchitecture extends SceneGraph{
             })
 
         })
+
+        modelLoader.Load2Scene('models/sz_simplify/', 'sz_out4simp', 'glb',(modelPtr) => {
+            modelPtr.scale.set(5,5,5)
+            modelPtr.position.set(300,20,200)
+
+            modelPtr.traverse((child) => {
+                child.castShadow = true
+                child.receiveShadow = true
+            })
+        })
         
 
-        /**
-         * Floor
-         */
-        const floor = new THREE.Mesh(
-            new THREE.PlaneGeometry(6000, 6000),
-            new THREE.MeshStandardMaterial({
-                color: '#4F7942',
-                metalness: 0.5,
-                roughness: 0.9
-            })
-        )
-        floor.receiveShadow = true
-        floor.rotation.x = - Math.PI * 0.5
-        floor.position.y = -33
-        this.scene.add(floor)
+        // /**
+        //  * Floor
+        //  */
+        // const floor = new THREE.Mesh(
+        //     new THREE.PlaneGeometry(6000, 6000),
+        //     new THREE.MeshStandardMaterial({
+        //         color: '#4F7942',
+        //         metalness: 0.5,
+        //         roughness: 0.9
+        //     })
+        // )
+        // floor.receiveShadow = true
+        // floor.rotation.x = - Math.PI * 0.5
+        // floor.position.y = -33
+        // this.scene.add(floor)
 
         //console.log(window.debug_ui)
         this.scene.fog = new THREE.Fog( 0xcccccc, 700, 1500 );

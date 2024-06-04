@@ -234,6 +234,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
                 //console.log(plane.material)
                 plane.randerOrder = -1
                 plane.getWorldPosition(arrow.material.uniforms.uAnchorPosition.value)
+                plane.frustumCulled = false;
 
                 //console.log(child)
                 modelData.memory = {

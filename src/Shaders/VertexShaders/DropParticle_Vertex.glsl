@@ -28,6 +28,7 @@ void main()
             * (uCeil - modelPosition.y)/50.0  //the lower the faster
             * uWindStrength 
             * aSize; //the biger the faster
+        //modelPosition.xz -= uWindDirection * 50.0; //keep in center
     }
     //rain
     else if(uType == 1){

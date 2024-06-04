@@ -108,14 +108,14 @@ export default class SceneManager{
 
         if(weather == 'snow'){
             this.dropParticle = new DropParticle3D(
-                2000,//amount
+                2500,//amount
                 2.0,//size
                 7.0,//speed
                 'snow',//type
                 300,//ceil
                 0,//floor
-                550,//width
-                550,//depth
+                600,//width
+                600,//depth
                 timeUniform,
                 resolutionUnifrom
             )    
@@ -123,14 +123,14 @@ export default class SceneManager{
         }
         else if(weather == 'rain'){
             this.dropParticle = new DropParticle3D(
-                2000,//amount
+                2500,//amount
                 5.0,//size
                 110.0,//drop speed
                 'rain',//type
                 300,//ceil
                 0,//floor
-                550,//width
-                550,//depth
+                600,//width
+                600,//depth
                 timeUniform,
                 resolutionUnifrom
             )    
