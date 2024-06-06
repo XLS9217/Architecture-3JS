@@ -69,8 +69,7 @@ export default class ShenZhen_MainDisplay extends SceneGraph{
     }
 
 
-    Create2DPoints(){
-        
+    Create2DPoints(){ 
         
         for(const element of tags){
             element.hide()

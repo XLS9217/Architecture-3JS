@@ -23,6 +23,8 @@ import SceneCameraManager from './Utils/CameraManager';
 import { RGBELoader } from 'three/examples/jsm/Addons.js';
 import UserState from './UserState';
 import ShaderMaterialManager from './Utils/ShaderMaterialManager';
+import MQRouter from './MQRouter';
+import DebugManager from './Utils/DebugManager';
 
 
 
@@ -32,19 +34,15 @@ import ShaderMaterialManager from './Utils/ShaderMaterialManager';
 
 //UserState
 const userState = new UserState()
+//router
+let router = new MQRouter();
 
 //Statistics 
 const stats = new Stats()
 stats.showPanel(0) 
 document.body.appendChild(stats.dom)
 
-//Debug Gui
-const debug_ui = new GUI()
-window.debug_ui = debug_ui
-let gui_obj = {
-    
-}
-//debug_ui.hide();//hide UI
+
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -115,55 +113,14 @@ sceneManager.ChangeWeather('none')
 //iteractive model Manager
 let interactiveModelManager =  sceneManager.currentGraph.interactiveModelManager
 
+
+let debugManager = new DebugManager()
+
 /**
  * End init scene prop-------------------------------------------------
  */
 
-/**
- * Debug
- */
-// Add a button to the GUI
-// gui_obj.cameraMove = () =>
-// {
-//     sceneCameraManager.hopToPosition(1,1,1)
-// }
-// debug_ui.add(gui_obj, 'cameraMove')
 
-let orbit = true;
-gui_obj.controlChange = () =>
-{
-    if(orbit) controlsManager.switch2PointerLock()
-    else controlsManager.switch2Orbit()
-
-    orbit = !orbit
-}
-debug_ui.add(gui_obj, 'controlChange')
-
-// gui_obj.HDR_Name = 'sky'
-// debug_ui.add(gui_obj,'HDR_Name')
-// gui_obj.switchHDR_MAP = () =>
-// {
-//     sceneManager.LoadEnvironmentMap('EnvMap/' + gui_obj.HDR_Name + '.hdr')
-// }
-// debug_ui.add(gui_obj, 'switchHDR_MAP')
-
-gui_obj.trunOffEnvMap = () =>
-{
-    scene.environment = null;
-    scene.background = null;
-}
-debug_ui.add(gui_obj, 'trunOffEnvMap')
-
-gui_obj.printScene = () => {
-    console.log(scene)
-};
-debug_ui.add(gui_obj, 'printScene')
-
-// // Define the deleteLight function
-// gui_obj.deleteLight = () => {
-//     sceneManager.DeleteLight()
-// };
-// debug_ui.add(gui_obj, 'deleteLight')
 
 /**
  * Interactive logic-------------------------------------------------
@@ -417,31 +374,7 @@ nightButton.addEventListener('click', () => {
 //test ground --------------------------------------------------------------------------------------------
 
 
-// Check if the device is a mobile device
-function isMobileDevice() {
-    return /Mobi|Android/i.test(navigator.userAgent);
-}
 
-// Check if the device is a tablet
-function isTablet() {
-    return /iPad|Android/i.test(navigator.userAgent);
-}
-
-// Check if the device is a desktop/laptop
-function isDesktop() {
-    return !isMobileDevice() && !isTablet();
-}
-
-// Example usage
-if (isMobileDevice()) {
-    alert("This is a mobile device.");
-} else if (isTablet()) {
-    alert("This is a tablet device.");
-} else if (isDesktop()) {
-    console.log("This is a desktop or laptop.");
-} else {
-    console.log("Device type not identified.");
-}
 
 
 

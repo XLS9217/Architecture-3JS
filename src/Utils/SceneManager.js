@@ -65,6 +65,10 @@ export default class SceneManager{
         this.dropParticle = null
     }
 
+    GetScene(){
+        return scene
+    }
+
     GetCamera(){
         return camera
     }

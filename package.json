@@ -12,8 +12,10 @@
     "vite": "^4.5.0"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "gsap": "^3.12.2",
     "lil-gui": "^0.19.0",
+    "nipplejs": "^0.10.2",
     "node-rtsp-stream": "^0.0.9",
     "spin.js": "^4.1.1",
     "stats.js": "^0.17.0",

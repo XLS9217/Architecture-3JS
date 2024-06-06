@@ -46,7 +46,7 @@ body
     align-items: flex-start; /* Align items to the start of the flex container */
     z-index: 999; /* Ensure buttons are visible */
     pointer-events: none;
-    border: 2px solid black;
+    /* border: 2px solid black; */
 }
 
 .button_holder{

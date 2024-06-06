@@ -10,6 +10,23 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.0/flv.min.js"></script>
     <script type="module" src="node_modules/spin.js/spin.js"></script>
+
+    <script type="importmap">
+        {
+        "imports": {
+            "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+        }
+        }
+    </script>
+    <!-- ES Module Shims: Import maps polyfill for modules browsers without import maps support (all except Chrome 89+) -->
+    <script
+        async
+        src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
+        crossorigin="anonymous"
+    ></script>
+
+    <div id="joystick-container" style="position: absolute; bottom: 10%; left: 25%;  pointer-events: all;"></div>
+
     <div class="HUD">
         <div class="button_holder">
 
