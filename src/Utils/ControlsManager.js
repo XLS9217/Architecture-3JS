@@ -5,6 +5,7 @@ import UserState from '../UserState';
 
 let instance = null
 let currentControl = null
+let userState = new UserState()
 
 export default class ControlsManager{
     constructor(inputCamera, inputCanvas){
@@ -24,11 +25,11 @@ export default class ControlsManager{
 
         this.setupMouseLinstener()
 
-        let userState = new UserState()
 
         this.joystickX = 0;
         this.joystickY = 0;
         if(userState.deviceType == userState.DeviceTypes.MOBILE){
+            console.log('mobile set up joystick')
             this.setupJoyStick()
         }
 
@@ -72,9 +73,6 @@ export default class ControlsManager{
             this.joystickX = data.vector.x;
             this.joystickY = data.vector.y;
             console.log(this.joystickX)
-
-            
-
         });
 
         joystick.on('end', () => {
@@ -108,8 +106,10 @@ export default class ControlsManager{
             currentControl.update()
             //console.log(currentControl)
         }
-        this.roatateCameraOnJoystickMove()
 
+        if(userState.deviceType == userState.DeviceTypes.MOBILE){
+            this.roatateCameraOnJoystickMove()
+        }
     }
 
     getCurrentControl(){
@@ -117,6 +117,7 @@ export default class ControlsManager{
     }
 
     switchOrbitDefault(){
+        this.orbitControl.target.set(0, 0, 0);
         this.orbitControl.enableDamping = true
         this.orbitControl.rotateSpeed = 0.15;
         this.orbitControl.PanSpeed = 0.5;

@@ -3,6 +3,7 @@ import MQRouter from '../MQRouter';
 import SceneManager from './SceneManager';
 import ControlsManager from './ControlsManager';
 import UserState from '../UserState';
+import httpRouter from '../HTTPRouter.js';
 
 let instance = null
 
@@ -122,12 +123,47 @@ export default class DebugManager{
     initMessageControl(){
         const folder = window.debug_ui.addFolder('Message Control');
 
-        window.gui_obj.messageSend = 'message'
+
+        window.gui_obj.message2rabbit = 'message'
         window.gui_obj.sendToRabbit = () => {
-            router.publishMessage(window.gui_obj.messageSend)
+            router.publishMessage(window.gui_obj.message2rabbit)
         };
-        folder.add(window.gui_obj, 'messageSend').name('msg to rabbit');
-        folder.add(window.gui_obj, 'sendToRabbit').name('Send');
+        folder.add(window.gui_obj, 'message2rabbit').name('msg to rabbit');
+        folder.add(window.gui_obj, 'sendToRabbit').name('Send to rabbit');
+
+
+        window.gui_obj.message2Http = 'message'
+        window.gui_obj.sendToHttp = () => {
+            let message = {
+                type: "message",
+                message: window.gui_obj.message2Http
+            }
+
+            httpRouter.postJSON(message)
+                .then(result => {
+                    console.log(result)
+                })
+        };
+        folder.add(window.gui_obj, 'message2Http').name('msg to http');
+        folder.add(window.gui_obj, 'sendToHttp').name('Send to http');
+
+        
+        window.gui_obj.sendPlaneJSON = () => {
+
+            //edit here ----------------------------------------
+            let message = {
+                type: "sql",
+                module: "density"
+            }
+            //--------------------------------------------------
+
+            httpRouter.postJSON(message)
+                .then(result => {
+                    console.log(result)
+                })
+        };
+        folder.add(window.gui_obj, 'sendPlaneJSON').name('Send plain json (edit in code)');
+
         folder.open();
     }
 }

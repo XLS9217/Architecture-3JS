@@ -16,7 +16,7 @@ const client = new Client({
     },
     onConnect: () => {
 
-        console.log("connected")
+        console.log("rabbit mq connected")
         isConnected = true
 
         client.subscribe('/topic/test01', message =>

@@ -229,6 +229,7 @@ const level2Button = document.getElementById('level2');
 const level3Button = document.getElementById('level3');
 const basementButton = document.getElementById('level4');
 const roomButton = document.getElementById('Room');
+const heatZoneButton = document.getElementById('HeatZone');
 const mainDisplayButton = document.getElementById('Main_Display');
 
 // Hook functions to buttons using event listeners
@@ -255,6 +256,11 @@ level3Button.addEventListener('click', () => {
 basementButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
     sceneManager.LoadScene('Base')
+});
+
+heatZoneButton.addEventListener('click', () => {
+    console.log("heat Zone Button button clicked!");
+    sceneManager.LoadScene('HeatZone')
 });
 
 //button to toggle the levels

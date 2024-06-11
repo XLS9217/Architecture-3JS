@@ -16,6 +16,7 @@ import LoadingSpinner from '../2DElements/LoadingSpinner'
 import DropParticle3D from '../Particles/DropParticle3D'
 import TestScene from '../SceneGraphs/TestScene'
 import { color } from 'three/examples/jsm/nodes/Nodes.js'
+import HeatZoneTest from '../SceneGraphs/HeatZoneTest'
 
 //spinner.stop();
 
@@ -57,6 +58,7 @@ export default class SceneManager{
         this.classRoom = new Classroom(scene)
         this.mainDisplay = new ShenZhen_MainDisplay(scene)
         this.testScene = new TestScene(scene)
+        this.heatZoneTest = new HeatZoneTest(scene)
 
         this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', 'afternoon')
 
@@ -280,6 +282,9 @@ export default class SceneManager{
         }
         else if(sceneName == 'test'){
             this.LoadGraph(this.testScene)
+        }
+        else if(sceneName == 'HeatZone'){
+            this.LoadGraph(this.heatZoneTest)
         }
 
         this.SwitchEnvironment(this.currrentEnvironment)
