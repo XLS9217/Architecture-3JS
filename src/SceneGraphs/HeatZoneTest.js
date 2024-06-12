@@ -10,6 +10,7 @@ import httpRouter from "../HTTPRouter";
 
 import HeatVertex from "../Shaders/VertexShaders/HeatFloor_Vertex.glsl"
 import HeatFragment from "../Shaders/FragmentShaders/HeatFloor_Fragment.glsl"
+import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 
 let instance = null
 let modelLoader = null
@@ -34,9 +35,10 @@ export default class HeatZoneTest extends SceneGraph{
         instance = this
         console.log(this)
 
+        this.interactiveModelManager = new InteractiveModelMangaer()
+
         this.fetchInterval = null;
         this.heatPoints = []
-
         this.floorMat = null;
     }
 
@@ -57,6 +59,13 @@ export default class HeatZoneTest extends SceneGraph{
                     let heatPoint = heatPoints[point.pointName];
                     if (heatPoint) {
                        heatPoint.density = point.density
+                    }
+
+                    if(point.pointName == 'MeetingPath'){
+                        console.log("class room position updated")
+                        this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
+                        window.debug_ui.add(this.floorMat.uniforms.uHeatPosition.value , 'x' ).min(-50.0).max(50.0).name('heat pos')
+                        
                     }
                 });
             })
@@ -100,25 +109,33 @@ export default class HeatZoneTest extends SceneGraph{
                 }
                 
                 let tokens = child.name.split('_')
-                if(tokens[0] == 'Floor' && child instanceof THREE.Mesh){
+                if(tokens[0] == 'Floor' && child instanceof THREE.Mesh
+                    && tokens[2] == '3' //QUICK FIX
+                ){
                     //console.log(child)
                     const originalTexture = child.material.map;
                     this.floorMat = new THREE.ShaderMaterial({
                         vertexShader: HeatVertex,
                         fragmentShader: HeatFragment,
                         uniforms:{
-                            uTexture: { type: 't', value: originalTexture }
+                            uTexture: { type: 't', value: originalTexture },
+                            uHeatPosition: new THREE.Uniform(new THREE.Vector3(10,0,0)),
+                            uDistance: new THREE.Uniform(10.0)
                         }
                     })
 
                     child.material = this.floorMat
+                    //let modelData = this.interactiveModelManager.addInteractiveModel(child)
                 }
                 else if(tokens[0] == 'HeatPoint'){
+                    let modelData = this.interactiveModelManager.addInteractiveModel(child)
                     //console.log('HeatPoint: ' + child.name + ' scene: ' + instance.constructor.name)
                     this.heatPoints[tokens[1]] = {
                         density: 0,
                         position: child.position
                     }
+
+
 
                 }
                 else{
@@ -128,6 +145,7 @@ export default class HeatZoneTest extends SceneGraph{
             })
 
             
+            window.debug_ui.add(this.floorMat.uniforms.uDistance , 'value' ).min(5.0).max(100.0)
             this.fetchCrowdDensity(this.heatPoints)
             console.log(this.heatPoints)
         })

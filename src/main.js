@@ -194,6 +194,7 @@ window.addEventListener('click', () =>
         if(!interactiveModelManager.triggerClickAction(currentIntersect.object))
             interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
         console.log("mouse intersect with " + currentIntersect.object.name)
+        console.log(currentIntersect.object)
     }
     
     const mouseX = event.clientX;
