@@ -19,6 +19,7 @@ let modelLoader = null
 let points = null
 let tags = []
 
+const maxHeatPosition = 20;
 
 
 
@@ -39,6 +40,20 @@ export default class HeatZoneTest extends SceneGraph{
 
         this.fetchInterval = null;
         this.heatPoints = []
+
+        
+        this.heatPositions = []
+        for(let i=0; i < maxHeatPosition; i++){
+            this.heatPositions.push(new THREE.Vector3(0,0,0))
+        }
+
+        this.heatDensitys = []
+        for(let i=0; i < maxHeatPosition; i++){
+            this.heatDensitys.push(0)
+        }
+
+        this.pointsNumber = 0;
+
         this.floorMat = null;
     }
 
@@ -55,20 +70,39 @@ export default class HeatZoneTest extends SceneGraph{
         httpRouter.postJSON(request)
             .then(response => {
                 console.log(response)
+
+                this.pointsNumber = 0;
+
                 response.result.forEach((point) => {
                     let heatPoint = heatPoints[point.pointName];
                     if (heatPoint) {
                        heatPoint.density = point.density
                     }
 
-                    if(point.pointName == 'MeetingPath'){
-                        console.log("class room position updated")
-                        this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
-                        window.debug_ui.add(this.floorMat.uniforms.uHeatPosition.value , 'x' ).min(-50.0).max(50.0).name('heat pos')
-                        
-                    }
+                    // if(point.pointName == 'MeetingPath'){
+                    //     console.log("MeetingPath position updated")
+                    //     this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
+                    //     //this.floorMat.uniforms.uHeatPositions.value[0] = heatPoint.position            
+                    //     this.heatPositions[0] = heatPoint.position            
+                    // }
+                    // if(point.pointName == 'Classroom'){
+                    //     console.log("Classroom position updated")
+                    //     this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
+                    //     //this.floorMat.uniforms.uHeatPositions.value[0] = heatPoint.position            
+                    //     this.heatPositions[1] = heatPoint.position            
+                    // }
+
+                    console.log(point.pointName + " at the position " + this.pointsNumber)
+                    this.heatPositions[this.pointsNumber] = heatPoint.position
+
+                    this.pointsNumber ++;
                 });
+
+                this.floorMat.uniforms.uPointsNumber.value = this.pointsNumber;
+                console.log(this.floorMat.uniforms.uPointsNumber.value)
+                window.debug_ui.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1)
             })
+            
     }
 
     loadScene(){
@@ -119,7 +153,10 @@ export default class HeatZoneTest extends SceneGraph{
                         fragmentShader: HeatFragment,
                         uniforms:{
                             uTexture: { type: 't', value: originalTexture },
-                            uHeatPosition: new THREE.Uniform(new THREE.Vector3(10,0,0)),
+                            uHeatPosition: new THREE.Uniform(new THREE.Vector3(0,0,0)),
+                            uHeatPositions: new THREE.Uniform(this.heatPositions),
+                            uHeatDensitys: new THREE.Uniform(this.heatDensitys),
+                            uPointsNumber: new THREE.Uniform(this.pointsNumber),
                             uDistance: new THREE.Uniform(10.0)
                         }
                     })
@@ -134,7 +171,6 @@ export default class HeatZoneTest extends SceneGraph{
                         density: 0,
                         position: child.position
                     }
-
 
 
                 }
