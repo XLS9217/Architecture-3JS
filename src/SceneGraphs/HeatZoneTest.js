@@ -11,6 +11,7 @@ import httpRouter from "../HTTPRouter";
 import HeatVertex from "../Shaders/VertexShaders/HeatFloor_Vertex.glsl"
 import HeatFragment from "../Shaders/FragmentShaders/HeatFloor_Fragment.glsl"
 import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
+import MQRouter from "../MQRouter";
 
 let instance = null
 let modelLoader = null
@@ -21,7 +22,7 @@ let tags = []
 
 const maxHeatPosition = 20;
 
-
+let heatZoneInfo = {}
 
 export default class HeatZoneTest extends SceneGraph{
 
@@ -37,11 +38,10 @@ export default class HeatZoneTest extends SceneGraph{
         console.log(this)
 
         this.interactiveModelManager = new InteractiveModelMangaer()
+        this.mqRouter = new MQRouter()
 
-        this.fetchInterval = null;
         this.heatPoints = []
 
-        
         this.heatPositions = []
         for(let i=0; i < maxHeatPosition; i++){
             this.heatPositions.push(new THREE.Vector3(0,0,0))
@@ -53,10 +53,12 @@ export default class HeatZoneTest extends SceneGraph{
         }
 
         this.pointsNumber = 0;
-
         this.floorMat = null;
+
+        this.subscribeID = null;//for unsubscribe
     }
 
+    //fetch default crowd density from sql, do it only once
     fetchCrowdDensity(heatPoints) {
         let request = {
             type : 'sql',
@@ -74,40 +76,40 @@ export default class HeatZoneTest extends SceneGraph{
                 this.pointsNumber = 0;
 
                 response.result.forEach((point) => {
+                    //to relate frontend points to backend points, yes I know all have positions
                     let heatPoint = heatPoints[point.pointName];
                     if (heatPoint) {
                        heatPoint.density = point.density
+                       heatPoint.index = this.pointsNumber
                     }
 
-                    // if(point.pointName == 'MeetingPath'){
-                    //     console.log("MeetingPath position updated")
-                    //     this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
-                    //     //this.floorMat.uniforms.uHeatPositions.value[0] = heatPoint.position            
-                    //     this.heatPositions[0] = heatPoint.position            
-                    // }
-                    // if(point.pointName == 'Classroom'){
-                    //     console.log("Classroom position updated")
-                    //     this.floorMat.uniforms.uHeatPosition.value = heatPoint.position              
-                    //     //this.floorMat.uniforms.uHeatPositions.value[0] = heatPoint.position            
-                    //     this.heatPositions[1] = heatPoint.position            
-                    // }
-
-                    console.log(point.pointName + " at the position " + this.pointsNumber)
+                    console.log(point.pointName + " at the position " + this.pointsNumber + " density: " + heatPoint.density)
                     this.heatPositions[this.pointsNumber] = heatPoint.position
+                    this.heatDensitys[this.pointsNumber] = heatPoint.density
+
+                    window.debug_ui.add(this.heatDensitys, this.pointsNumber, 0 , 15).name(point.pointName)
 
                     this.pointsNumber ++;
                 });
 
                 this.floorMat.uniforms.uPointsNumber.value = this.pointsNumber;
                 console.log(this.floorMat.uniforms.uPointsNumber.value)
-                window.debug_ui.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1)
+
+                window.debug_ui.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1).name("renderedAmount")
+                this.debugInput = true
             })
             
+    }
+
+    handleHeatPointMessage(messageBody) {
+        heatZoneInfo = JSON.parse(messageBody)
+        console.log(heatZoneInfo);
     }
 
     loadScene(){
         console.log("loading heat zone")
         super.loadScene()
+        this.subscribeID = this.mqRouter.subscribeToTopic('/topic/heat_point_processed_message', this.handleHeatPointMessage);
     }
 
     Create2DPoints(){
@@ -153,11 +155,9 @@ export default class HeatZoneTest extends SceneGraph{
                         fragmentShader: HeatFragment,
                         uniforms:{
                             uTexture: { type: 't', value: originalTexture },
-                            uHeatPosition: new THREE.Uniform(new THREE.Vector3(0,0,0)),
                             uHeatPositions: new THREE.Uniform(this.heatPositions),
                             uHeatDensitys: new THREE.Uniform(this.heatDensitys),
-                            uPointsNumber: new THREE.Uniform(this.pointsNumber),
-                            uDistance: new THREE.Uniform(10.0)
+                            uPointsNumber: new THREE.Uniform(this.pointsNumber)
                         }
                     })
 
@@ -169,7 +169,8 @@ export default class HeatZoneTest extends SceneGraph{
                     //console.log('HeatPoint: ' + child.name + ' scene: ' + instance.constructor.name)
                     this.heatPoints[tokens[1]] = {
                         density: 0,
-                        position: child.position
+                        position: child.position,
+                        index: 0
                     }
 
 
@@ -180,8 +181,6 @@ export default class HeatZoneTest extends SceneGraph{
                 }
             })
 
-            
-            window.debug_ui.add(this.floorMat.uniforms.uDistance , 'value' ).min(5.0).max(100.0)
             this.fetchCrowdDensity(this.heatPoints)
             console.log(this.heatPoints)
         })
@@ -210,7 +209,7 @@ export default class HeatZoneTest extends SceneGraph{
     }
 
     unloadScene(){
-        clearInterval(this.fetchInterval);
+        this.mqRouter.unsubscribeByID(this.subscribeID);
     }
 
     /**

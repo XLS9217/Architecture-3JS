@@ -1,9 +1,12 @@
 
 import { Client } from '@stomp/stompjs';
+import UserState from './UserState';
 
 let instance = null
 
 let isConnected = false;
+
+let userState = new UserState()
 
 const username = 'xls';
 const password = '123456';
@@ -23,7 +26,11 @@ const client = new Client({
             console.log(`Received: ${message.body}`)
         );
 
-        client.publish({ destination: '/topic/test01', body: 'From xls main project' });
+        // client.subscribe('/topic/heat_point_raw_message', message =>
+        //     console.log(`Received heat point: ${message.body}`)
+        // );
+
+        client.publish({ destination: '/topic/test01', body: 'User start xls project, device: ' + userState.deviceType });
     },
 });
 
@@ -68,6 +75,21 @@ export default class MQRouter{
         });
     
         client.activate();
+    }
+
+    subscribeToTopic(topic, callbackFunction) {
+        // Subscribe to the specified topic with the provided callback function
+        let subscribeID = client.subscribe(topic, message => {
+            callbackFunction(message.body);
+        });
+        console.log(subscribeID)
+        return subscribeID.id
+    }
+
+    unsubscribeByID(ID) {
+        // Unsubscribe from the specified topic
+        client.unsubscribe(ID);
+        alert('unsubscribe ' + ID)
     }
 
     publishMessage(message) {
