@@ -7,11 +7,13 @@ import * as THREE from 'three'
 import SceneGraph from "./SceneGraph";
 import SceneCameraManager from "../Utils/CameraManager";
 import httpRouter from "../HTTPRouter";
+import { gsap } from 'gsap'
 
 import HeatVertex from "../Shaders/VertexShaders/HeatFloor_Vertex.glsl"
 import HeatFragment from "../Shaders/FragmentShaders/HeatFloor_Fragment.glsl"
 import InteractiveModelMangaer from "../Utils/InteractiveModelMangaer";
 import MQRouter from "../MQRouter";
+import GUI from "lil-gui";
 
 let instance = null
 let modelLoader = null
@@ -23,6 +25,9 @@ let tags = []
 const maxHeatPosition = 20;
 
 let heatZoneInfo = {}
+
+//for synchronize data
+let heatPoints = []
 
 export default class HeatZoneTest extends SceneGraph{
 
@@ -40,26 +45,29 @@ export default class HeatZoneTest extends SceneGraph{
         this.interactiveModelManager = new InteractiveModelMangaer()
         this.mqRouter = new MQRouter()
 
-        this.heatPoints = []
+        this.debug_folder = window.debug_ui.addFolder('Heat Zone Test');
 
+        //for forwarding to shader
         this.heatPositions = []
         for(let i=0; i < maxHeatPosition; i++){
             this.heatPositions.push(new THREE.Vector3(0,0,0))
         }
-
         this.heatDensitys = []
         for(let i=0; i < maxHeatPosition; i++){
             this.heatDensitys.push(0)
         }
-
         this.pointsNumber = 0;
         this.floorMat = null;
 
-        this.subscribeID = null;//for unsubscribe
+        //for unsubscribe
+        this.subscribeID = null;
+
+        //for updating data received from mq to scene
+        this.updateIntervalID = null
     }
 
     //fetch default crowd density from sql, do it only once
-    fetchCrowdDensity(heatPoints) {
+    initCrowdDensity() {
         let request = {
             type : 'sql',
             module : 'density',
@@ -87,7 +95,8 @@ export default class HeatZoneTest extends SceneGraph{
                     this.heatPositions[this.pointsNumber] = heatPoint.position
                     this.heatDensitys[this.pointsNumber] = heatPoint.density
 
-                    window.debug_ui.add(this.heatDensitys, this.pointsNumber, 0 , 15).name(point.pointName)
+                    this.debug_folder.add(this.heatDensitys, this.pointsNumber, 0 , 15).name(point.pointName)
+                    //window.debug_ui.add(this.heatDensitys, this.pointsNumber, 0 , 15).name(point.pointName)
 
                     this.pointsNumber ++;
                 });
@@ -95,16 +104,46 @@ export default class HeatZoneTest extends SceneGraph{
                 this.floorMat.uniforms.uPointsNumber.value = this.pointsNumber;
                 console.log(this.floorMat.uniforms.uPointsNumber.value)
 
-                window.debug_ui.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1).name("renderedAmount")
-                this.debugInput = true
+                this.debug_folder.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1).name("renderedAmount")
+                //window.debug_ui.add(this.floorMat.uniforms.uPointsNumber,'value').min(0).max(10).step(1).name("renderedAmount")
+
+                //update the heat map
+                setInterval(this.updateDensityAnimation, 2500); 
             })
-            
+            window.debug_ui.add(this.debug_folder)
     }
 
     handleHeatPointMessage(messageBody) {
         heatZoneInfo = JSON.parse(messageBody)
-        console.log(heatZoneInfo);
     }
+
+    updateDensityAnimation() {
+        let sceneInfo = heatZoneInfo["HeatZoneTest"];
+        
+        // Create a copy of instance.heatDensitys
+        let endArray = instance.heatDensitys.slice(0);
+      
+        // Update endArray based on sceneInfo
+        for (let point in sceneInfo) {
+          let heatPoint = heatPoints[point];
+          if (heatPoint) {
+            heatPoint.density = sceneInfo[point];
+          }
+          endArray[heatPoint.index] = heatPoint.density;
+        }
+      
+        // Using GSAP to animate instance.heatDensitys to endArray over 1 second
+        gsap.to(instance.heatDensitys, {
+          duration: 1,  
+          endArray: endArray,  
+          onUpdate: function() {
+            //console.log(instance.heatDensitys);
+          },
+          onComplete: function() {
+            //console.log("Animation completed");
+          }
+        });
+      }
 
     loadScene(){
         console.log("loading heat zone")
@@ -167,12 +206,11 @@ export default class HeatZoneTest extends SceneGraph{
                 else if(tokens[0] == 'HeatPoint'){
                     let modelData = this.interactiveModelManager.addInteractiveModel(child)
                     //console.log('HeatPoint: ' + child.name + ' scene: ' + instance.constructor.name)
-                    this.heatPoints[tokens[1]] = {
+                    heatPoints[tokens[1]] = {
                         density: 0,
                         position: child.position,
                         index: 0
                     }
-
 
                 }
                 else{
@@ -181,8 +219,8 @@ export default class HeatZoneTest extends SceneGraph{
                 }
             })
 
-            this.fetchCrowdDensity(this.heatPoints)
-            console.log(this.heatPoints)
+            this.initCrowdDensity()
+            console.log(heatPoints)
         })
 
         /**
@@ -210,6 +248,7 @@ export default class HeatZoneTest extends SceneGraph{
 
     unloadScene(){
         this.mqRouter.unsubscribeByID(this.subscribeID);
+        this.debug_folder.destroy();
     }
 
     /**
