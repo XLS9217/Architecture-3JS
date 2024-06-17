@@ -160,6 +160,7 @@ const select_material = new THREE.MeshBasicMaterial({
 document.body.onkeyup = function(e) {
     if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
       alert(camera.position.x + "\n" + camera.position.y + "\n" +  camera.position.z)
+      console.log(camera.position.x + "," + camera.position.y + "," +  camera.position.z)
     }
 }
 
@@ -232,6 +233,7 @@ const basementButton = document.getElementById('level4');
 const roomButton = document.getElementById('Room');
 const heatZoneButton = document.getElementById('HeatZone');
 const mainDisplayButton = document.getElementById('Main_Display');
+const earthButton = document.getElementById('earth');
 
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
@@ -262,6 +264,11 @@ basementButton.addEventListener('click', () => {
 heatZoneButton.addEventListener('click', () => {
     console.log("heat Zone Button button clicked!");
     sceneManager.LoadScene('HeatZone')
+});
+
+earthButton.addEventListener('click', () => {
+    console.log("earth button clicked!");
+    sceneManager.LoadScene('Earth')
 });
 
 //button to toggle the levels

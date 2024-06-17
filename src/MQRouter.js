@@ -89,7 +89,7 @@ export default class MQRouter{
     unsubscribeByID(ID) {
         // Unsubscribe from the specified topic
         client.unsubscribe(ID);
-        alert('unsubscribe ' + ID)
+        //alert('unsubscribe ' + ID)
     }
 
     publishMessage(message) {

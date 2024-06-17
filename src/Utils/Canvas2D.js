@@ -73,8 +73,7 @@ export default class Canvas2D{
     //return a THREE.Vector2 for screen location
     findScreenPosition(obj){
         if(obj instanceof HTMLElement || obj instanceof HTMLVideoElement ){
-            
-            
+                       
             const rect = obj.getBoundingClientRect();
             const screenX = (rect.left + rect.right) /2;
             const screenY = (rect.top + rect.bottom) / 2;

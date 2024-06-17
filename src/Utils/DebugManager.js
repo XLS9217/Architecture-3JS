@@ -38,6 +38,8 @@ export default class DebugManager{
         this.initUserControl()
         this.initSceneControl()
         this.initMessageControl()
+
+        debug_ui.close()
     }
 
     initBasicFunction(){

@@ -17,6 +17,7 @@ import DropParticle3D from '../Particles/DropParticle3D'
 import TestScene from '../SceneGraphs/TestScene'
 import { color } from 'three/examples/jsm/nodes/Nodes.js'
 import HeatZoneTest from '../SceneGraphs/HeatZoneTest'
+import Earth from '../SceneGraphs/Earth'
 
 //spinner.stop();
 
@@ -59,6 +60,7 @@ export default class SceneManager{
         this.mainDisplay = new ShenZhen_MainDisplay(scene)
         this.testScene = new TestScene(scene)
         this.heatZoneTest = new HeatZoneTest(scene)
+        this.earth = new Earth(scene)
 
         this.LoadEnvironmentMap('EnvMap/afternoon_1_1k.hdr', 'afternoon')
 
@@ -259,6 +261,9 @@ export default class SceneManager{
 
     //in charge of linking the string to the scene
     LoadScene(sceneName){
+        //some scene might not want to handle envmap and weather on their own
+        let keepPrevEnv = true;
+
         if(sceneName == 'Arch'){
             this.LoadGraph(this.shenzhenArch)
         }
@@ -286,9 +291,15 @@ export default class SceneManager{
         else if(sceneName == 'HeatZone'){
             this.LoadGraph(this.heatZoneTest)
         }
+        else if(sceneName == 'Earth'){
+            this.LoadGraph(this.earth)
+            keepPrevEnv = false;
+        }
 
-        this.SwitchEnvironment(this.currrentEnvironment)
-        this.ChangeWeather(this.currentWeather)
+        if(keepPrevEnv){
+            this.SwitchEnvironment(this.currrentEnvironment)
+            this.ChangeWeather(this.currentWeather)
+        }
     }
 
     //in charge of what to do when loading a new scene graph
@@ -345,25 +356,23 @@ export default class SceneManager{
                 // No intersect found
                 if(intersects.length === 0)
                 {
-                    // Show
                     tag.unhide(opacity)
                 }
                 else
                 {
+
                     // Get the distance of the intersection and the distance of the point
                     const intersectionDistance = intersects[0].distance
 
                     // Intersection is close than the point
                     if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
                     {
-                        // Hide
-                        tag.hide()
-                        //console.log("hide")
+                        if(intersects[0].object.name != 'Ignore') //SPECIAL TYPE OF MESH, LATER CONSIDER COLLISION CHANNEL
+                            tag.hide()
                     }
                     // Intersection is further than the point
                     else
                     {
-                        // Show
                         tag.unhide(opacity)
                     }
                 }

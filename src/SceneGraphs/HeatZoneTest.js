@@ -45,7 +45,6 @@ export default class HeatZoneTest extends SceneGraph{
         this.interactiveModelManager = new InteractiveModelMangaer()
         this.mqRouter = new MQRouter()
 
-        this.debug_folder = window.debug_ui.addFolder('Heat Zone Test');
 
         //for forwarding to shader
         this.heatPositions = []
@@ -149,6 +148,7 @@ export default class HeatZoneTest extends SceneGraph{
         console.log("loading heat zone")
         super.loadScene()
         this.subscribeID = this.mqRouter.subscribeToTopic('/topic/heat_point_processed_message', this.handleHeatPointMessage);
+        this.debug_folder = window.debug_ui.addFolder('Heat Zone Test');
     }
 
     Create2DPoints(){
@@ -174,7 +174,6 @@ export default class HeatZoneTest extends SceneGraph{
 
         modelLoader.Load2Scene('models/testModelsGLB/', 'HeatZoneLevel3', 'glb',(modelPtr) => {
             
-
             modelPtr.traverse((child) => {
                 if(child instanceof THREE.PerspectiveCamera){
                     console.log(child)

@@ -18,11 +18,6 @@ let points = null
 let tags = []
 let models = []
 
-//tags.push(new FloatTag2D("main architecture",new THREE.Vector3(0,35,0)))
-//tags[0].setBackgroundColor('#ff0000bb')
-
-
-
 
 export default class TestScene extends SceneGraph{
 

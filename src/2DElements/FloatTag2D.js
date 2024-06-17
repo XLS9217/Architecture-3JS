@@ -2,9 +2,9 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import * as THREE from 'three'
 
 export default class FloatTag2D {
-    constructor(textContent, position) {
+    constructor(textContent, position, customFunction) {
         // Create the point2D element
-        const point2D = document.createElement('div');
+        const point2D = document.createElement('button');
         point2D.textContent = textContent;
 
         // Apply CSS styles to the point2D element
@@ -24,6 +24,8 @@ export default class FloatTag2D {
         point2D.style.fontSize = '12px';
         point2D.style.cursor = 'help';
         point2D.style.transition = 'transform 0.1s';
+        point2D.style.zIndex = '999'; // Set z-index
+        point2D.style.pointerEvents = 'auto'; // Enable all pointer events
 
         // Create a CSS2DObject using the point2D element
         this.label = new CSS2DObject(point2D);
@@ -32,6 +34,18 @@ export default class FloatTag2D {
         // Set the initial position of the label
         this.position = position;
         this.label.position.copy(position);
+
+        // Attach click event listener to the button
+        if (customFunction && typeof customFunction === 'function') {
+            point2D.addEventListener('click', () => {
+                customFunction()
+            });
+        }else{
+            point2D.addEventListener('click', () => {
+                console.log('No custom function for this tag')
+            });
+        }
+
 
         this.hide()
     }

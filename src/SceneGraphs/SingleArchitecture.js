@@ -178,7 +178,11 @@ export default class SingleArchitecture extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-130, 55, 189)
+        let userState = new UserState()
+        if(userState.deviceType == userState.DeviceTypes.MOBILE)
+            camera.position.set(-130, 55, 189)
+        else
+            camera.position.set(-50,266,400)
     }
 
     isSceneReady(){
