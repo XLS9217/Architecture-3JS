@@ -18,6 +18,18 @@
     pointer-events: all;
 }
 
+.testScene_panel {
+    position: absolute;
+    /* border: 3px solid blue; */
+    left: 100%;
+    top: 46.3%;
+    height: 35px;
+    display: flex;
+    z-index: 999;
+    width: auto;  
+    pointer-events: all;
+}
+
 .wind_panel {
     position: absolute;
     left: 100%;

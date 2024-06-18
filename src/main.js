@@ -273,20 +273,34 @@ earthButton.addEventListener('click', () => {
 
 //button to toggle the levels
 const levelsButton = document.getElementById("levels");
-const panel = document.getElementById("level_buttons");
+const level_panel = document.getElementById("level_buttons");
 let isLevelPanelHiding = true;
 levelsButton.addEventListener("click", () => {
     isLevelPanelHiding = !isLevelPanelHiding
     if(isLevelPanelHiding){
-        panel.classList.add("hide");
+        level_panel.classList.add("hide");
     }else{
-        panel.classList.remove("hide")
+        level_panel.classList.remove("hide")
     }
 });
+
+const testSceneButton = document.getElementById("Test_Scene");
+const testScene_panel = document.getElementById("test_scenes");
+let isTestSceneHiding = true;
+testSceneButton.addEventListener("click", () => {
+    isLevelPanelHiding = !isLevelPanelHiding
+    if(isLevelPanelHiding){
+        testScene_panel.classList.add("hide");
+    }else{
+        testScene_panel.classList.remove("hide")
+    }
+});
+
 roomButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
     sceneManager.LoadScene('Room')
 });
+
 mainDisplayButton.addEventListener('click', () => {
     console.log("Main display button clicked!");
     sceneManager.LoadScene('MainDisplay')

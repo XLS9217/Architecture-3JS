@@ -367,7 +367,7 @@ export default class SceneManager{
                     // Intersection is close than the point
                     if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
                     {
-                        if(intersects[0].object.name != 'Ignore') //SPECIAL TYPE OF MESH, LATER CONSIDER COLLISION CHANNEL
+                        if(intersects[0].object.name != 'TagIgnore') //SPECIAL TYPE OF MESH, LATER CONSIDER COLLISION CHANNEL
                             tag.hide()
                     }
                     // Intersection is further than the point

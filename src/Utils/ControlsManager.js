@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { OrbitControls, PointerLockControls } from 'three/examples/jsm/Addons.js';
 import nipplejs from 'nipplejs';
 import UserState from '../UserState';
+import { gsap } from 'gsap'
 
 let instance = null
 let currentControl = null
@@ -79,6 +80,12 @@ export default class ControlsManager{
             this.joystickX = 0;
             this.joystickY = 0;
         });
+    }
+
+    lerpToOrbitTarget(x, y, z) {
+        if (currentControl instanceof OrbitControls) {
+            gsap.to(currentControl.target, { x, y, z, duration: 1 });
+        }
     }
 
     roatateCameraOnJoystickMove(){
