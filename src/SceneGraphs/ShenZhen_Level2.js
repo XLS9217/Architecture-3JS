@@ -89,7 +89,6 @@ export default class ShenZhen_Level2 extends SceneGraph{
             console.log(modelPtr)
             arch_level1 = modelPtr;
             arch_level1.scale.set(5,5,5)
-            arch_level1.position.set(-307,-22,244)
             modelPtr.traverse((child) => {
                 child.castShadow = true
                 child.receiveShadow = true
@@ -126,7 +125,7 @@ export default class ShenZhen_Level2 extends SceneGraph{
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(-8,29,130)
+        camera.position.set(105.65035425727193,85.67761999262049,83.03421085554929)
     }
 
     isSceneReady(){
