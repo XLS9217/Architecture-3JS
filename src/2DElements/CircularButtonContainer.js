@@ -172,11 +172,11 @@ export default class CircularButtonContainer {
     }
 
     destroy() {
-        // Remove all buttons
-        this.buttonArray.forEach(button => button.remove());
+        // // Remove all buttons
+        // this.buttonArray.forEach(button => button.remove());
 
-        // Remove close button
-        this.container.querySelector('button').remove();
+        // // Remove close button
+        // this.container.querySelector('button').remove();
 
         // Remove container from the document
         this.container.remove();
