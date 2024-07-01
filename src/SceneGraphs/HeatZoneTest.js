@@ -63,6 +63,8 @@ export default class HeatZoneTest extends SceneGraph{
 
         //for updating data received from mq to scene
         this.updateIntervalID = null
+
+        this.debug_folder
     }
 
     //fetch default crowd density from sql, do it only once
@@ -109,7 +111,6 @@ export default class HeatZoneTest extends SceneGraph{
                 //update the heat map
                 setInterval(this.updateDensityAnimation, 2500); 
             })
-            window.debug_ui.add(this.debug_folder)
     }
 
     handleHeatPointMessage(messageBody) {
@@ -145,10 +146,10 @@ export default class HeatZoneTest extends SceneGraph{
       }
 
     loadScene(){
+        this.debug_folder = window.debug_ui.addFolder('Heat Zone Test');
         console.log("loading heat zone")
         super.loadScene()
         this.subscribeID = this.mqRouter.subscribeToTopic('/topic/heat_point_processed_message', this.handleHeatPointMessage);
-        this.debug_folder = window.debug_ui.addFolder('Heat Zone Test');
     }
 
     Create2DPoints(){

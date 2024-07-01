@@ -201,8 +201,6 @@ export default class SingleArchitecture extends SceneGraph{
                 child.castShadow = true
                 child.receiveShadow = true
             })
-            
-            window.debug_ui.add(modelPtr.position, 'x').min(300).max(500).name('top')
 
         })
 

@@ -119,7 +119,7 @@ export default class Earth extends SceneGraph{
         }
         instance = this
         //console.log(this)
-
+        this.debug_folder
     }
 
     GenerateLight(){
@@ -127,6 +127,7 @@ export default class Earth extends SceneGraph{
     }
 
     loadScene(){
+        this.debug_folder = window.debug_ui.addFolder('Earth');
         console.log("loading earth")
         super.loadScene()
         gsap.to(this.scene, {
@@ -139,6 +140,7 @@ export default class Earth extends SceneGraph{
     
     unloadScene(){
         infoPanel.destroy()
+        this.debug_folder.destroy();
     }
 
     Create2DPoints(){
@@ -192,7 +194,7 @@ export default class Earth extends SceneGraph{
         this.scene.add(earth)
         earth.rotation.y = Math.PI * 1.5
 
-        window.debug_ui
+        this.debug_folder
             .add(earthMaterial.uniforms.uCloudRange, 'value')
             .min(0)
             .max(0.5)
@@ -219,7 +221,7 @@ export default class Earth extends SceneGraph{
 
         atmosphere.rotation.y = Math.PI * 1.5
 
-        window.debug_ui
+        this.debug_folder
             .addColor(earthParameters, 'atmosphereDayColor')
             .onChange(() =>
             {
@@ -227,7 +229,7 @@ export default class Earth extends SceneGraph{
                 atmosphereMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
             })
     
-        window.debug_ui
+        this.debug_folder
             .addColor(earthParameters, 'atmosphereTwilightColor')
             .onChange(() =>
             {
@@ -259,12 +261,12 @@ export default class Earth extends SceneGraph{
         }
         updateSun()
         //Tweaks
-        window.debug_ui
+        this.debug_folder
             .add(sunSpherical, 'phi')
             .min(0)
             .max(Math.PI * 2)
             .onChange(updateSun)
-        window.debug_ui
+        this.debug_folder
             .add(sunSpherical, 'theta')
             .min(0)
             .max(Math.PI* 2)

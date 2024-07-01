@@ -49,9 +49,16 @@ export default class UserState{
             console.log("Device type not identified.");
         }
 
-        
+        this.logDeviceMemory()
         //this.deviceType = this.DeviceTypes.MOBILE;
     }
 
+    logDeviceMemory() {
+        if ('deviceMemory' in navigator) {
+            console.log(`Approximately ${navigator.deviceMemory} GB of RAM available.`);
+        } else {
+            console.log("The Device Memory API is not supported in this browser.");
+        }
+    }
 
 }
