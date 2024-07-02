@@ -234,6 +234,7 @@ const roomButton = document.getElementById('Room');
 const heatZoneButton = document.getElementById('HeatZone');
 const mainDisplayButton = document.getElementById('Main_Display');
 const earthButton = document.getElementById('earth');
+const shanghaiButton = document.getElementById('shanghaiMain');
 
 // Hook functions to buttons using event listeners
 mainButton.addEventListener('click', () => {
@@ -259,6 +260,11 @@ level3Button.addEventListener('click', () => {
 basementButton.addEventListener('click', () => {
     console.log("Basement button clicked!");
     sceneManager.LoadScene('Base')
+});
+
+shanghaiButton.addEventListener('click', () => {
+    console.log("Shanghai button clicked!");
+    sceneManager.LoadScene('ShanghaiMain')
 });
 
 heatZoneButton.addEventListener('click', () => {

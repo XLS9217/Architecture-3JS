@@ -47,7 +47,10 @@ function latLongToVector3(lat, lon, radius) {
 
 
 let shanghaiLoc = latLongToVector3(31.2304, 121.4737, 2.0);
-tags.push(new FloatTag2D("上海校区", shanghaiLoc , ()=>{
+tags.push(new FloatTag2D({
+    textContent: "上海校区", 
+    position: latLongToVector3(31.2304, 121.4737, 2.1) , 
+    customFunction: ()=>{
 
     let cameraPos = latLongToVector3(31.2304, 121.4737, 3.5);
     sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
@@ -61,13 +64,17 @@ tags.push(new FloatTag2D("上海校区", shanghaiLoc , ()=>{
         buttonName: '前往',
         pictureAddress: 'pictures/ShanghaiCampus.jpg',
         buttonFunction: () => {
-            console.log('404 there is no scene for this campus');
+            let sceneManager = new SceneManager()
+            sceneManager.LoadScene('ShanghaiMain')
         }
     })
-})) 
+}})) 
 
 let beijingLoc = latLongToVector3(39.9042, 116.4074, 2.0);
-tags.push(new FloatTag2D("北京校区", beijingLoc , ()=>{
+tags.push(new FloatTag2D({
+    textContent: "北京校区", 
+    position: latLongToVector3(39.9042, 116.4074, 2.1) , 
+    customFunction: ()=>{
 
     let cameraPos = latLongToVector3(39.9042, 116.4074, 3.5);
     sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
@@ -84,10 +91,13 @@ tags.push(new FloatTag2D("北京校区", beijingLoc , ()=>{
             console.log('404 there is no scene for this campus');
         }
     })
-})) 
+}})) 
 
 let shenzhenLoc = latLongToVector3(22.5431, 114.0579, 2.0);
-tags.push(new FloatTag2D("深圳校区", shenzhenLoc , ()=>{
+tags.push(new FloatTag2D({
+    textContent: "深圳校区", 
+    position: latLongToVector3(22.5431, 114.0579, 2.1) , 
+    customFunction: ()=>{
 
     let cameraPos = latLongToVector3(22.5431, 114.0579, 3.5);
     sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
@@ -105,7 +115,7 @@ tags.push(new FloatTag2D("深圳校区", shenzhenLoc , ()=>{
             sceneManager.LoadScene('Arch')
         }
     })
-})) 
+}})) 
 
 
 export default class Earth extends SceneGraph{

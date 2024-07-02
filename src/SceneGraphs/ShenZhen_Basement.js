@@ -15,22 +15,22 @@ let modelLoader = null
 let points = null
 let tags = []
 let models = []
-tags.push(new FloatTag2D("负一层",new THREE.Vector3(20,28,-13))) 
+tags.push(new FloatTag2D({textContent: "负一层", position: new THREE.Vector3(20,28,-13)})) 
 tags[0].getLabel().element.style.width = '70px'
 tags[0].getLabel().element.style.fontSize = '20px'
 tags[0].getLabel().element.style.background = '#ff1111'
 
-tags.push(new FloatTag2D("B03阶梯教室",new THREE.Vector3(51,0,-111))) 
-tags.push(new FloatTag2D("B02阶梯教室",new THREE.Vector3(-41,-5,63)))
-tags.push(new FloatTag2D("B01阶梯教室",new THREE.Vector3(-115,-5,54)))
+tags.push(new FloatTag2D({ textContent: "B03阶梯教室", position: new THREE.Vector3(51, 0, -111) }));
+tags.push(new FloatTag2D({ textContent: "B02阶梯教室", position: new THREE.Vector3(-41, -5, 63) }));
+tags.push(new FloatTag2D({ textContent: "B01阶梯教室", position: new THREE.Vector3(-115, -5, 54) }));
 
-tags.push(new FloatTag2D("B14讨论室",new THREE.Vector3(59,-7,42))) 
-tags.push(new FloatTag2D("B13讨论室",new THREE.Vector3(59,-7,22))) 
-tags.push(new FloatTag2D("B12讨论室",new THREE.Vector3(59,-7,2))) 
+tags.push(new FloatTag2D({ textContent: "B14讨论室", position: new THREE.Vector3(59, -7, 42) }));
+tags.push(new FloatTag2D({ textContent: "B13讨论室", position: new THREE.Vector3(59, -7, 22) }));
+tags.push(new FloatTag2D({ textContent: "B12讨论室", position: new THREE.Vector3(59, -7, 2) }));
 
-tags.push(new FloatTag2D("B05讨论室",new THREE.Vector3(-114,-7,-55))) 
-tags.push(new FloatTag2D("B06讨论室",new THREE.Vector3(-84,-7,-55))) 
-tags.push(new FloatTag2D("B07讨论室",new THREE.Vector3(-54,-7,-55))) 
+tags.push(new FloatTag2D({ textContent: "B05讨论室", position: new THREE.Vector3(-114, -7, -55) }));
+tags.push(new FloatTag2D({ textContent: "B06讨论室", position: new THREE.Vector3(-84, -7, -55) }));
+tags.push(new FloatTag2D({ textContent: "B07讨论室", position: new THREE.Vector3(-54, -7, -55) }));
 for(let i=1; i<tags.length; i++){
     if(i <= 3)    tags[i].getLabel().element.style.width = '90px'
     else{

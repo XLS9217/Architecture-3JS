@@ -18,6 +18,7 @@ import TestScene from '../SceneGraphs/TestScene'
 import { color } from 'three/examples/jsm/nodes/Nodes.js'
 import HeatZoneTest from '../SceneGraphs/HeatZoneTest'
 import Earth from '../SceneGraphs/Earth'
+import CEIBS_Shanghai_Main from '../SceneGraphs/CEIBS_Shanghai_Main'
 
 //spinner.stop();
 
@@ -56,6 +57,7 @@ export default class SceneManager{
         this.shenzhenL2 = new ShenZhen_Level2(scene)
         this.shenzhenL3 = new ShenZhen_Level3(scene)
         this.shenzhenBase = new ShenZhen_Basement(scene)
+        this.shanghaiMain = new CEIBS_Shanghai_Main(scene)
         this.classRoom = new Classroom(scene)
         this.mainDisplay = new ShenZhen_MainDisplay(scene)
         this.testScene = new TestScene(scene)
@@ -282,6 +284,9 @@ export default class SceneManager{
         else if(sceneName == 'Room'){
             this.LoadGraph(this.classRoom)
         }
+        else if(sceneName == 'ShanghaiMain'){
+            this.LoadGraph(this.shanghaiMain)
+        }
         else if(sceneName == 'MainDisplay'){
             this.LoadGraph(this.mainDisplay, this.currentControl)
         }
@@ -338,44 +343,8 @@ export default class SceneManager{
             // Go through each tag
             for(const tag of this.currentGraph.getTags())
             {
+                tag.update(camera, raycaster, scene);
 
-                const screenPosition = tag.position.clone()
-                screenPosition.project(camera)
-
-                // Set the raycaster
-                raycaster.setFromCamera(screenPosition, camera)
-                const intersects = raycaster.intersectObjects(scene.children, true)
-                //console.log(intersects)
-
-                
-                const pointDistance = tag.position.distanceTo(camera.position)
-                const distanceRatio = (minimunPointDistance-pointDistance) / minimunPointDistance
-                const opacity = 1-Math.cos((distanceRatio+0.5) * Math.PI/2)
-                //console.log(opacity)
-
-                // No intersect found
-                if(intersects.length === 0)
-                {
-                    tag.unhide(opacity)
-                }
-                else
-                {
-
-                    // Get the distance of the intersection and the distance of the point
-                    const intersectionDistance = intersects[0].distance
-
-                    // Intersection is close than the point
-                    if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
-                    {
-                        if(intersects[0].object.name != 'TagIgnore') //SPECIAL TYPE OF MESH, LATER CONSIDER COLLISION CHANNEL
-                            tag.hide()
-                    }
-                    // Intersection is further than the point
-                    else
-                    {
-                        tag.unhide(opacity)
-                    }
-                }
             }
 
 
