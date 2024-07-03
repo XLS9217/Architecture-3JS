@@ -347,9 +347,6 @@ export default class SceneManager{
 
             }
 
-
-
-
             // Go through each point
             for(const point of this.currentGraph.getPoints())
             {

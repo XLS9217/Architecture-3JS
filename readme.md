@@ -38,3 +38,6 @@ BaseCamera ---- the camera in the Room
 # ./Utils/SceneManger.js
     manage the change of the scenes
 
+分层建筑命名规范
+CEIBS_Level_L + 数字
+记住要重设原点

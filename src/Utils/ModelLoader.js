@@ -199,4 +199,24 @@ export default class ModelLoader
         return sceneReady;
     }
 
+    unloadModel(model) { 
+        if (model) {
+            // Traverse through the model to dispose geometries and materials
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.geometry.dispose();
+    
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach((material) => material.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            });
+    
+            // Remove the model from the scene
+            this.scene.remove(model);
+        }
+    }
+
 }

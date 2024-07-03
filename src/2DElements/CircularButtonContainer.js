@@ -2,7 +2,15 @@ import { attribute } from "three/examples/jsm/nodes/Nodes.js";
 
 //minimum 2
 export default class CircularButtonContainer {
-    constructor({ buttonNumber, containerWidth, containerHeight, top, left, buttonSize = 30 }) {
+    constructor({ 
+        buttonNumber, 
+        containerWidth, 
+        containerHeight, 
+        top, 
+        left, 
+        buttonSize = 30 , 
+        hasRail = true
+    }) {
         this.numButtons = buttonNumber;
         this.buttonArray = [];
         this.buttonAttributes = []; // Stores positions and sizeUp attribute
@@ -19,11 +27,12 @@ export default class CircularButtonContainer {
         this.container.style.width = containerWidth || '100px';
         this.container.style.height = containerHeight || '100px';
         this.container.style.transform = 'translate(-50%, -50%)';
-        this.container.style.border = 'solid 3px black';
+        if (hasRail) this.container.style.border = 'solid 3px black';
         this.container.style.borderRadius = '50%'; // Make the container a circle for better visualization
         this.container.style.display = 'flex';
         this.container.style.justifyContent = 'center';
         this.container.style.alignItems = 'center';
+        this.container.style.zIndex = '998';
         document.body.appendChild(this.container);
 
         // Calculate the angle between each button
@@ -45,18 +54,18 @@ export default class CircularButtonContainer {
                 sizeUp = 1.75;
             } 
             else if(i == this.numButtons-1){
-                sizeUp = 1.25
+                sizeUp = 1.0
                 containerEvent = () =>{this.rotateForward()}
             } 
             else if(i == 1){
-                sizeUp = 1.25
+                sizeUp = 1.0
                 containerEvent = () =>{this.rotateBackward()}
             }
             this.buttonAttributes.push({
                 position: { x, y }, 
                 sizeUp: sizeUp,
                 originalSize: this.buttonSize,
-                originalFontSize: this.buttonSize/3.5,
+                originalFontSize: this.buttonSize/3,
                 containerEvent: containerEvent // what to do when button at this location is clicked
             });
 
@@ -67,10 +76,10 @@ export default class CircularButtonContainer {
             button.style.width = this.buttonSize* sizeUp + 'px';
             button.style.height = this.buttonSize* sizeUp + 'px';
             button.style.borderRadius = "50%";
+            button.style.fontSize = this.buttonSize/3 * sizeUp + 'px'
             button.style.border = "3px solid black";
             button.style.backgroundColor = "#444444";
             button.style.color = "white";
-            button.style.fontSize = this.buttonSize/4 * sizeUp + 'px'
             button.style.left = `calc(50% + ${x}px - ${this.buttonSize * sizeUp / 2}px)`; // Center the button
             button.style.top = `calc(50% + ${y}px - ${this.buttonSize * sizeUp / 2}px)`;  // Center the button
 
