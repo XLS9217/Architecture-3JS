@@ -72,15 +72,16 @@ export default class FloatTag2D {
             this.onHoverEnd();
         });
 
+        this.isForceHide = false
+
         this.logicHide = logicHide;
         if (logicHide) this.hide();
     }
 
-    update(camera, raycaster, scene) {
+    update(camera, raycaster, scene, intersectObjArray) {
         function clamp(number, min, max) {
             return Math.min(Math.max(number, min), max);
         }
-
         const pointDistance = this.position.distanceTo(camera.position);
         const distanceRatio = (this.minimunPointDistance - pointDistance) / this.minimunPointDistance;
         const opacity = 1 - Math.cos((distanceRatio + 0.5) * Math.PI / 2);
@@ -109,7 +110,12 @@ export default class FloatTag2D {
 
         // Set the raycaster
         raycaster.setFromCamera(screenPosition, camera);
-        const intersects = raycaster.intersectObjects(scene.children, true);
+        let intersects
+        if(intersectObjArray){
+            intersects = raycaster.intersectObjects(intersectObjArray, true);
+        }else{
+            intersects = raycaster.intersectObjects(scene.children, true);
+        }
 
         // No intersect found
         if (intersects.length === 0) {
@@ -142,18 +148,30 @@ export default class FloatTag2D {
         this.defaultHeight = height;
     }
 
+    shouldForceHide(shouldHide){
+        if(shouldHide){
+            this.hide()
+        }
+        this.isForceHide = shouldHide
+    }
+
     // Function to hide the label
     hide() {
         this.label.element.style.opacity = '0';
+        this.label.element.style.pointerEvents = 'none'
     }
 
     // Function to unhide the label
     unhide(opacity) {
-        if (opacity == null) {
-            this.label.element.style.opacity = '1';
-        } else {
-            this.label.element.style.opacity = opacity;
+        if(!this.isForceHide){
+            if (opacity == null) {
+                this.label.element.style.opacity = '1';
+            } else {
+                this.label.element.style.opacity = opacity;
+            }
+            this.label.element.style.pointerEvents = 'all'
         }
+        
     }
 
     // Function to set the background color

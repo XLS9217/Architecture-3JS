@@ -426,8 +426,6 @@ let objectsToTest = interactiveModelManager.getInteractiveModels()
 const tick = () =>
 {
     stats.begin();
-    //update elapsed time
-    sceneManager.UpdateTimeUniform(clock.getElapsedTime())
 
     // Update controls
     controlsManager.update()
@@ -462,12 +460,12 @@ const tick = () =>
         }
     }
 
-    //update the 2d tags in scene
-    sceneManager.Update2DTagVisibility(sizes)
-
     // Render
     renderer.render(scene, camera)
     labelRenderer.render( scene, camera );
+
+    //HIGHEST PRIORITY
+    sceneManager.Update()
 
     // End the stats
     stats.end();

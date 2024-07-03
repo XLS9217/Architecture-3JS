@@ -99,7 +99,17 @@ export default class SceneGraph{
         this.Create2DPoints()
         this.CreateEnvironmentMap()
     }
+    unloadScene(){}
 
+    Update(){
+        let cameraManager = new SceneCameraManager()
+        let raycaster = new THREE.Raycaster()
+        //console.log(this.intersectionModels)
+        for(const tag of this.getTags())
+        {
+            tag.update(cameraManager.getCamera(), raycaster, this.scene);
+        }
+    }
 
     CreateLights(){
         this.scene.add(this.currentLightGroup)
@@ -123,7 +133,6 @@ export default class SceneGraph{
     }
 
     isSceneReady(){}
-    unloadScene(){}
 
     getPoints(){
         //console.log("getPoints")

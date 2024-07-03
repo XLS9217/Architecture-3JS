@@ -127,11 +127,14 @@ export default class ModelLoader
      * @param {string} type 
      * @param {function} callback what to do with the model, immediately after it is loaded
      */
-    Load2Scene(path, name, type, callback){
+    Load2Scene(path, name, type, callback, disableOverlay = false){
         
-        this.scene.add(overlay)
-        overlay.material.uniforms.uAlpha.value = 1.0; 
-        sceneReady = false
+        if(!disableOverlay){
+            this.scene.add(overlay)
+            overlay.material.uniforms.uAlpha.value = 1.0; 
+            sceneReady = false
+        }
+        
 
         if(type == "gltf"){
             gltfLoader.load(

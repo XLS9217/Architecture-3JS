@@ -71,6 +71,14 @@ export default class SceneManager{
         this.dropParticle = null
     }
 
+    Update(){
+        this.UpdateResolutionUniform()
+        this.UpdateTimeUniform()
+
+        this.currentGraph.Update()
+
+    }
+
     GetScene(){
         return scene
     }
@@ -331,73 +339,5 @@ export default class SceneManager{
         this.currentGraph.loadScene()
         this.currentGraph.setIdealCameraLocation(camera)
         this.currentControl.target.set(0, 0, 0);
-    }
-
-    Update2DTagVisibility(sizes){
-        
-        let minimunPointDistance = 400  
-
-        if(this.currentGraph.isSceneReady())
-        {
-            
-            // Go through each tag
-            for(const tag of this.currentGraph.getTags())
-            {
-                tag.update(camera, raycaster, scene);
-
-            }
-
-            // Go through each point
-            for(const point of this.currentGraph.getPoints())
-            {
-
-                // Get 2D screen position
-                const screenPosition = point.position.clone()
-                screenPosition.project(camera)
-        
-                // Set the raycaster
-                raycaster.setFromCamera(screenPosition, camera)
-                const intersects = raycaster.intersectObjects(scene.children, true)
-        
-                // No intersect found
-                if(intersects.length === 0)
-                {
-                    // Show
-                    point.element.classList.add('visible')
-                }
-
-                // Intersect found
-                else
-                {
-                    // Get the distance of the intersection and the distance of the point
-                    const intersectionDistance = intersects[0].distance
-                    const pointDistance = point.position.distanceTo(camera.position)
-        
-                    // Intersection is close than the point
-                    if(intersectionDistance < pointDistance || pointDistance > minimunPointDistance)
-                    {
-                        // Hide
-                        point.element.classList.remove('visible')
-                    }
-                    // Intersection is further than the point
-                    else
-                    {
-                        // Show
-                        point.element.classList.add('visible')
-                    }
-                }
-        
-                const translateX = screenPosition.x * sizes.width * 0.5
-                const translateY = - screenPosition.y * sizes.height * 0.5
-                point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
-            }
-        }else{
-            //console.log("not ready")
-            //hide tags and points first
-            if(this.currentGraph && this.currentGraph.isSceneReady()){
-                for(const tag of this.currentGraph.getTags()) tag.unhide(opacity)
-                for(const point of this.currentGraph.getPoints()) point.element.classList.remove('visible')
-            }
-        }
     }
 }

@@ -58,6 +58,8 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         this.LevelModels = {}
         this.LevelOrigionalPositions = {}
 
+        this.intersectionModels = []
+
         // Initialize the exit button
         this.exitButton = this.createExitButton()
     }
@@ -108,6 +110,10 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         if(this.circularButtons) this.circularButtons.remove()
     }
 
+    Update(){
+        super.Update()
+    }
+
     Create2DPoints() {
         for (const element of tags) {
             element.hide()
@@ -119,6 +125,11 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
     //take in an architecture name load the seperate level building by the name and show the button group
     ToggleBuildingView(ArchitectureName) {
         let archKey = translateName[ArchitectureName]
+
+        //hide tags
+        for(let i=0; i<tags.length; i++){
+            tags[i].shouldForceHide(true)
+        }
 
         //show exit button
         this.exitButton.style.opacity = 1.0;
@@ -167,6 +178,9 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                             
                         }
                     }
+                    else if(child.isMesh){
+                        this.intersectionModels.push(child)
+                    }
                 });
 
                 console.log(ss);
@@ -207,7 +221,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                         this.ToggleOnLevel(LevelKeyArray[keyIndex])
                     })
                 }
-            });
+            },true);
 
         }
 
@@ -218,7 +232,12 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
         //hide exit, remove circular
         this.exitButton.style.opacity = 0.0;
-        this.circularButtons.destroy()
+        if(this.circularButtons) this.circularButtons.destroy()
+
+        //unhide tags
+        for(let i=0; i<tags.length; i++){
+            tags[i].shouldForceHide(false)
+        }
 
         //lerp camera back
         let cameraManager = new SceneCameraManager();
@@ -228,12 +247,18 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
             value: 600.0,
         });
 
+        //empty the intersection model
+        this.intersectionModels = []
+
         //remove level model
         modelLoader.unloadModel(this.togglingArchLevelGroup)
         //show shell model
-        for(let i=0; i<this.togglingArchShellGroup.length; i++){
-            this.togglingArchShellGroup[i].visible = true
+        if(this.togglingArchShellGroup){
+            for(let i=0; i<this.togglingArchShellGroup.length; i++){
+                this.togglingArchShellGroup[i].visible = true
+            }
         }
+        
     }
 
     restoreAllLevel(levelKey){
