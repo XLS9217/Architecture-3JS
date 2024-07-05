@@ -426,6 +426,8 @@ let objectsToTest = interactiveModelManager.getInteractiveModels()
 const tick = () =>
 {
     stats.begin();
+    //update elapsed time
+    sceneManager.UpdateTimeUniform(clock.getElapsedTime())
 
     // Update controls
     controlsManager.update()

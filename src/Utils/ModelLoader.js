@@ -215,6 +215,7 @@ export default class ModelLoader
                         child.material.dispose();
                     }
                 }
+                this.scene.remove(child)
             });
     
             // Remove the model from the scene

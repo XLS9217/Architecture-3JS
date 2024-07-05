@@ -5,7 +5,9 @@ export default class FloatTag2D {
     constructor({
         textContent = "need content", 
         position = new THREE.Vector3(0,0,0), 
-        customFunction = ()=>{ console.log('no function') },
+        customFunction = ()=>{ console.log('no customFunction') },
+        onHoverFunction = ()=>{},
+        onHoverEndFunction = ()=>{ },
         logicHide = true, //hide by some logic
         minimunPointDistance = 400,
         customWidth = 70,
@@ -53,7 +55,9 @@ export default class FloatTag2D {
         this.textContent = textContent;
         this.minimunPointDistance = minimunPointDistance;
 
-        // Attach click event listener to the button
+        // Attach mouse event listener to the button
+        this.onHoverFunction = onHoverFunction;
+        this.onHoverEndFunction = onHoverEndFunction;
         if (customFunction && typeof customFunction === 'function') {
             point2D.addEventListener('click', () => {
                 customFunction();
@@ -79,6 +83,12 @@ export default class FloatTag2D {
     }
 
     update(camera, raycaster, scene, intersectObjArray) {
+
+        if(this.isForceHide){
+            this.hide()
+            return
+        }
+
         function clamp(number, min, max) {
             return Math.min(Math.max(number, min), max);
         }
@@ -135,6 +145,10 @@ export default class FloatTag2D {
         }
     }
 
+    destroy(){
+        this.label.element.remove()
+    }
+
     // Getter for the label element
     getLabel() {
         return this.label;
@@ -176,8 +190,16 @@ export default class FloatTag2D {
 
     // Function to set the background color
     setBackgroundColor(newColor) {
-        this.label.element.style.background = newColor;
-        this.defaultBackground = newColor
+        if (typeof newColor === 'string') {
+            this.label.element.style.background = newColor;
+            this.defaultBackground = newColor;
+        } else if (typeof newColor === 'number') {
+            const hexString = '#' + newColor.toString(16).padStart(6, '0');
+            this.label.element.style.background = hexString;
+            this.defaultBackground = hexString;
+        } else {
+            console.error('Invalid input: newColor must be either a string or a number');
+        }
     }
 
     // Function to set the font color
@@ -188,10 +210,12 @@ export default class FloatTag2D {
     // Function called on hover start
     onHover() {
         this.label.element.style.background = '#cc0000'; 
+        this.onHoverFunction()
     }
 
     // Function called on hover end
     onHoverEnd() {
         this.label.element.style.background = this.defaultBackground
+        this.onHoverEndFunction()
     }
 }
