@@ -36,8 +36,10 @@ let ArchitectureShells = {}
 
 
 //frame material
-let classroomColor = 0xe30D54
-let meetingroomColor = 0x0095EF
+// let classroomColor = 0xd30D44
+// let meetingroomColor = 0x0095EF
+let classroomColor = 0x812b2f
+let meetingroomColor = 0x00567b
 
 
 /**
@@ -49,6 +51,17 @@ let translateName = {
     "教学楼1":"Edu1",
     "教学楼2":"Edu2",
     "教学楼3":"Edu3"
+}
+
+
+function hexToVector3(hex) {
+    // Extract the red, green, and blue components from the hex color
+    const r = ((hex >> 16) & 0xFF) / 255;
+    const g = ((hex >> 8) & 0xFF) / 255;
+    const b = (hex & 0xFF) / 255;
+    
+    // Create and return the THREE.Vector3 object
+    return new THREE.Vector3(r, g, b);
 }
 
 export default class CEIBS_Shanghai_Main extends SceneGraph {
@@ -227,12 +240,31 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                         if(tokens.length > 2 && tokens[0] == 'Frame'){
                             console.log('level tag '+child.name+' found at ' + child.position.x + ' ' + child.position.y + ' '+ child.position.z )
 
-                            //create new tag
+                            let selectUniform = new THREE.Uniform(false)
+                            //create new level tag
                             let newTag = new FloatTag2D({
                                 textContent: tokens[2],
                                 position: child.position.clone(),
                                 logicHide: false,
-                                minimunPointDistance: 250
+                                minimunPointDistance: 90,
+                                onHoverFunction : ()=>{
+                                    //console.log('room ' + child.name + ' hovered')
+                                    selectUniform.value = true
+                                },
+                                onHoverEndFunction : () => {
+                                    //console.log('room ' + child.name + ' exited')
+                                    selectUniform.value = false
+                                },
+                                customFunction:  () => {
+                                    let cameraManager = new SceneCameraManager()
+                                    let controlsManager = new ControlsManager()
+
+                                    let tagWorldPos = new THREE.Vector3()
+                                    newTag.getLabel().getWorldPosition(tagWorldPos)
+
+                                    cameraManager.hopToPosition(tagWorldPos.x, tagWorldPos.y + 20, tagWorldPos.z)
+                                    controlsManager.lerpToOrbitTarget(tagWorldPos.x - 5, tagWorldPos.y, tagWorldPos.z - 5)
+                                }
                             })
 
                             if(levelTags[tokens[1]]){
@@ -250,12 +282,14 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                             if(child.name.includes('教室')){
                                 console.log('child.name.includes(教室)')
                                 newTag.setBackgroundColor(classroomColor)
-                                colorUniform = new THREE.Uniform(new THREE.Vector3(0.96, 0.11, 0.39))
+                                //colorUniform = new THREE.Uniform(new THREE.Vector3(0.96, 0.11, 0.39))
+                                colorUniform = new THREE.Uniform(hexToVector3(classroomColor))
                             }
                             else if(child.name.includes('讨论')){
                                 console.log('child.name.includes(讨论)')
                                 newTag.setBackgroundColor(meetingroomColor)
-                                colorUniform = new THREE.Uniform(new THREE.Vector3(0.0, 0.58, 0.93))
+                                //colorUniform = new THREE.Uniform(new THREE.Vector3(0.0, 0.58, 0.93))
+                                colorUniform = new THREE.Uniform(hexToVector3(meetingroomColor))
                             }
 
                             //customize the material
@@ -267,8 +301,10 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                                     uTime: timeUniform,
                                     uYGap: yGapUniform,
                                     uTagPosition: new THREE.Uniform(child.position),
-                                    uFadeValue: fadeUniform
-                                }
+                                    uFadeValue: fadeUniform,
+                                    uIsSelected: selectUniform
+                                },
+                                //transparent: true
                             })
                             child.renderOrder = Number.NEGATIVE_INFINITY;
 

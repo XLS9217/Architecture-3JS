@@ -92,7 +92,11 @@ export default class FloatTag2D {
         function clamp(number, min, max) {
             return Math.min(Math.max(number, min), max);
         }
-        const pointDistance = this.position.distanceTo(camera.position);
+
+        let worldPos = new THREE.Vector3()
+        this.getLabel().getWorldPosition(worldPos)
+
+        const pointDistance = worldPos.distanceTo(camera.position);
         const distanceRatio = (this.minimunPointDistance - pointDistance) / this.minimunPointDistance;
         const opacity = 1 - Math.cos((distanceRatio + 0.5) * Math.PI / 2);
 

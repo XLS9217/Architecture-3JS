@@ -7,6 +7,8 @@ uniform float uTime;
 uniform float uYGap;
 uniform float uFadeValue;
 
+uniform bool uIsSelected;
+
 varying vec4 vModelPosition;
 varying mat4 vModelMatrix;
 
@@ -31,17 +33,30 @@ void main(){
     float dotNormalDown = dot(vNormal, downward);
     float cos10deg = cos(radians(10.0));
 
-    //gl_FragColor = vec4(vec3(dotNormalDown), 1.0);
-    //gl_FragColor = vec4(vec3(cos10deg), 1.0);
-    //return;
+    //behaviour of face on side
+    if(uIsSelected){
+        alpha = (sin(uTime * 2.5) + 1.0) / 2.0 + 0.25;
+    }
 
+    //behavior on the face on top
     if(dotNormalDown > cos10deg){
-        color = vec3(0.0,0.0,0.0);
+        if(uIsSelected){
+            color = vec3(0.0,0.0,0.0);
+        }else{
+            color = uBaseColor/ 2.0;
+        }
         alpha = 0.95;
     }
 
     //the glich effect
-    color *= mod(gl_FragCoord.y, 3.0);
+    float glitchGap = 3.0;
+    if(uIsSelected){
+        glitchGap *= 2.0;
+        color *= mod(gl_FragCoord.x + uTime, glitchGap);
+    }else{
+        color *= mod(gl_FragCoord.y, glitchGap);
+    }
+    
 
 
     gl_FragColor = vec4(color , alpha);

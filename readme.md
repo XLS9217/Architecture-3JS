@@ -39,6 +39,7 @@ BaseCamera ---- the camera in the Room
     manage the change of the scenes
 
 分层建筑命名规范
-CEIBS_Level_L + 数字
-记住要重设原点
-楼层内标注要善用原点
+    CEIBS_Level_{楼层名字}
+    Frame_{楼层名字}_{房间名字} (房间名字将被用以染色)
+    记住要重设原点
+    楼层内标注要善用原点
