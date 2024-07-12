@@ -13,6 +13,11 @@ import { gsap } from 'gsap'
 import RoomFrameFragment from "../Shaders/FragmentShaders/RoomFrame_Fragment.glsl"
 import RoomFrameVertex from "../Shaders/VertexShaders/RoomFrame_Vertex.glsl"
 import CircularButtonContainer from "../2DElements/CircularButtonContainer";
+import RendererManager from "../Utils/RenderManager";
+
+import { hexToVector3, createUtilButton, perlinNoise } from "./SH_Main_Supportive/SH_Main_Support.js"
+import AS_RoomDisplay from "../AdvenceScenes/AS_RoomDisplay.js";
+import { color } from "three/examples/jsm/nodes/Nodes.js";
 
 let instance = null
 let modelLoader = null
@@ -28,6 +33,7 @@ let yGapUniform = new THREE.Uniform(1.5)
 let fadeUniform = new THREE.Uniform(15.0)
 
 let levelTags = {}
+const displayTransform = new THREE.Vector3(-40, 60, -40)
 
 //for advenced displaying of building selection
 const distancePoint = new THREE.Uniform(new THREE.Vector3(0, 0, 0))
@@ -53,17 +59,6 @@ let translateName = {
     "教学楼3":"Edu3"
 }
 
-
-function hexToVector3(hex) {
-    // Extract the red, green, and blue components from the hex color
-    const r = ((hex >> 16) & 0xFF) / 255;
-    const g = ((hex >> 8) & 0xFF) / 255;
-    const b = (hex & 0xFF) / 255;
-    
-    // Create and return the THREE.Vector3 object
-    return new THREE.Vector3(r, g, b);
-}
-
 export default class CEIBS_Shanghai_Main extends SceneGraph {
 
     constructor(inputScene) {
@@ -85,44 +80,53 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
         this.LevelModels = {}
         this.LevelOrigionalPositions = {}
+        this.currentLevelKey = null
 
-        this.intersectionModels = []
+        this.SH_Shell = null
+        this.SH_Ground = null
+        this.SH_BuildingPoints = null
+
+        //for level view displaying
+        this.roomFrames = []
+        this.levelBasePlane = null//the plane under the level
 
         // Initialize the exit button
-        this.exitButton = this.createExitButton()
-    }
+        this.ViewMode = {
+            Campus: 'Campus',
+            Level: 'Level',
+            Room: 'Room',
+            Panorama: 'Panorama'
+        }
 
-    createExitButton() {
-        // Create the exit button
-        const exitButton = document.createElement('button');
-        exitButton.style.position = 'fixed';
-        exitButton.style.top = '50%'; 
-        exitButton.style.right = '0px'; 
-        exitButton.style.transform = 'translateY(-50%)'; 
-        exitButton.style.zIndex = '999'; 
-        exitButton.style.border = '3px solid black'
-        exitButton.style.borderRadius = '50%'; 
-        exitButton.style.width = '40px'; 
-        exitButton.style.height = '40px'; 
-        exitButton.style.background = '#ffcc00aa'; 
-        exitButton.style.opacity = 0.0;
+        this.currentViewMode = this.ViewMode.Campus
 
-        // Create the img element inside the button
-        const exitImg = document.createElement('img');
-        exitImg.src = 'Icons/exit.png'; 
-        exitImg.style.width = '100%'; 
-        exitImg.style.height = '100%'; 
-        exitImg.style.borderRadius = '50%'; 
 
-        // Append the img element to the button
-        exitButton.appendChild(exitImg);
 
-        // Add event listener
-        exitButton.addEventListener('click', () => {
+        this.exit2CampusButton = createUtilButton(() => {
             this.ToggleCampusView()
-        });
+        }, 'exit.png')
 
-        return exitButton;
+        this.exit2LevelButton = createUtilButton(() => {
+            this.ToggleOnLevel(this.currentLevelKey)
+        }, 'logout.png')
+        this.exit2LevelButton.style.background = '#99ff00aa'; 
+        this.exit2LevelButton.style.top = '46%'; 
+
+        this.panoramaViewPicUrl = 'EnvMap/classroom_1_4k.jpg'
+        this.panoramaSwitchButton = createUtilButton(() => {
+            let renderManager = new RendererManager()
+            console.log('current view mode ' + this.currentViewMode)
+            if(this.currentViewMode == this.ViewMode.Room){
+                renderManager.switch2Panorama(this.panoramaViewPicUrl)
+                this.currentViewMode = this.ViewMode.Panorama
+            }else{
+                renderManager.switch2Normal()
+                this.currentViewMode = this.ViewMode.Room
+            }
+            this.switchDisplayMode(this.currentViewMode)
+        }, 'video_camera.png')
+        this.panoramaSwitchButton.style.background = '#99ff00aa'; 
+        this.panoramaSwitchButton.style.top = '54%'; 
     }
 
     loadScene() {
@@ -130,11 +134,15 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         super.loadScene()
 
         // Append the button to the body
-        document.body.appendChild(this.exitButton);
+        document.body.appendChild(this.exit2CampusButton);
+        document.body.appendChild(this.exit2LevelButton);
+        document.body.appendChild(this.panoramaSwitchButton);
     }
 
     unloadScene() {
-        this.exitButton.remove();
+        this.exit2CampusButton.remove();
+        this.exit2LevelButton.remove();
+        this.panoramaSwitchButton.remove();
         if(this.circularButtons ) this.circularButtons.destroy()
     }
 
@@ -164,6 +172,12 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         points = []
     }
 
+
+
+
+
+    //================================================================================= begin state machine
+
     //take in an architecture name load the seperate level building by the name and show the button group
     /**
         分层建筑命名规范
@@ -173,11 +187,11 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         楼层内标注要善用原点
     * */
     ToggleBuildingView(ArchitectureName) {
+
         
-        window.debug_ui.add(yGapUniform,'value').min(0.0).max(10.0).name('gap')
-        window.debug_ui.add(fadeUniform,'value').min(0.0).max(20.0).name('fade')
-
-
+        
+        // window.debug_ui.add(yGapUniform,'value').min(0.0).max(10.0).name('gap')
+        // window.debug_ui.add(fadeUniform,'value').min(0.0).max(20.0).name('fade')
 
         let archKey = translateName[ArchitectureName]
 
@@ -187,16 +201,14 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         }
 
         //show exit button
-        this.exitButton.style.opacity = 1.0;
+        this.switchDisplayMode(this.ViewMode.Level)
 
-        // Object.keys(ArchitectureShells).forEach((key) => {
-        //     if(key == archKey)console.log('shellBuildings[key]')
-        //     console.log(ArchitectureShells[key])
-        // })
-            
+        
+this.levelFocusMode(false)
+
         //if model can be load
         if(archKey){
-            //turn the origional group off
+            //turn the origional shell group off
             this.togglingArchShellGroup = ArchitectureShells[archKey]
             console.log(this.togglingArchShellGroup)
             for(let i=0; i<this.togglingArchShellGroup.length; i++){
@@ -256,14 +268,10 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                                     selectUniform.value = false
                                 },
                                 customFunction:  () => {
-                                    let cameraManager = new SceneCameraManager()
-                                    let controlsManager = new ControlsManager()
-
                                     let tagWorldPos = new THREE.Vector3()
                                     newTag.getLabel().getWorldPosition(tagWorldPos)
 
-                                    cameraManager.hopToPosition(tagWorldPos.x, tagWorldPos.y + 20, tagWorldPos.z)
-                                    controlsManager.lerpToOrbitTarget(tagWorldPos.x - 5, tagWorldPos.y, tagWorldPos.z - 5)
+                                    this.ToggleOnRoom(tagWorldPos, child.name)
                                 }
                             })
 
@@ -280,15 +288,13 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
                             //extra utility set color by room name
                             if(child.name.includes('教室')){
-                                console.log('child.name.includes(教室)')
+                                //console.log('child.name.includes(教室)')
                                 newTag.setBackgroundColor(classroomColor)
-                                //colorUniform = new THREE.Uniform(new THREE.Vector3(0.96, 0.11, 0.39))
                                 colorUniform = new THREE.Uniform(hexToVector3(classroomColor))
                             }
                             else if(child.name.includes('讨论')){
-                                console.log('child.name.includes(讨论)')
+                                //console.log('child.name.includes(讨论)')
                                 newTag.setBackgroundColor(meetingroomColor)
-                                //colorUniform = new THREE.Uniform(new THREE.Vector3(0.0, 0.58, 0.93))
                                 colorUniform = new THREE.Uniform(hexToVector3(meetingroomColor))
                             }
 
@@ -307,7 +313,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                                 //transparent: true
                             })
                             child.renderOrder = Number.NEGATIVE_INFINITY;
-
+                            this.roomFrames.push(child)
                         }
 
                     }
@@ -316,8 +322,8 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                 
             
 
-                console.log(ss);
-                console.log(levels);
+                //console.log(ss);
+                //console.log(levels);
                 this.LevelModels = levels
 
                 //clear circular buttons if existing
@@ -340,6 +346,8 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
                     let cameraManager = new SceneCameraManager()
                     let controlsManager = new ControlsManager()
+
+                    this.levelFocusMode(false)
                     
                     cameraManager.hopToPosition(this.currentCameraPos.x, this.currentCameraPos.y, this.currentCameraPos.z)
                     controlsManager.lerpToOrbitTarget(this.currentLootAt.x, this.currentLootAt.y,this.currentLootAt.z)
@@ -368,8 +376,10 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
     //close the button group and return to the full campus view
     ToggleCampusView(){
 
+        this.roomFrames = []
+
         //hide exit, remove circular
-        this.exitButton.style.opacity = 0.0;
+        this.switchDisplayMode(this.ViewMode.Campus)
         if(this.circularButtons) this.circularButtons.destroy()
 
         //unhide tags
@@ -394,9 +404,6 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
             value: 600.0,
         });
 
-        //empty the intersection model
-        this.intersectionModels = []
-
         //remove level model
         modelLoader.unloadModel(this.togglingArchLevelGroup)
 
@@ -407,6 +414,175 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
             }
         }
         
+    }
+
+    ToggleOnLevel(levelKey){
+
+        this.switchDisplayMode(this.ViewMode.Level)
+        this.circularButtons.disable(false)
+
+        console.log('Toggle on ' + levelKey)
+        this.currentLevelKey = levelKey
+
+        let level = this.LevelModels[levelKey]
+        let originalPos = this.LevelOrigionalPositions[levelKey]
+
+        this.restoreAllLevel(levelKey)
+        this.setFrameVisibility(true)
+
+        //show the tag of the current level
+        let levelTagArr = levelTags[levelKey]
+        if(levelTagArr){
+            for(let i=0; i<levelTagArr.length; i++){
+                levelTagArr[i].unhide()
+                levelTagArr[i].shouldForceHide(false)
+            }
+        }
+        
+
+        //move current level and camera to position
+        let newPos = new THREE.Vector3(
+            originalPos.x + displayTransform.x,
+            originalPos.y + displayTransform.y,
+            originalPos.z + displayTransform.z
+        )
+        
+        let cameraManager = new SceneCameraManager()
+        let controlsManager = new ControlsManager()
+
+        gsap.to(level.position,{
+            duration: 1,
+            x: newPos.x,
+            y: newPos.y,
+            z: newPos.z,
+            onComplete: ()=>{
+                this.SH_Ground.visible = false;
+                this.SH_Shell.visible = false;
+            }
+        })
+        cameraManager.hopToPosition( 
+            newPos.x + 20,
+            newPos.y + 35,
+            newPos.z - 10,
+        )
+
+        controlsManager.lerpToOrbitTarget(
+            newPos.x,
+            newPos.y,
+            newPos.z - 10,
+        )
+
+
+
+        //reset render order
+        // let sceneManager = new SceneManager()
+        // sceneManager.RecalculateRenderOrder()
+
+    }
+
+    ToggleOnRoom(tagWorldPos, roomName){
+
+        if(roomName.includes('教室')){
+            this.panoramaViewPicUrl = 'EnvMap/classroom_1_4k.jpg'
+        }
+        else if(roomName.includes('讨论')){
+            this.panoramaViewPicUrl = 'EnvMap/meetingroom_1_4k.jpg'
+        }
+        
+        this.switchDisplayMode(this.ViewMode.Room)
+        this.circularButtons.disable(true)
+
+        let cameraManager = new SceneCameraManager()
+        let controlsManager = new ControlsManager()
+
+        cameraManager.hopToPosition(tagWorldPos.x + 5, tagWorldPos.y + 9, tagWorldPos.z + 5)
+        controlsManager.lerpToOrbitTarget(tagWorldPos.x - 1, tagWorldPos.y, tagWorldPos.z - 1)
+
+        this.setFrameVisibility(false)
+
+
+        //TO DO !!!!!!!!!!!
+        //load the devices model
+        //search for it
+        //apply transform
+        // modelLoader.Load2Scene('CEIBS_SH/Room_Device/', 'A3-117_Devices', 'glb', (modelPtr) => {
+        //     modelPtr.position.x += displayTransform.x
+        //     modelPtr.position.y += displayTransform.y
+        //     modelPtr.position.z += displayTransform.z
+
+        //     modelPtr.traverse((child) => {
+        //         this.interactiveModelManager.addInteractiveModel(child)
+        //     })
+        // }, true)
+    }
+
+    //================================================================================= end state machine
+
+
+
+
+    //================================================================================= begin state machine support
+
+    switchDisplayMode(currentMode){
+
+        console.log('switch to ' + currentMode)
+
+        this.currentViewMode = currentMode
+        this.levelFocusMode(false)
+
+        if(currentMode == this.ViewMode.Campus){
+
+            this.exit2CampusButton.style.opacity = 0.0;
+            this.exit2CampusButton.style.pointerEvents = 'none';
+
+            this.exit2LevelButton.style.opacity = 0.0;
+            this.exit2LevelButton.style.pointerEvents = 'none';
+
+            this.panoramaSwitchButton.style.opacity = 0.0
+            this.panoramaSwitchButton.style.pointerEvents = 'none';
+
+        }
+
+        else if(currentMode == this.ViewMode.Level){
+
+            this.exit2CampusButton.style.opacity = 1.0;
+            this.exit2CampusButton.style.pointerEvents = 'all';
+
+            this.exit2LevelButton.style.opacity = 0.0;
+            this.exit2LevelButton.style.pointerEvents = 'none';
+
+            this.panoramaSwitchButton.style.opacity = 0.0
+            this.panoramaSwitchButton.style.pointerEvents = 'none';
+
+            this.levelFocusMode(true)
+
+        }
+
+        else if(currentMode == this.ViewMode.Room){
+
+            this.exit2CampusButton.style.opacity = 0.0;
+            this.exit2CampusButton.style.pointerEvents = 'none';
+
+            this.exit2LevelButton.style.opacity = 1.0;
+            this.exit2LevelButton.style.pointerEvents = 'all';
+
+            this.panoramaSwitchButton.style.opacity = 1.0
+            this.panoramaSwitchButton.style.pointerEvents = 'all';
+
+        }
+
+        else if(currentMode == this.ViewMode.Panorama){
+
+            this.exit2CampusButton.style.opacity = 0.0;
+            this.exit2CampusButton.style.pointerEvents = 'none';
+
+            this.exit2LevelButton.style.opacity = 0.5;
+            this.exit2LevelButton.style.pointerEvents = 'none';
+
+            this.panoramaSwitchButton.style.opacity = 1.0
+            this.panoramaSwitchButton.style.pointerEvents = 'all';
+
+        }
     }
 
     restoreAllLevel(levelKey){
@@ -436,64 +612,110 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         })
     }
 
-    ToggleOnLevel(levelKey){
-        console.log('Toggle on ' + levelKey)
-        let level = this.LevelModels[levelKey]
-        let originalPos = this.LevelOrigionalPositions[levelKey]
-
-        this.restoreAllLevel(levelKey)
-
-        //show the tag of the current level
-        let levelTagArr = levelTags[levelKey]
-        if(levelTagArr){
-            for(let i=0; i<levelTagArr.length; i++){
-                levelTagArr[i].unhide()
-                levelTagArr[i].shouldForceHide(false)
-            }
+    setFrameVisibility(visible){
+        for(let i=0; i< this.roomFrames.length; i++){
+            //console.log(this.roomFrames[i])
+            this.roomFrames[i].visible = visible
         }
-        
-
-        //move current level and camera to position
-        let newPos = new THREE.Vector3(
-            originalPos.x - 40,
-            originalPos.y + 60,
-            originalPos.z - 40
-        )
-        
-        let cameraManager = new SceneCameraManager()
-        let controlsManager = new ControlsManager()
-
-        gsap.to(level.position,{
-            duration: 1,
-            x: newPos.x,
-            y: newPos.y,
-            z: newPos.z
-        })
-        cameraManager.hopToPosition( 
-            newPos.x + 20,
-            newPos.y + 35,
-            newPos.z - 10,
-        )
-
-        controlsManager.lerpToOrbitTarget(
-            newPos.x,
-            newPos.y,
-            newPos.z - 10,
-        )
-
-        //reset render order
-        // let sceneManager = new SceneManager()
-        // sceneManager.RecalculateRenderOrder()
-
     }
+
+    //================================================================================= end state machine support
 
     CreateModels() {
         modelLoader = new ModelLoader(this.scene)
 
-        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix2', 'glb', (modelPtr) => {
+        const poolColors = {
+
+        } 
+        
+        poolColors.waterColor = '#6785a8'
+        poolColors.tideColor = '#bdeaff'
+
+        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix5', 'glb', (modelPtr) => {
             modelPtr.traverse((child) => {
                 child.receiveShadow = true
+                //console.log(child.name)
+
+                if(child.name.includes('Base')){
+                    console.log('base found')
+                    child.material.transparent = false
+                    child.position.y -= 2
+                }
+
+                if(child.name.includes('Lake') && child.isMesh){
+                    //add the water logic
+                    child.material.onBeforeCompile = (shader) => {
+
+                        shader.uniforms.uTime = timeUniform;
+                        shader.uniforms.uWaterColor = new THREE.Uniform(new THREE.Color(poolColors.waterColor));
+                        shader.uniforms.uTideColor = new THREE.Uniform(new THREE.Color(poolColors.tideColor));
+
+                        
+                        window.debug_ui.addColor(poolColors, 'waterColor')
+                            .onChange(() =>
+                            {
+                                shader.uniforms.uWaterColor.value.set(poolColors.waterColor)
+                            })
+
+                        window.debug_ui.addColor(poolColors, 'tideColor')
+                            .onChange(() =>
+                            {
+                                shader.uniforms.uTideColor.value.set(poolColors.tideColor)
+                            })
+
+                        shader.vertexShader = `
+                            varying vec3 vWorldPosition;
+                            varying vec2 vUv;
+
+                            uniform float uTime;
+
+                            ${shader.vertexShader}
+                        `;
+
+                        shader.vertexShader = shader.vertexShader.replace(
+                            '#include <begin_vertex>',
+                            `
+                            vec4 worldPosition1 = modelMatrix * vec4(position, 1.0);
+                            vWorldPosition = worldPosition1.xyz;
+
+                            vUv = uv;
+
+                            #include <begin_vertex>
+                            `
+                        );
+
+                        shader.fragmentShader = `
+                            uniform float uTime;
+                            uniform vec3 uWaterColor;
+                            uniform vec3 uTideColor;
+                            
+                            varying vec3 vWorldPosition;
+                            varying vec2 vUv;
+
+                            ${perlinNoise}
+
+                            ${shader.fragmentShader}
+                        `;
+
+                        shader.fragmentShader = shader.fragmentShader.replace(
+                            '#include <dithering_fragment>',
+                            `
+                            vec3 color = uWaterColor;
+                            vec2 noiseSeed = vUv;
+                            noiseSeed.x += sin(uTime) * 5.0;
+                            float noise = sin(cnoise(noiseSeed / (50.0 + sin(vWorldPosition.x) * 4.0) ) * 20.0);
+                            noise = smoothstep(0.0, 0.5, noise);
+
+                            gl_FragColor = vec4(mix(gl_FragColor.rgb, uTideColor, noise) , 1.0);
+                            #include <dithering_fragment>
+                            `
+                        );
+                        //console.log(shader.fragmentShader)
+                    }
+                }
+
             })
+            this.SH_Ground = modelPtr
         })
 
         modelLoader.Load2Scene('CEIBS_SH/Supportive/', 'Building_Points', 'glb', (modelPtr) => {
@@ -513,6 +735,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                     let newTag = new FloatTag2D({
                         textContent: child.name,
                         position: child.position.clone(),
+                        customWidth: 100,
                         customFunction: () => {
                             let currentBuildingName = child.name;
                             console.log(currentBuildingName)
@@ -560,16 +783,21 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
             for (let i = 0; i < tags.length; i++) {
                 this.scene.add(tags[i].getLabel());
             }
+
+            this.SH_BuildingPoints = modelPtr
         })
 
-        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_SH_UnifiedModel5_ms', 'glb', (modelPtr) => {
+        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_SH_UnifiedModel5_ms2', 'glb', (modelPtr) => {
             modelPtr.traverse((child) => {
                 //console.log(child.name);
 
-                if (child.name.includes('Transparent')) {
+                if (child.name.includes('Transparent') && child.isMesh) {
                     child.renderOrder = Number.NEGATIVE_INFINITY;
+                    child.material.metalness = 1.0
+                    child.material.roughness = 1.0
                 } else {
                     child.castShadow = true;
+                    //child.receiveShadow = true
                 }
 
                 const tokens = child.name.split('_');
@@ -584,6 +812,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
                 //shader injection
                 if (child.isMesh) {
+
                     child.material.onBeforeCompile = (shader) => {
                         shader.uniforms.distanceThreshold = distanceThreshold;
                         shader.uniforms.distancePoint = distancePoint;
@@ -625,12 +854,70 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                             `
                         );
                     };
+
+                    
                 }
+
             });
+
+            this.SH_Shell = modelPtr
         });
 
-        let axisHelper = new THREE.AxesHelper(500)
-        this.scene.add(axisHelper)
+        // let axisHelper = new THREE.AxesHelper(500)
+        // this.scene.add(axisHelper)
+
+        this.scene.environment.intensity = 0.5;
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(100, 250, -125);
+        directionalLight.target.position.set(100, 0, 100);
+        directionalLight.castShadow = true;
+
+        // Adjust the shadow camera properties
+        directionalLight.shadow.camera.left = -400;
+        directionalLight.shadow.camera.right = 250;
+        directionalLight.shadow.camera.top = 250;
+        directionalLight.shadow.camera.bottom = -250;
+        directionalLight.shadow.camera.near = 0.1;
+        directionalLight.shadow.camera.far = 500;
+
+        // Set the shadow camera's position and orientation to match the light
+        directionalLight.shadow.camera.position.copy(directionalLight.position);
+        directionalLight.shadow.camera.lookAt(directionalLight.target.position);
+
+        // Update the camera helper to reflect changes
+        directionalLight.shadow.camera.updateProjectionMatrix();
+        this.lighthelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+        //this.scene.add(this.lighthelper);
+
+        this.scene.add(directionalLight);
+        this.scene.add(directionalLight.target);
+    }
+
+    levelFocusMode( shouldFocus ){
+        this.SH_Ground.visible = !shouldFocus;
+        this.SH_Shell.visible = !shouldFocus;
+        this.SH_BuildingPoints.visible = !shouldFocus
+
+        if(shouldFocus){
+            this.levelBasePlane = new THREE.Mesh(
+                new THREE.PlaneGeometry(1000,1000),
+                new THREE.MeshBasicMaterial({
+                    color: '#cccccc' 
+                })
+            )
+            this.scene.add(this.levelBasePlane)
+            this.levelBasePlane.rotation.x = - Math.PI * 0.5
+            this.levelBasePlane.position.set(43, 52, 116)
+        }else{
+            if(this.levelBasePlane){
+                this.scene.remove(this.levelBasePlane)
+                this.levelBasePlane = null
+            }
+        }
+    }
+
+    GenerateLight(){
+        console.log('dont override')
     }
 
     setIdealCameraLocation(camera) {

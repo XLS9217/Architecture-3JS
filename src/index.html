@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="./panels.css">
 </head>
 <body>
+
+    
+    <canvas id="3D_Canvas" class="webgl"></canvas>
+    <canvas id="2D_Canvas" class="webgl" style=' pointer-events: none;'></canvas>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.0/flv.min.js"></script>
     <script type="module" src="node_modules/spin.js/spin.js"></script>
 
@@ -26,6 +31,20 @@
     ></script>
 
     <div id="joystick-container" style="position: absolute; bottom: 10%; left: 25%;  pointer-events: all;"></div>
+
+    <div id = "top_bar"> 
+        <div class="environment_button_holder">
+            <button id="day" style="background-color: #00f7ff;" class="environment_button"> </button>
+            <button id="afternoon" style="background-color: rgb(255, 210, 64);" class="environment_button"> </button>
+            <button id="night" style="background-color: rgb(0, 96, 180);" class="environment_button"> </button>
+        </div>
+
+        <div class="weather_panel">
+            <button id="weather_snow"  class="weather_button"> <img src="/Icons/snow_icon.png" alt="Icon" class="weather_img"> </button>
+            <button id="weather_rain" class="weather_button"><img src="/Icons/rain_icon.png" alt="Icon" class="weather_img"> </button>
+            <button id="weather_none" class="weather_button"><img src="/Icons/no_icon.png" alt="Icon" class="weather_img"> </button>
+        </div>
+    </div>
 
     <div class="HUD">
         <div class="button_holder">
@@ -68,17 +87,7 @@
         </div>
 
 
-        <div class="environment_button_holder">
-            <button id="day" style="background-color: #00f7ff;" class="environment_button"> </button>
-            <button id="afternoon" style="background-color: rgb(255, 210, 64);" class="environment_button"> </button>
-            <button id="night" style="background-color: rgb(0, 96, 180);" class="environment_button"> </button>
-        </div>
-
-        <div class="weather_panel">
-            <button id="weather_snow"  class="weather_button"> <img src="/Icons/snow_icon.png" alt="Icon" class="weather_img"> </button>
-            <button id="weather_rain" class="weather_button"><img src="/Icons/rain_icon.png" alt="Icon" class="weather_img"> </button>
-            <button id="weather_none" class="weather_button"><img src="/Icons/no_icon.png" alt="Icon" class="weather_img"> </button>
-        </div>
+        
 
 
 
@@ -96,8 +105,6 @@
 
     <div id="point_holder"></div>
 
-    <canvas class="webgl"></canvas>
-    <canvas id="2D_Canvas" class="webgl" style=' pointer-events: none;'></canvas>
 
     <div class="loading-bar"></div>
 
@@ -112,14 +119,6 @@
     <div class="point point-2">
         <div class="label" id="title-3">3</div>
         <div class="text" id="text-3">Cameras supporting night vision and heat vision with automatic adjustment.</div>
-    </div>
-
-    <!--
-        points in my scene
-    -->
-    <div class="point green-house">
-        <div class="label">gre</div>
-        <div class="text">This is a green house</div>
     </div>
     
     <script type="module" src="./main.js"></script>

@@ -1,45 +1,40 @@
 # LingSheng Xu
 
-# dictionary
+# src
 
-scene manager:
-Arch ---- the shenzhen single architecutre
-L1 ---- level 1 of shenzhend single architecture
-L2 ---- level 2 of shenzhend single architecture
-L3 ---- level 3 of shenzhend single architecture
-Base ---- basement of shenzhend single architecture
-Room ---- the test class room that can be access from base room
+# ./2DElements
+    用于在场景内生成一些html按钮
 
-camera:
-shgbit_door ---- the main door of 24 gem building
-
-dynamicLine:
-BaseCamera ---- the camera in the Room
-
-# ./2DElements  
-    2d html elements in the scene
-
+# ./Particles
+    粒子效果
 
 # ./SceneGraphs
-    graphs that represent a scene
-    * load model
-    * help set camera location
+    各种场景，第一版的加载逻辑，重构的时候别tm用这个逻辑了，直接建立新场景替换，加载的时候同步减载。
 
+# ./Shaders
+    着色器
 
 # ./Utils
-    helper classes
+    工具类
 
-# ./Utils/InteractiveModelManager.js
-    manage models that can be clicked
-
-# ./Utils/ModelLoader.js
-    manage the loading effects and load models
-
-# ./Utils/SceneManger.js
-    manage the change of the scenes
 
 分层建筑命名规范
     CEIBS_Level_{楼层名字}
     Frame_{楼层名字}_{房间名字} (房间名字将被用以染色)
     记住要重设原点
     楼层内标注要善用原点
+
+重构
+    命名规范: 
+        类：仿照ue5命名规范，除了工具类，开头都要加 [大类简写]_ 比如 AS_RoomDisplay
+        函数：驼峰，首字母小写
+    文件结构：
+        src:
+            着色器
+            引擎管理
+            定制化-（可去掉）
+        static:
+            引擎需要
+            定制化-（可去掉）
+    逻辑：
+        modelLoader：大改，针对多场景，多后缀

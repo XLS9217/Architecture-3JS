@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+:root {
+  --top_bar_height: 5%;
+}
+
 html,
 body
 {
@@ -15,6 +19,8 @@ body
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
     outline: none;
 }
 
@@ -35,6 +41,14 @@ body
     transform: scaleX(0);
     transform-origin: 100% 0;
     transition: transform 1.5s ease-in-out;
+}
+
+.top_bar{
+  
+    height: 5%;
+    top: 5px;
+    background-color: #4c4c4c;
+    z-index: 999;
 }
 
 .HUD{

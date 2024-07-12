@@ -8,8 +8,8 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import FloatTag2D from "../2DElements/FloatTag2D";
 import { element } from "three/examples/jsm/nodes/Nodes.js";
 import SceneGraph from "./SceneGraph";
-import SceneManager from "../Utils/SceneManager";
-import SceneCameraManager from "../Utils/CameraManager";
+import AS_RoomDisplay from "../AdvenceScenes/AS_RoomDisplay";
+import RendererManager from "../Utils/RenderManager";
 
 let instance = null
 let modelLoader = null
@@ -66,7 +66,21 @@ export default class TestScene extends SceneGraph{
         })
 
 
+        
+        let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/displayRoom.glb')
+        let rendererManager = new RendererManager()
 
+        
+        //classRoomDisplay.loadScene()
+        let toggle = false;
+        window.gui_obj.toggleRoomDisplay = () =>
+        {
+            if(toggle) classRoomDisplay.unloadScene()
+            else classRoomDisplay.loadScene()
+        
+            toggle = !toggle
+        }
+        window.debug_ui.add(window.gui_obj, 'toggleRoomDisplay')
 
         
 

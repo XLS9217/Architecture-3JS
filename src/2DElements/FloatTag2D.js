@@ -29,7 +29,7 @@ export default class FloatTag2D {
         point2D.style.left = '-20px';
         point2D.style.width = this.defaultWidth + 'px';
         point2D.style.height = this.defaultHeight + 'px';
-        point2D.style.borderRadius = '25%';
+        point2D.style.borderRadius = '4px';
         point2D.style.background = this.defaultBackground;
         point2D.style.border = '1px solid #ffffff77';
         point2D.style.color = '#ffffff';

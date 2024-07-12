@@ -121,6 +121,16 @@ export default class CircularButtonContainer {
         }
     }
 
+    disable(shouldDisable){
+        if(shouldDisable){
+            this.container.style.pointerEvents = 'none'
+            this.container.style.opacity = 0.5
+        }else{
+            this.container.style.pointerEvents = 'all'
+            this.container.style.opacity = 1.0
+        }
+    }
+
     setButtonAppearance(index, appearance) {
         if (index >= 0 && index < this.numButtons) {
             const button = this.buttonArray[index];
