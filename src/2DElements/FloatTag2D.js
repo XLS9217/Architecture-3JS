@@ -11,6 +11,7 @@ export default class FloatTag2D {
         logicHide = true, //hide by some logic
         minimunPointDistance = 400,
         customWidth = 70,
+        autoWidth = false,
         customHeight = 30,
         customFontSize = 12
     }) {
@@ -27,7 +28,10 @@ export default class FloatTag2D {
         point2D.style.position = 'absolute';
         point2D.style.top = '-20px';
         point2D.style.left = '-20px';
-        point2D.style.width = this.defaultWidth + 'px';
+
+        if(autoWidth) point2D.style.width = this.defaultWidth + 'px';
+        else point2D.style.width = 'auto';
+
         point2D.style.height = this.defaultHeight + 'px';
         point2D.style.borderRadius = '4px';
         point2D.style.background = this.defaultBackground;

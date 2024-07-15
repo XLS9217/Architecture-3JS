@@ -11,12 +11,13 @@ import ViperWaveFragment from '../Shaders/FragmentShaders/ViperWave_Fragment.gls
 import SceneManager from '../Utils/SceneManager'
 import SceneCameraManager from '../Utils/CameraManager'
 import { distance } from 'three/examples/jsm/nodes/Nodes.js'
+import InteractiveModelMangaer from '../Utils/InteractiveModelMangaer'
 
 const gltfLoader = new GLTFLoader()
 
 export default class AS_RoomDisplay{
 
-    constructor(modelPath){
+    constructor(modelPath, size){
         
         this.scene = new THREE.Scene()
         this.modelPath = modelPath
@@ -25,6 +26,13 @@ export default class AS_RoomDisplay{
 
         this.debugFolder = null
         this.walls = []
+
+        this.size = 1.0
+        if(size) this.size = size
+
+        this.deviceReference = {}
+
+        this.interactiveModelManager = new InteractiveModelMangaer()
     }
 
     loadScene(){
@@ -39,10 +47,13 @@ export default class AS_RoomDisplay{
             this.modelPath,
             (gltf) =>
             {
+                //add logic to model
                 const model = gltf.scene
                 this.scene.add(model)
+                model.scale.set(this.size, this.size, this.size)
                 this.modelCustomize(model)
                 
+                //tell rendererManager to render this
                 let rendererManager = new RendererManager()
                 rendererManager.switch2TempScene(this)
             }
@@ -111,7 +122,7 @@ export default class AS_RoomDisplay{
 
         const viperGridPlane = new THREE.Mesh(planeGeometry, viperShader);
         viperGridPlane.rotation.x = -Math.PI / 2;
-        viperGridPlane.position.y -= 5.0
+        viperGridPlane.position.y -= 10.0
         this.scene.add(viperGridPlane);
 
 
@@ -127,14 +138,14 @@ export default class AS_RoomDisplay{
      */
     modelCustomize( model ){
         model.traverse((child) => {
-            if(child.isMesh){
-                let tokens = child.name.split('_')
+            let tokens = child.name.split('_')
+            //if(child.isMesh){
                 /**
                  * Click z in blender, then rename group to N S W E
                  * Use face to decide which to not visible
                  */
                 if(tokens[0] == 'Wall'){
-                    console.log('loading wall ' + child.name)
+                    //console.log('loading wall ' + child.name)
                     let facingReference = {
                         'N' : new THREE.Vector3(0, 0, -1),
                         'S' : new THREE.Vector3(0, 0, 1),
@@ -146,8 +157,16 @@ export default class AS_RoomDisplay{
                         normal: facingReference[tokens[1]]
                     })
                 }
-            }
+                else if(tokens[0] == "Device"){
+                    if(!this.deviceReference[tokens[1]]){
+                        this.deviceReference[tokens[1]] = []
+                    }
+                    this.deviceReference[tokens[1]].push(child)
+                    this.interactiveModelManager.addInteractiveModel(child)
+                }
+            //}
         })
+        console.log(this.deviceReference)
     }
 
     destroy(){

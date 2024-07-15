@@ -56,7 +56,8 @@ let meetingroomColor = 0x00567b
 let translateName = {
     "教学楼1":"Edu1",
     "教学楼2":"Edu2",
-    "教学楼3":"Edu3"
+    "教学楼3":"Edu3",
+    "段永平教学中心": "DYP"
 }
 
 export default class CEIBS_Shanghai_Main extends SceneGraph {
@@ -259,6 +260,7 @@ this.levelFocusMode(false)
                                 position: child.position.clone(),
                                 logicHide: false,
                                 minimunPointDistance: 90,
+                                autoWidth: true,
                                 onHoverFunction : ()=>{
                                     //console.log('room ' + child.name + ' hovered')
                                     selectUniform.value = true
@@ -629,9 +631,9 @@ this.levelFocusMode(false)
         } 
         
         poolColors.waterColor = '#6785a8'
-        poolColors.tideColor = '#bdeaff'
+        poolColors.tideColor = '#7ea6b9'
 
-        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix5', 'glb', (modelPtr) => {
+        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix4', 'glb', (modelPtr) => {
             modelPtr.traverse((child) => {
                 child.receiveShadow = true
                 //console.log(child.name)
@@ -639,6 +641,7 @@ this.levelFocusMode(false)
                 if(child.name.includes('Base')){
                     console.log('base found')
                     child.material.transparent = false
+                    child.renderOrder = 1
                     child.position.y -= 2
                 }
 
@@ -736,6 +739,7 @@ this.levelFocusMode(false)
                         textContent: child.name,
                         position: child.position.clone(),
                         customWidth: 100,
+                        autoWidth: true,
                         customFunction: () => {
                             let currentBuildingName = child.name;
                             console.log(currentBuildingName)

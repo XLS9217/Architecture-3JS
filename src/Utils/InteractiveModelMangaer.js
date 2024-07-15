@@ -26,6 +26,10 @@ export default class InteractiveModelMangaer{
         this.interactiveModel_data = []
     }
 
+    update(){
+        
+    }
+
     clearSceneData(){
         console.log("clear scene data")
         this.interactiveModels = [];

@@ -86,7 +86,6 @@ const rendererManager = new RendererManager(
 //SceneMangaer
 const sceneManager = new SceneManager(scene, camera, controlsManager.getCurrentControl())
 sceneManager.currentControl = controlsManager.getCurrentControl()
-//sceneManager.LoadScene('Arch')//======================================================
 sceneManager.LoadScene('test')
 sceneManager.UpdateResolutionUniform(sizes.resolution)
 sceneManager.ChangeWeather('none')
@@ -263,6 +262,9 @@ const tick = () =>
 
     //Update 2d canvas
     canvas2D.updateCanvas2D()
+
+    //Mouse Model Interaction Logic
+    interactiveModelManager.update()
 
     //Raycast with mouse click
     raycaster.setFromCamera(mouse, camera)

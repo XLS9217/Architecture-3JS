@@ -67,7 +67,8 @@ export default class TestScene extends SceneGraph{
 
 
         
-        let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/displayRoom.glb')
+        //let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/displayRoom.glb')
+        let classRoomDisplay = new AS_RoomDisplay('CEIBS_SH/Room_Device/ClassroomDisplay.glb', 5.0)
         let rendererManager = new RendererManager()
 
         
