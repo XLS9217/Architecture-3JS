@@ -655,10 +655,11 @@ this.levelFocusMode(false)
 
                         
                         window.debug_ui.addColor(poolColors, 'waterColor')
-                            .onChange(() =>
-                            {
-                                shader.uniforms.uWaterColor.value.set(poolColors.waterColor)
-                            })
+                            .onChange(() => {
+                                const waterColor = new THREE.Color(poolColors.waterColor);
+                                shader.uniforms.uWaterColor.value.copy(waterColor);
+                                child.material.color.set(poolColors.waterColor);
+                            });
 
                         window.debug_ui.addColor(poolColors, 'tideColor')
                             .onChange(() =>
@@ -699,6 +700,14 @@ this.levelFocusMode(false)
 
                             ${shader.fragmentShader}
                         `;
+
+                        shader.fragmentShader = shader.fragmentShader.replace(
+                            'void main(){',
+                            `
+                                void main(){
+                                    gl_FragColor = uWaterColor;
+                            `
+                        );
 
                         shader.fragmentShader = shader.fragmentShader.replace(
                             '#include <dithering_fragment>',
