@@ -13,9 +13,16 @@ import SceneCameraManager from '../Utils/CameraManager'
 import { distance } from 'three/examples/jsm/nodes/Nodes.js'
 import InteractiveModelMangaer from '../Utils/InteractiveModelMangaer'
 
+import DeviceFrameFragment from '../Shaders/FragmentShaders/DeviceSelectFrame_Fragment.glsl'
+import DeviceFrameVertex from '../Shaders/VertexShaders/DeviceSelectFrame_Vertex.glsl'
+
 const gltfLoader = new GLTFLoader()
 
-export default class AS_RoomDisplay{
+let baseColor = new THREE.Uniform(new THREE.Vector3(0.0, 1.0, 0.0))
+let mixColor  = new THREE.Uniform(new THREE.Vector3(0.0, 0.5, 0.0))
+
+
+export default class AS_RoomDisplay{ 
 
     constructor(modelPath, size){
         
@@ -33,6 +40,7 @@ export default class AS_RoomDisplay{
         this.deviceReference = {}
 
         this.interactiveModelManager = new InteractiveModelMangaer()
+        this.sceneManager = new SceneManager()
     }
 
     loadScene(){
@@ -111,7 +119,7 @@ export default class AS_RoomDisplay{
             fragmentShader: ViperWaveFragment,
             uniforms: {
                 uTime: sceneManager.GetTimeUniform(),
-                uWaveStrength: new THREE.Uniform(1.5)
+                uWaveStrength: new THREE.Uniform(1.5),
             },
             side: THREE.DoubleSide,
             transparent: true,
@@ -157,16 +165,49 @@ export default class AS_RoomDisplay{
                         normal: facingReference[tokens[1]]
                     })
                 }
-                else if(tokens[0] == "Device"){
-                    if(!this.deviceReference[tokens[1]]){
-                        this.deviceReference[tokens[1]] = []
+                else if (tokens[0] == "Device") {
+                    console.log(child.name);
+                    if (!this.deviceReference[tokens[1]]) {
+                        this.deviceReference[tokens[1]] = [];
                     }
-                    this.deviceReference[tokens[1]].push(child)
-                    this.interactiveModelManager.addInteractiveModel(child)
+                    this.deviceReference[tokens[1]].push(child);
+                
+                    let model_data = this.interactiveModelManager.addInteractiveModel(child);
+                
+                    // Create a wireframe sphere at the world position of the child
+                    const sphereGeometry = new THREE.SphereGeometry(1.5, 4, 4); // Adjust size and detail as needed
+                    const wireframeMaterial = new THREE.ShaderMaterial({
+                         vertexShader: DeviceFrameVertex,
+                         fragmentShader: DeviceFrameFragment,
+                         uniforms: {
+                            uTime : this.sceneManager.GetTimeUniform(),
+                            uBaseColor: baseColor,
+                            uMixColor: mixColor
+                         },
+                         wireframe: true 
+                    });
+                    const wireframeSphere = new THREE.Mesh(sphereGeometry, wireframeMaterial);
+                    wireframeSphere.visible = false; // Start with the wireframe sphere hidden
+                
+                    // Position the wireframe sphere at the child's world position
+                    const worldPosition = new THREE.Vector3();
+                    child.getWorldPosition(worldPosition);
+                    wireframeSphere.position.copy(worldPosition);
+                    this.scene.add(wireframeSphere); // Assuming `this.scene` is your Three.js scene
+                
+                    model_data.hoverAction = () => {
+                        wireframeSphere.visible = true;
+                    };
+                
+                    model_data.idleAction = () => {
+                        wireframeSphere.visible = false;
+                    };
                 }
+                
+                
             //}
         })
-        console.log(this.deviceReference)
+        console.log(this.interactiveModelManager.getInteractiveModels())
     }
 
     destroy(){

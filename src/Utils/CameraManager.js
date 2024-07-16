@@ -7,17 +7,17 @@ const sizes = {
     height: window.innerHeight
 }
 
-let instance = null
+export let sceneCameraManager = null
 let camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
 
 export default class SceneCameraManager{
     constructor(){
         // Singleton
-        if(instance)
+        if(sceneCameraManager)
         {
-            return instance
+            return sceneCameraManager
         }
-        instance = this;
+        sceneCameraManager = this;
 
     }
 
@@ -39,3 +39,4 @@ export default class SceneCameraManager{
         });
     }
 }
+

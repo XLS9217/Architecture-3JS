@@ -112,31 +112,12 @@ let debugManager = new DebugManager()
 const raycaster = new THREE.Raycaster()
 let currentIntersect = null
 
-/**
- * Mouse
- */
-const mouse = new THREE.Vector2()
 
-window.addEventListener('mousemove', (event) =>
-{
-    const rect = canvas.getBoundingClientRect();//in case if css transform the webgl canvas
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    //console.log(mouse)
-})
 
 /**
  * Interaction Logic----------------------------------------------------------------
  */
-const hover_material = new THREE.MeshBasicMaterial({
-    color: new THREE.Color('#ff0055')
-})
 
-const select_material = new THREE.MeshBasicMaterial({
-    color: new THREE.Color('#ff0055'),
-    wireframe: true
-})
 
 document.body.onkeyup = function(e) {
     if (e.key == " " || e.code == "Space" || e.keyCode == 32) {
@@ -169,22 +150,7 @@ window.addEventListener('resize', () =>
 })
 
 
-//left button
-window.addEventListener('click', () =>
-{
-    if(currentIntersect){
-        if(!interactiveModelManager.triggerClickAction(currentIntersect.object))
-            interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, select_material, true)
-        console.log("mouse intersect with " + currentIntersect.object.name)
-        console.log(currentIntersect.object)
-    }
-    
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-    //console.log('Mouse position (screen coordinates):', mouseX, mouseY);
-    // console.log(sceneManager.currentGraph)
-    // console.log(objectsToTest)
-})
+
 
 //right button
 window.addEventListener('contextmenu', () => {
@@ -265,33 +231,6 @@ const tick = () =>
 
     //Mouse Model Interaction Logic
     interactiveModelManager.update()
-
-    //Raycast with mouse click
-    raycaster.setFromCamera(mouse, camera)
-    const intersects = raycaster.intersectObjects(objectsToTest)
-    
-    //if there are interactive stuff in the scene 
-    if(sceneManager.currentGraph.interactiveModelManager){
-        interactiveModelManager = sceneManager.currentGraph.interactiveModelManager
-        objectsToTest = interactiveModelManager.getInteractiveModels()
-
-        // Reset all objects to red
-        for (const object of objectsToTest) {
-            //object.material.color.set('#ff0000');
-            interactiveModelManager.triggerIdleAction(object)
-
-            interactiveModelManager.revertInteractiveModelMaterial(object,false)
-        }
-
-        // Change color of the closest intersected object to blue
-        if (intersects.length > 0) {
-            currentIntersect = intersects[0]
-            if(!interactiveModelManager.triggerHoverAction(currentIntersect.object))
-                interactiveModelManager.setInteractiveModelMaterial(currentIntersect.object, hover_material, false)
-        }else{
-            currentIntersect = null
-        }
-    }
 
     // Render
     rendererManager.render()

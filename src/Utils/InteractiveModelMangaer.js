@@ -1,18 +1,42 @@
+import { Raycaster } from "three"
+import * as THREE from 'three'
 import { mod, reference } from "three/examples/jsm/nodes/Nodes.js"
+import UserState from "../UserState"
+import {sceneCameraManager} from "./CameraManager.js"
 
 let instance = null
 
+const hover_material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('#ff0055')
+})
 
+const select_material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color('#ff0055'),
+    wireframe: true
+})
+
+//left button
+window.addEventListener('click', () =>
+{
+    if(instance.currentIntersect)
+        instance.triggerClickAction(instance.currentIntersect.object)
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    //console.log('Mouse position (screen coordinates):', mouseX, mouseY);
+    // console.log(sceneManager.currentGraph)
+    // console.log(objectsToTest)
+})
 
 export default class InteractiveModelMangaer{
 
     constructor(){
-        // // Singleton
-        // if(instance)
-        // {
-        //     return instance
-        // }
-        // instance = this
+        // Singleton
+        if(instance)
+        {
+            return instance
+        }
+        instance = this
 
         //store the reference the model
         this.interactiveModels = [] 
@@ -24,10 +48,44 @@ export default class InteractiveModelMangaer{
         hasChanged
         */
         this.interactiveModel_data = []
+        this.currentIntersect = null
+    }
+
+    findParentGroup(object) {
+        const interactiveModels = this.getInteractiveModels();
+        while (object.parent && interactiveModels.includes(object.parent)) {
+            //console.log(object.name + " has parent")
+            object = object.parent;
+        }
+        return object;
     }
 
     update(){
-        
+        //Raycast with mouse click
+        let raycaster = new Raycaster()
+        let userState = new UserState()
+
+        let objectsToTest = this.getInteractiveModels()
+
+        raycaster.setFromCamera(userState.getUserMouse(), sceneCameraManager.getCamera())
+        const intersects = raycaster.intersectObjects(objectsToTest)
+
+        // Reset all objects to red
+        for (const object of objectsToTest) {
+            //object.material.color.set('#ff0000');
+            this.triggerIdleAction(object)
+
+            this.revertInteractiveModelMaterial(object,false)
+        }
+
+        // Change color of the closest intersected object to blue
+        if (intersects.length > 0) {
+            this.currentIntersect = intersects[0]
+            this.triggerHoverAction(this.currentIntersect.object)
+            this.currentIntersect.object = this.findParentGroup(this.currentIntersect.object)
+        }else{
+            this.currentIntersect = null
+        }
     }
 
     clearSceneData(){
@@ -42,6 +100,11 @@ export default class InteractiveModelMangaer{
      * add the interactive model to interactiveModels for fast return, and to interactiveModel_data for data processing
      */
     addInteractiveModel(model){
+
+        if(this.interactiveModels.includes(model.parent)){
+            return
+        }
+
         this.interactiveModels.push(model)
         let reference = {
             name: model.name,
@@ -50,8 +113,13 @@ export default class InteractiveModelMangaer{
             isSelected: false,
             //variables for furthere customization
             idleAction: null, //what to do when idling, before hover
-            hoverAction: null, //has to take memory as first variable
-            clickAction: null, //has to take memory as first variable
+            hoverAction: () => {
+                this.setInteractiveModelMaterial(this.currentIntersect.object, hover_material, false)
+            }, //has to take memory as first variable
+            clickAction: ()=>{
+                console.log("mouse intersect with " + instance.currentIntersect.object.name)
+                //console.log(instance.currentIntersect.object)
+            }, //has to take memory as first variable
             memory: null
         }
         this.interactiveModel_data.push(reference)
@@ -59,6 +127,7 @@ export default class InteractiveModelMangaer{
     }
 
     triggerHoverAction(obj){
+        obj = this.findParentGroup(obj)
         for(const metaData of this.interactiveModel_data){
             if(obj.name == metaData.name && metaData.hoverAction){
                 metaData.hoverAction(metaData.memory)
@@ -80,6 +149,8 @@ export default class InteractiveModelMangaer{
     }
 
     triggerClickAction(obj){
+        //console.log('click action for ' + obj.name)
+        //console.log(obj)
         for(const metaData of this.interactiveModel_data){
             if(obj.name == metaData.name && metaData.clickAction){
                 metaData.clickAction(metaData.memory)

@@ -1,5 +1,7 @@
-let instance = null
 
+import * as THREE from 'three'
+let instance = null
+const canvas = document.querySelector('canvas.webgl')
 
 // Check if the device is a mobile device
 function isMobileDevice() {
@@ -15,6 +17,20 @@ function isTablet() {
 function isDesktop() {
     return !isMobileDevice() && !isTablet();
 }
+
+/**
+ * Mouse
+ */
+const mouse = new THREE.Vector2()
+
+window.addEventListener('mousemove', (event) =>
+{
+    const rect = canvas.getBoundingClientRect();//in case if css transform the webgl canvas
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    //console.log(mouse)
+})
 
 export default class UserState{
     constructor(){
@@ -59,6 +75,10 @@ export default class UserState{
         } else {
             console.log("The Device Memory API is not supported in this browser.");
         }
+    }
+
+    getUserMouse(){
+        return mouse
     }
 
 }

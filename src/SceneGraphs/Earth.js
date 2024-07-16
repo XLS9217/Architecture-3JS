@@ -17,13 +17,14 @@ import earthVertexShader from "../Shaders/VertexShaders/Earth_Vertex.glsl"
 import earthFragmentShader from "../Shaders/FragmentShaders/Earth_Fragment.glsl"
 import earthatmosVertexShader from "../Shaders/VertexShaders/EarthAtmos_Vertex.glsl"
 import earthatmosFragmentShader from "../Shaders/FragmentShaders/EarthAtmos_Fragment.glsl"
-import SceneCameraManager from "../Utils/CameraManager";
+
+import {sceneCameraManager} from "../Utils/CameraManager.js"
 import ControlsManager from "../Utils/ControlsManager";
 
 let instance = null
 let modelLoader = null
 let textureLoader = new THREE.TextureLoader()
-let sceneCameraManager = new SceneCameraManager()
+//let sceneCameraManager = new SceneCameraManager()
 
 //props inside scene
 let points = null
