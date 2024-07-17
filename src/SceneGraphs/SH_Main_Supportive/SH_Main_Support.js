@@ -1,7 +1,7 @@
 
 import * as THREE from 'three'
 
-
+let textureLoader = new THREE.TextureLoader()
 
 export function hexToVector3(hex) {
     // Extract the red, green, and blue components from the hex color
@@ -12,8 +12,6 @@ export function hexToVector3(hex) {
     // Create and return the THREE.Vector3 object
     return new THREE.Vector3(r, g, b);
 }
-
-
 
 export function createUtilButton(exitToFunction, imgName) {
     // Create the exit button
@@ -46,6 +44,88 @@ export function createUtilButton(exitToFunction, imgName) {
     return exitButton;
 }
 
+
+export function ManuallyConfigLight( scene ){
+    // Initialize the directional light===========================================================================
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 4.47);
+    directionalLight.position.set(424,240,-100);
+    directionalLight.target.position.set(268, 58, -20);
+    directionalLight.castShadow = true;
+
+    // Adjust the shadow camera properties
+    directionalLight.shadow.camera.left = -400;
+    directionalLight.shadow.camera.right = 250;
+    directionalLight.shadow.camera.top = 250;
+    directionalLight.shadow.camera.bottom = -250;
+    directionalLight.shadow.camera.near = 0.1;
+    directionalLight.shadow.camera.far = 500;
+
+    // Set the shadow camera's position and orientation to match the light
+    directionalLight.shadow.camera.position.copy(directionalLight.position);
+    directionalLight.shadow.camera.lookAt(directionalLight.target.position);
+
+    // Update the camera helper to reflect changes
+    directionalLight.shadow.camera.updateProjectionMatrix();
+    let lighthelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+    //this.scene.add(this.lighthelper);//helper here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    scene.add(directionalLight);
+    scene.add(directionalLight.target);
+
+    // // Create lil-gui folder
+    // const lightFolder = window.debug_ui.addFolder('Directional Light');
+
+    // // Add controls for light color
+    // lightFolder.addColor({ color: directionalLight.color.getHex() }, 'color').onChange((value) => {
+    //     directionalLight.color.set(value);
+    // });
+
+    // // Add controls for light intensity
+    // lightFolder.add(directionalLight, 'intensity', 0, 10);
+
+    // // Add controls for light position
+    // const lightPositionFolder = lightFolder.addFolder('Position');
+    // lightPositionFolder.add(directionalLight.position, 'x', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+    // lightPositionFolder.add(directionalLight.position, 'y', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+    // lightPositionFolder.add(directionalLight.position, 'z', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+
+    // // Add controls for light target position
+    // const lightTargetFolder = lightFolder.addFolder('Target Position');
+    // lightTargetFolder.add(directionalLight.target.position, 'x', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+    // lightTargetFolder.add(directionalLight.target.position, 'y', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+    // lightTargetFolder.add(directionalLight.target.position, 'z', -1000, 1000).onChange(() => updateShadowCamera(directionalLight));
+
+    // // Function to update the shadow camera when the light or target position changes
+    // function updateShadowCamera(light) {
+    //     light.shadow.camera.position.copy(light.position);
+    //     light.shadow.camera.lookAt(light.target.position);
+    //     light.shadow.camera.updateProjectionMatrix();
+    //     //this.lighthelper.update();
+    // }
+
+    // Initialize the ambient light
+    const ambientLight = new THREE.AmbientLight(0xfff7e5, 1.15); // color and intensity
+    scene.add(ambientLight);
+
+    // // Create lil-gui folder for ambient light
+    // const ambientLightFolder = window.debug_ui.addFolder('Ambient Light');
+
+    // // Add controls for ambient light color
+    // ambientLightFolder.addColor({ color: ambientLight.color.getHex() }, 'color').onChange((value) => {
+    //     ambientLight.color.set(value);
+    // });
+
+    // // Add controls for ambient light intensity
+    // ambientLightFolder.add(ambientLight, 'intensity', 0, 10);
+}
+
+
+/**
+ * Shader code
+ */
+
+let clearColor = 0xffffff
 
 export const perlinNoise = `
     //	Classic Perlin 2D Noise 
@@ -95,3 +175,121 @@ export const perlinNoise = `
         return 2.3 * n_xy;
     }
 `
+
+export function BasePlaneInjection(child){
+    child.material.transparent = false
+    child.renderOrder = 1
+    child.position.y -= 2
+    child.material.onBeforeCompile = (shader) => {
+        // Add custom uniforms
+        shader.uniforms.uDistance = { value: 1000.0 };
+        //window.debug_ui.add(shader.uniforms.uDistance, 'value').min(0.0).max(1000,0).step(1.0).name('dist')
+        shader.uniforms.uClearColor = { value: new THREE.Color(clearColor) };
+    
+        // Inject custom varying variables into the vertex shader
+        shader.vertexShader = `
+            varying vec3 vPosition;
+            varying vec2 vUv;
+    
+            ${shader.vertexShader}
+        `;
+    
+        // Replace the main shader function to include custom logic
+        shader.vertexShader = shader.vertexShader.replace(
+            '#include <begin_vertex>',
+            `
+            vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+            vUv = uv;
+            #include <begin_vertex>
+            `
+        );
+    
+        // Inject custom uniforms and varying variables into the fragment shader
+        shader.fragmentShader = `
+            uniform float uDistance;
+            uniform vec3 uClearColor;
+    
+            varying vec3 vPosition;
+            varying vec2 vUv;
+    
+            ${shader.fragmentShader}
+        `;
+    
+        // Replace the main shader function to include custom logic
+        shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <dithering_fragment>',
+            `
+            float distFactor = clamp(distance(vPosition, vec3(0.0, 0.0, 0.0)) / uDistance, 0.0 , 1.0);
+            vec3 finalColor = mix(gl_FragColor.rgb, uClearColor, distFactor);
+    
+            gl_FragColor = vec4(finalColor, 1.0);
+            #include <dithering_fragment>
+            `
+        );
+    };
+}
+
+export function LakeInjection(child){
+
+
+    // Create the video element
+    // const video = document.createElement('video');
+    // video.src = 'CEIBS_SH/Other/waterTextureVideo.mp4'; // Path to your video file
+    // video.loop = true;
+    // video.muted = true; // Mute the video to allow autoplay
+    // video.crossOrigin = 'anonymous';
+    // video.play();
+    // video.playbackRate = 0.4; 
+
+    // // Create the video texture
+    // const videoTexture = new THREE.VideoTexture(video);
+    // videoTexture.repeat.set(0.004, 0.004);
+    // videoTexture.wrapS = THREE.RepeatWrapping;
+    // videoTexture.wrapT = THREE.RepeatWrapping;
+
+    // child.material = new THREE.MeshStandardMaterial({ map: videoTexture });
+
+    // child.material.onBeforeCompile = (shader) => {
+    //     shader.fragmentShader = shader.fragmentShader.replace(
+    //         '#include <dithering_fragment>',
+    //         `
+    //         gl_FragColor.xyz *= 0.5;
+    //         gl_FragColor.b += 0.1;
+    //         #include <dithering_fragment>
+    //         `
+    //     );
+    // }
+
+
+    //add the water pbr
+    let waterTexture = textureLoader.load('/CEIBS_SH/Water_001_SD/Water_001_COLOR.jpg')
+
+    waterTexture.repeat.set(0.004, 0.004)
+    waterTexture.wrapS = THREE.MirroredRepeatWrapping;
+    waterTexture.wrapT = THREE.MirroredRepeatWrapping;
+
+    child.material = new THREE.MeshStandardMaterial({
+        map: waterTexture
+    });
+
+}
+
+export function GrassInjection(child){
+    child.material.onBeforeCompile = (shader) => {
+        shader.uniforms.uGrassHue = new THREE.Uniform(0.56)
+        //window.debug_ui.add(shader.uniforms.uGrassHue, 'value').min(0.0).max(1.0).step(0.01).name('GrassHue')
+        shader.fragmentShader = `
+            uniform float uGrassHue;
+            ${shader.fragmentShader}
+        `;
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <dithering_fragment>',
+            `
+            gl_FragColor.xyz *= uGrassHue;
+            #include <dithering_fragment>
+            `
+        );
+    }
+}
+

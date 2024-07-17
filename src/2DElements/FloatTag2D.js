@@ -3,11 +3,11 @@ import * as THREE from 'three'
 
 export default class FloatTag2D {
     constructor({
-        textContent = "need content", 
-        position = new THREE.Vector3(0,0,0), 
-        customFunction = ()=>{ console.log('no customFunction') },
-        onHoverFunction = ()=>{},
-        onHoverEndFunction = ()=>{ },
+        textContent = "need content",
+        position = new THREE.Vector3(0, 0, 0),
+        customFunction = () => { console.log('no customFunction') },
+        onHoverFunction = () => { },
+        onHoverEndFunction = () => { },
         logicHide = true, //hide by some logic
         minimunPointDistance = 400,
         customWidth = 70,
@@ -29,7 +29,7 @@ export default class FloatTag2D {
         point2D.style.top = '-20px';
         point2D.style.left = '-20px';
 
-        if(autoWidth) point2D.style.width = this.defaultWidth + 'px';
+        if (autoWidth) point2D.style.width = this.defaultWidth + 'px';
         else point2D.style.width = 'auto';
 
         point2D.style.height = this.defaultHeight + 'px';
@@ -42,7 +42,7 @@ export default class FloatTag2D {
         point2D.style.lineHeight = this.defaultHeight + 'px';
         point2D.style.fontWeight = 'normal';
         point2D.style.fontSize = this.defaultFontSize + 'px';
-        point2D.style.cursor = 'help';
+        point2D.style.cursor = 'pointer';
         point2D.style.transition = 'transform 0.1s';
         //point2D.style.zIndex = '998'; // Set z-index
         point2D.style.pointerEvents = 'auto'; // Enable all pointer events
@@ -50,7 +50,7 @@ export default class FloatTag2D {
         // Create a CSS2DObject using the point2D element
         this.label = new CSS2DObject(point2D);
         this.point = point2D;
-        
+
         // Set the initial position of the label
         this.position = position;
         this.label.position.copy(position);
@@ -88,7 +88,7 @@ export default class FloatTag2D {
 
     update(camera, raycaster, scene, intersectObjArray) {
 
-        if(this.isForceHide){
+        if (this.isForceHide) {
             this.hide()
             return
         }
@@ -129,9 +129,9 @@ export default class FloatTag2D {
         // Set the raycaster
         raycaster.setFromCamera(screenPosition, camera);
         let intersects
-        if(intersectObjArray){
+        if (intersectObjArray) {
             intersects = raycaster.intersectObjects(intersectObjArray, true);
-        }else{
+        } else {
             intersects = raycaster.intersectObjects(scene.children, true);
         }
 
@@ -153,7 +153,7 @@ export default class FloatTag2D {
         }
     }
 
-    destroy(){
+    destroy() {
         this.label.element.remove()
     }
 
@@ -170,8 +170,8 @@ export default class FloatTag2D {
         this.defaultHeight = height;
     }
 
-    shouldForceHide(shouldHide){
-        if(shouldHide){
+    shouldForceHide(shouldHide) {
+        if (shouldHide) {
             this.hide()
         }
         this.isForceHide = shouldHide
@@ -185,7 +185,7 @@ export default class FloatTag2D {
 
     // Function to unhide the label
     unhide(opacity) {
-        if(!this.isForceHide){
+        if (!this.isForceHide) {
             if (opacity == null) {
                 this.label.element.style.opacity = '1';
             } else {
@@ -193,7 +193,7 @@ export default class FloatTag2D {
             }
             this.label.element.style.pointerEvents = 'all'
         }
-        
+
     }
 
     // Function to set the background color
@@ -217,7 +217,7 @@ export default class FloatTag2D {
 
     // Function called on hover start
     onHover() {
-        this.label.element.style.background = '#cc0000'; 
+        this.label.element.style.background = '#cc0000';
         this.onHoverFunction()
     }
 

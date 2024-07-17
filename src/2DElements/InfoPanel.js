@@ -34,13 +34,13 @@ class InfoPanel {
         sidebar.style.right = '20px';
         sidebar.style.width = '20%'; 
         sidebar.style.height = '60%'; 
-        sidebar.style.color = 'white'; 
-        sidebar.style.backgroundColor = '#4c4c4c80';
-        sidebar.style.border = '2px solid white';
-        sidebar.style.padding = '10px';
+        sidebar.style.color = '#333'; 
+        sidebar.style.backgroundColor = '#f3f4fa';
+        sidebar.style.border = '1px solid #d9d9d9';
+        sidebar.style.padding = '16px';
         sidebar.style.display = 'flex';
         sidebar.style.flexDirection = 'column';
-        sidebar.style.borderRadius = '5%';
+        sidebar.style.borderRadius = '12px';
         sidebar.style.opacity = '0';
         sidebar.style.transition = 'opacity 0.35s';
 
@@ -49,7 +49,7 @@ class InfoPanel {
 
         const titleElement = document.createElement('h3');
         titleElement.textContent = this.title;
-        titleElement.style.marginBottom = '10px'; // Adjust margin to give space below the title
+        titleElement.style.marginBottom = '16px'; // Adjust margin to give space below the title
         sidebar.appendChild(titleElement);
 
         if (this.pictureAddress) {
@@ -101,15 +101,15 @@ class InfoPanel {
         closeButton.textContent = 'X';
         closeButton.style.position = 'absolute';
         closeButton.style.borderRadius = '50%';
-        closeButton.style.top = '5px';
-        closeButton.style.right = '5px';
-        closeButton.style.width = '30px';
-        closeButton.style.height = '30px'; 
-        closeButton.style.color = 'white'; 
+        closeButton.style.top = '12px';
+        closeButton.style.right = '12px';
+        closeButton.style.width = '32px';
+        closeButton.style.height = '32px'; 
+        closeButton.style.color = '#666'; 
         closeButton.style.fontSize = '16px';
+        closeButton.style.border = 'none';
         closeButton.style.cursor = 'pointer';
-        closeButton.style.border = '2px solid white';
-        closeButton.style.backgroundColor = '#aa000080';
+        // closeButton.style.backgroundColor = '#d9d9d9';
         closeButton.style.transition = 'all 0.35s';
 
         closeButton.addEventListener('click', () => {
@@ -117,17 +117,11 @@ class InfoPanel {
         });
 
         closeButton.addEventListener('mouseenter', () => {
-            closeButton.style.width = '33px';
-            closeButton.style.height = '33px';
-            closeButton.style.fontSize = '18px';
-            closeButton.style.backgroundColor = '#ff3333';
+            closeButton.style.backgroundColor = '#d9d9d9';
         });
 
         closeButton.addEventListener('mouseleave', () => {
-            closeButton.style.width = '30px';
-            closeButton.style.height = '30px';
-            closeButton.style.fontSize = '16px';
-            closeButton.style.backgroundColor = '#aa000080';
+            closeButton.style.backgroundColor = '#fff';
         });
 
         return closeButton;
@@ -138,27 +132,23 @@ class InfoPanel {
         button.textContent = this.buttonName;
         button.style.width = '100%';
         button.style.height = '40px';
-        button.style.fontSize = '18px';
+        button.style.fontSize = '16px';
         button.style.fontWeight = 'bold';
         button.style.color = 'white';
-        button.style.backgroundColor = '#33333360';
+        button.style.backgroundColor = '#bf0000';
         button.style.cursor = 'pointer';
-        button.style.borderRadius = '15%';
-        button.style.border = '2px solid white';
+        button.style.borderRadius = '8px';
+        button.style.border = 'none'
         button.style.transition = 'all 0.35s';
 
         button.addEventListener('click', this.buttonFunction);
 
         button.addEventListener('mouseenter', () => {
-            button.style.height = '45px';
-            button.style.fontSize = '20px';
-            button.style.backgroundColor = '#555555';
+            button.style.backgroundColor = '#bf2222';
         });
 
         button.addEventListener('mouseleave', () => {
-            button.style.height = '40px';
-            button.style.fontSize = '18px';
-            button.style.backgroundColor = '#333333';
+            button.style.backgroundColor = '#bf2222';
         });
 
         return button;
@@ -170,15 +160,17 @@ class InfoPanel {
         image.style.maxWidth = '100%'; 
         image.style.height = 'auto'; 
         image.style.marginBottom = '10px';
-        image.style.borderRadius = '5%';
-        image.style.border = '2px solid white';
+        image.style.borderRadius = '8px';
+        image.style.border = '1px solid #d9d9d9';
         return image;
     }
 
     createTextParagraph() {
         const text = document.createElement('p');
         text.textContent = this.textContent;
-        text.style.marginBottom = '10px'; // Adjust margin to give space below text
+        text.style.fontSize = '14px';
+        text.style.lineHeight = '24px';
+        text.style.marginBottom = '16px'; // Adjust margin to give space below text
         return text;
     }
 

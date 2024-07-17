@@ -294,6 +294,7 @@ export default class SceneManager{
         }
         else if(sceneName == 'ShanghaiMain'){
             this.LoadGraph(this.shanghaiMain)
+            keepPrevEnv = false;
         }
         else if(sceneName == 'MainDisplay'){
             this.LoadGraph(this.mainDisplay, this.currentControl)

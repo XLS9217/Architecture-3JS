@@ -15,9 +15,11 @@ import RoomFrameVertex from "../Shaders/VertexShaders/RoomFrame_Vertex.glsl"
 import CircularButtonContainer from "../2DElements/CircularButtonContainer";
 import RendererManager from "../Utils/RenderManager";
 
-import { hexToVector3, createUtilButton, perlinNoise } from "./SH_Main_Supportive/SH_Main_Support.js"
+//import { Support.hexToVector3, Support.createUtilButton, Support.perlinNoise } from "./SH_Main_Supportive/SH_Main_Support.js"
+import * as Support from './SH_Main_Supportive/SH_Main_Support.js';
+
 import AS_RoomDisplay from "../AdvenceScenes/AS_RoomDisplay.js";
-import { color } from "three/examples/jsm/nodes/Nodes.js";
+import { color, uniform } from "three/examples/jsm/nodes/Nodes.js";
 
 let instance = null
 let modelLoader = null
@@ -46,6 +48,8 @@ let ArchitectureShells = {}
 // let meetingroomColor = 0x0095EF
 let classroomColor = 0x812b2f
 let meetingroomColor = 0x00567b
+
+let clearColor = 0xffffff
 
 
 /**
@@ -103,18 +107,18 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
 
 
-        this.exit2CampusButton = createUtilButton(() => {
+        this.exit2CampusButton = Support.createUtilButton(() => {
             this.ToggleCampusView()
         }, 'exit.png')
 
-        this.exit2LevelButton = createUtilButton(() => {
+        this.exit2LevelButton = Support.createUtilButton(() => {
             this.ToggleOnLevel(this.currentLevelKey)
         }, 'logout.png')
         this.exit2LevelButton.style.background = '#99ff00aa'; 
         this.exit2LevelButton.style.top = '46%'; 
 
         this.panoramaViewPicUrl = 'EnvMap/classroom_1_4k.jpg'
-        this.panoramaSwitchButton = createUtilButton(() => {
+        this.panoramaSwitchButton = Support.createUtilButton(() => {
             let renderManager = new RendererManager()
             console.log('current view mode ' + this.currentViewMode)
             if(this.currentViewMode == this.ViewMode.Room){
@@ -138,6 +142,12 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         document.body.appendChild(this.exit2CampusButton);
         document.body.appendChild(this.exit2LevelButton);
         document.body.appendChild(this.panoramaSwitchButton);
+
+        this.scene.background = false
+        this.scene.environment = false
+
+        let rendererManager = new RendererManager()
+        this.originalClearColor = rendererManager.renderer.setClearColor(clearColor)
     }
 
     unloadScene() {
@@ -145,6 +155,9 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         this.exit2LevelButton.remove();
         this.panoramaSwitchButton.remove();
         if(this.circularButtons ) this.circularButtons.destroy()
+
+        this.scene.background = false
+        this.scene.environment = false
     }
 
     Update(){
@@ -189,8 +202,6 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
     * */
     ToggleBuildingView(ArchitectureName) {
 
-        
-        
         // window.debug_ui.add(yGapUniform,'value').min(0.0).max(10.0).name('gap')
         // window.debug_ui.add(fadeUniform,'value').min(0.0).max(20.0).name('fade')
 
@@ -205,7 +216,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         this.switchDisplayMode(this.ViewMode.Level)
 
         
-this.levelFocusMode(false)
+        this.levelFocusMode(false)
 
         //if model can be load
         if(archKey){
@@ -223,10 +234,8 @@ this.levelFocusMode(false)
                 let ss = '';
                 const levels = {};
                 let LevelKeyArray = [] //in case more button then keys, mod button using this
-
                 modelPtr.traverse((child) => {
                     ss += child.name + '\n';
-
 
                     /**
                      * 分层建筑命名规范
@@ -292,12 +301,12 @@ this.levelFocusMode(false)
                             if(child.name.includes('教室')){
                                 //console.log('child.name.includes(教室)')
                                 newTag.setBackgroundColor(classroomColor)
-                                colorUniform = new THREE.Uniform(hexToVector3(classroomColor))
+                                colorUniform = new THREE.Uniform(Support.hexToVector3(classroomColor))
                             }
                             else if(child.name.includes('讨论')){
                                 //console.log('child.name.includes(讨论)')
                                 newTag.setBackgroundColor(meetingroomColor)
-                                colorUniform = new THREE.Uniform(hexToVector3(meetingroomColor))
+                                colorUniform = new THREE.Uniform(Support.hexToVector3(meetingroomColor))
                             }
 
                             //customize the material
@@ -630,100 +639,24 @@ this.levelFocusMode(false)
 
         } 
         
-        poolColors.waterColor = '#6785a8'
-        poolColors.tideColor = '#7ea6b9'
+        poolColors.waterColor = '#305e91'
+        poolColors.tideColor = '#4794b8'
 
-        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix4', 'glb', (modelPtr) => {
+        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix5', 'glb', (modelPtr) => {           
             modelPtr.traverse((child) => {
                 child.receiveShadow = true
                 //console.log(child.name)
 
-                if(child.name.includes('Base')){
+                if(child.name.includes('Plane')){
                     console.log('base found')
-                    child.material.transparent = false
-                    child.renderOrder = 1
-                    child.position.y -= 2
+                    Support.BasePlaneInjection(child)
                 }
-
-                if(child.name.includes('Lake') && child.isMesh){
-                    //add the water logic
-                    child.material.onBeforeCompile = (shader) => {
-
-                        shader.uniforms.uTime = timeUniform;
-                        shader.uniforms.uWaterColor = new THREE.Uniform(new THREE.Color(poolColors.waterColor));
-                        shader.uniforms.uTideColor = new THREE.Uniform(new THREE.Color(poolColors.tideColor));
-
-                        
-                        window.debug_ui.addColor(poolColors, 'waterColor')
-                            .onChange(() => {
-                                const waterColor = new THREE.Color(poolColors.waterColor);
-                                shader.uniforms.uWaterColor.value.copy(waterColor);
-                                child.material.color.set(poolColors.waterColor);
-                            });
-
-                        window.debug_ui.addColor(poolColors, 'tideColor')
-                            .onChange(() =>
-                            {
-                                shader.uniforms.uTideColor.value.set(poolColors.tideColor)
-                            })
-
-                        shader.vertexShader = `
-                            varying vec3 vWorldPosition;
-                            varying vec2 vUv;
-
-                            uniform float uTime;
-
-                            ${shader.vertexShader}
-                        `;
-
-                        shader.vertexShader = shader.vertexShader.replace(
-                            '#include <begin_vertex>',
-                            `
-                            vec4 worldPosition1 = modelMatrix * vec4(position, 1.0);
-                            vWorldPosition = worldPosition1.xyz;
-
-                            vUv = uv;
-
-                            #include <begin_vertex>
-                            `
-                        );
-
-                        shader.fragmentShader = `
-                            uniform float uTime;
-                            uniform vec3 uWaterColor;
-                            uniform vec3 uTideColor;
-                            
-                            varying vec3 vWorldPosition;
-                            varying vec2 vUv;
-
-                            ${perlinNoise}
-
-                            ${shader.fragmentShader}
-                        `;
-
-                        shader.fragmentShader = shader.fragmentShader.replace(
-                            'void main(){',
-                            `
-                                void main(){
-                                    gl_FragColor = uWaterColor;
-                            `
-                        );
-
-                        shader.fragmentShader = shader.fragmentShader.replace(
-                            '#include <dithering_fragment>',
-                            `
-                            vec3 color = uWaterColor;
-                            vec2 noiseSeed = vUv;
-                            noiseSeed.x += sin(uTime) * 5.0;
-                            float noise = sin(cnoise(noiseSeed / (50.0 + sin(vWorldPosition.x) * 4.0) ) * 20.0);
-                            noise = smoothstep(0.0, 0.5, noise);
-
-                            gl_FragColor = vec4(mix(gl_FragColor.rgb, uTideColor, noise) , 1.0);
-                            #include <dithering_fragment>
-                            `
-                        );
-                        //console.log(shader.fragmentShader)
-                    }
+                else if(child.name.includes('Lake') && child.isMesh){
+                    Support.LakeInjection(child)
+                }
+                else if(child.name.includes('Grass') && child.isMesh){
+                    console.log(child.name)
+                    Support.GrassInjection(child)
                 }
 
             })
@@ -880,33 +813,12 @@ this.levelFocusMode(false)
         // this.scene.add(axisHelper)
 
         this.scene.environment.intensity = 0.5;
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight.position.set(100, 250, -125);
-        directionalLight.target.position.set(100, 0, 100);
-        directionalLight.castShadow = true;
 
-        // Adjust the shadow camera properties
-        directionalLight.shadow.camera.left = -400;
-        directionalLight.shadow.camera.right = 250;
-        directionalLight.shadow.camera.top = 250;
-        directionalLight.shadow.camera.bottom = -250;
-        directionalLight.shadow.camera.near = 0.1;
-        directionalLight.shadow.camera.far = 500;
+        Support.ManuallyConfigLight(this.scene)
 
-        // Set the shadow camera's position and orientation to match the light
-        directionalLight.shadow.camera.position.copy(directionalLight.position);
-        directionalLight.shadow.camera.lookAt(directionalLight.target.position);
-
-        // Update the camera helper to reflect changes
-        directionalLight.shadow.camera.updateProjectionMatrix();
-        this.lighthelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-        //this.scene.add(this.lighthelper);
-
-        this.scene.add(directionalLight);
-        this.scene.add(directionalLight.target);
     }
 
-    levelFocusMode( shouldFocus ){
+    levelFocusMode( shouldFocus  ){
         this.SH_Ground.visible = !shouldFocus;
         this.SH_Shell.visible = !shouldFocus;
         this.SH_BuildingPoints.visible = !shouldFocus
@@ -921,6 +833,55 @@ this.levelFocusMode(false)
             this.scene.add(this.levelBasePlane)
             this.levelBasePlane.rotation.x = - Math.PI * 0.5
             this.levelBasePlane.position.set(43, 52, 116)
+            this.levelBasePlane.receiveShadow = true
+
+            this.levelBasePlane.material.onBeforeCompile = (shader) => {
+                // Add custom uniforms
+                shader.uniforms.uDistance = { value: 300.0 };
+                //window.debug_ui.add(shader.uniforms.uDistance, 'value').min(0.0).max(1000,0).step(1.0).name('dist')
+                shader.uniforms.uClearColor = { value: new THREE.Color(clearColor) };
+            
+                // Inject custom varying variables into the vertex shader
+                shader.vertexShader = `
+                    varying vec3 vPosition;
+                    varying vec2 vUv;
+            
+                    ${shader.vertexShader}
+                `;
+            
+                // Replace the main shader function to include custom logic
+                shader.vertexShader = shader.vertexShader.replace(
+                    '#include <begin_vertex>',
+                    `
+                    vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                    vUv = uv;
+                    #include <begin_vertex>
+                    `
+                );
+            
+                // Inject custom uniforms and varying variables into the fragment shader
+                shader.fragmentShader = `
+                    uniform float uDistance;
+                    uniform vec3 uClearColor;
+            
+                    varying vec3 vPosition;
+                    varying vec2 vUv;
+            
+                    ${shader.fragmentShader}
+                `;
+            
+                // Replace the main shader function to include custom logic
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <dithering_fragment>',
+                    `
+                    float distFactor = clamp(distance(vPosition, vec3(0.0, 0.0, 0.0)) / uDistance, 0.0 , 1.0);
+                    vec3 finalColor = mix(gl_FragColor.rgb, uClearColor, distFactor);
+            
+                    gl_FragColor = vec4(finalColor, 1.0);
+                    #include <dithering_fragment>
+                    `
+                );
+            };
         }else{
             if(this.levelBasePlane){
                 this.scene.remove(this.levelBasePlane)

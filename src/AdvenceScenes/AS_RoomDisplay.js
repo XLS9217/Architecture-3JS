@@ -44,7 +44,8 @@ export default class AS_RoomDisplay{
     }
 
     loadScene(){
-
+        let rendererManager = new RendererManager()
+        rendererManager.renderer.setClearColor(0x000000)
         
         this.originCameraPos = this.cameraManager.getCamera().position
 

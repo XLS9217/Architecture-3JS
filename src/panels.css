@@ -11,11 +11,20 @@
     /* border: 3px solid blue; */
     left: 100%;
     top: 0%;
-    height: 35px;
+    display: flex;
+    padding:0 2px;
+    min-width: 320px;
+    height: 42px;
     display: flex;
     z-index: 999;
-    width: auto;  
     pointer-events: all;
+}
+
+.level_panel .button {
+    min-width: 42px;
+    font-size: 12px;
+    margin-bottom: 0;
+    margin-right:2px;
 }
 
 .testScene_panel {
@@ -58,51 +67,73 @@
     top: 2%;
     left: 15%;
     /* border: 3px solid blue; */
+    display: flex;
     z-index: 999;
-    width: 130px; 
-    height: 40px; 
+    width: 240px;
+    height: 32px; 
+    padding:2px;
+    background:rgba(255,255,255,0.5);
+    border-radius: 4px;
     pointer-events: none;
 }
 
 .environment_button {
-    border: 3px solid black;
+    /* border: 3px solid black; */
     z-index: 999;
-    border-radius: 50%;
-    width: 35px; 
-    height: 35px; 
+    border:none;
+    flex:1;
+    border-radius: 4px;
+    background-color: transparent !important;
     pointer-events: all;
-    opacity: 0.5; /* Initial opacity */
+    margin-right:2px;
+    cursor:pointer;
     /* transition: width 0.1s ; 
     transition: height 0.1s ;  */
 }
+.environment_button:last-child {
+    margin-right:0;
+}
 
 .environment_button:hover {
-    
-    width: 40px; 
-    height: 40px;  
+    background-color: rgba(0,0,0,0.25) !important;
 }
 
 .weather_panel {
     position: absolute;
     left: 40%;
     top: 2%;
+    display: flex;
+    width: 240px;
+    height: 32px; 
+    padding:2px;
+    background:rgba(255,255,255,0.5);
+    border-radius: 4px;
     
     /* border: 3px solid blue; */
 }
 
 .weather_button {
-    border: transparent;
-    background-color: transparent;
+    border: none;
+    background-color:transparent !important;
     z-index: 999;
-    border-radius: 50%;
-    width: 40px; 
-    height: 40px; 
+    border-radius: 4px;
+    flex:1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right:2px;
     pointer-events: all;
-    opacity: 0.75;
+    cursor: pointer;
+}
+.weather_button:last-child {
+    margin-right:0;
+}
+.weather_button img {
+    width:20px;
 }
 
 .weather_button:hover {
-    border: 3px solid black;
+    background-color: rgba(0,0,0,.25) !important;
 }
 
 

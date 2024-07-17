@@ -18,8 +18,9 @@ import earthFragmentShader from "../Shaders/FragmentShaders/Earth_Fragment.glsl"
 import earthatmosVertexShader from "../Shaders/VertexShaders/EarthAtmos_Vertex.glsl"
 import earthatmosFragmentShader from "../Shaders/FragmentShaders/EarthAtmos_Fragment.glsl"
 
-import {sceneCameraManager} from "../Utils/CameraManager.js"
+import { sceneCameraManager } from "../Utils/CameraManager.js"
 import ControlsManager from "../Utils/ControlsManager";
+import RendererManager from "../Utils/RenderManager.js";
 
 let instance = null
 let modelLoader = null
@@ -49,83 +50,85 @@ function latLongToVector3(lat, lon, radius) {
 
 let shanghaiLoc = latLongToVector3(31.2304, 121.4737, 2.0);
 tags.push(new FloatTag2D({
-    textContent: "上海校区", 
-    position: latLongToVector3(31.2304, 121.4737, 2.1) , 
-    customFunction: ()=>{
+    textContent: "上海校区",
+    position: latLongToVector3(31.2304, 121.4737, 2.1),
+    customFunction: () => {
 
-    let cameraPos = latLongToVector3(31.2304, 121.4737, 3.5);
-    sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
+        let cameraPos = latLongToVector3(31.2304, 121.4737, 3.5);
+        sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
 
-    let controlsManager = new ControlsManager()
-    controlsManager.lerpToOrbitTarget(0,0,0)
+        let controlsManager = new ControlsManager()
+        controlsManager.lerpToOrbitTarget(0, 0, 0)
 
-    infoPanel.showInfoPanel({    
-        textContent: '由世界著名建筑大师贝聿铭领衔创办的贝•柯•弗建筑设计师事务所设计的上海校园堪称全球商学院中最美丽、最具特色的校园之一。',
-        title: '上海校区',
-        buttonName: '前往',
-        pictureAddress: 'pictures/ShanghaiCampus.jpg',
-        buttonFunction: () => {
-            let sceneManager = new SceneManager()
-            sceneManager.LoadScene('ShanghaiMain')
-        }
-    })
-}})) 
+        infoPanel.showInfoPanel({
+            textContent: '由世界著名建筑大师贝聿铭领衔创办的贝•柯•弗建筑设计师事务所设计的上海校园堪称全球商学院中最美丽、最具特色的校园之一。',
+            title: '上海校区',
+            buttonName: '前往',
+            pictureAddress: 'pictures/ShanghaiCampus.jpg',
+            buttonFunction: () => {
+                let sceneManager = new SceneManager()
+                sceneManager.LoadScene('ShanghaiMain')
+            }
+        })
+    }
+}))
 
 let beijingLoc = latLongToVector3(39.9042, 116.4074, 2.0);
 tags.push(new FloatTag2D({
-    textContent: "北京校区", 
-    position: latLongToVector3(39.9042, 116.4074, 2.1) , 
-    customFunction: ()=>{
+    textContent: "北京校区",
+    position: latLongToVector3(39.9042, 116.4074, 2.1),
+    customFunction: () => {
 
-    let cameraPos = latLongToVector3(39.9042, 116.4074, 3.5);
-    sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
+        let cameraPos = latLongToVector3(39.9042, 116.4074, 3.5);
+        sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
 
-    let controlsManager = new ControlsManager()
-    controlsManager.lerpToOrbitTarget(0,0,0)
+        let controlsManager = new ControlsManager()
+        controlsManager.lerpToOrbitTarget(0, 0, 0)
 
-    infoPanel.showInfoPanel({    
-        textContent: '中欧国际工商学院北京校区由西班牙知名设计公司IDOM设计, 坐落于被誉为“中国硅谷”的北京中关村软件园，营造出开放、共享的交流氛围，为课程创造了一流的教学环境，也为校友提供了一个永久的家园。',
-        title: '北京校区',
-        buttonName: '前往',
-        pictureAddress: 'pictures/BeijingCampus.jpg',
-        buttonFunction: () => {
-            console.log('404 there is no scene for this campus');
-        }
-    })
-}})) 
+        infoPanel.showInfoPanel({
+            textContent: '中欧国际工商学院北京校区由西班牙知名设计公司IDOM设计, 坐落于被誉为“中国硅谷”的北京中关村软件园，营造出开放、共享的交流氛围，为课程创造了一流的教学环境，也为校友提供了一个永久的家园。',
+            title: '北京校区',
+            buttonName: '前往',
+            pictureAddress: 'pictures/BeijingCampus.jpg',
+            buttonFunction: () => {
+                console.log('404 there is no scene for this campus');
+            }
+        })
+    }
+}))
 
 let shenzhenLoc = latLongToVector3(22.5431, 114.0579, 2.0);
 tags.push(new FloatTag2D({
-    textContent: "深圳校区", 
-    position: latLongToVector3(22.5431, 114.0579, 2.1) , 
-    customFunction: ()=>{
+    textContent: "深圳校区",
+    position: latLongToVector3(22.5431, 114.0579, 2.1),
+    customFunction: () => {
 
-    let cameraPos = latLongToVector3(22.5431, 114.0579, 3.5);
-    sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
+        let cameraPos = latLongToVector3(22.5431, 114.0579, 3.5);
+        sceneCameraManager.hopToPosition(cameraPos.x, cameraPos.y, cameraPos.z)
 
-    let controlsManager = new ControlsManager()
-    controlsManager.lerpToOrbitTarget(0,0,0)
+        let controlsManager = new ControlsManager()
+        controlsManager.lerpToOrbitTarget(0, 0, 0)
 
-    infoPanel.showInfoPanel({    
-        textContent: '中欧国际工商学院深圳校区地处粤港澳大湾区最核心区域，环境设计崇尚人与自然的和谐共生。深圳校区为华南地区快速发展的中资企业和跨国公司培养了大批国际化高级经营管理人才。',
-        title: '深圳校区',
-        buttonName: '前往',
-        pictureAddress: 'pictures/ShenzhenCampus.jpg',
-        buttonFunction: () => {
-            let sceneManager = new SceneManager()
-            sceneManager.LoadScene('Arch')
-        }
-    })
-}})) 
+        infoPanel.showInfoPanel({
+            textContent: '中欧国际工商学院深圳校区地处粤港澳大湾区最核心区域，环境设计崇尚人与自然的和谐共生。深圳校区为华南地区快速发展的中资企业和跨国公司培养了大批国际化高级经营管理人才。',
+            title: '深圳校区',
+            buttonName: '前往',
+            pictureAddress: 'pictures/ShenzhenCampus.jpg',
+            buttonFunction: () => {
+                let sceneManager = new SceneManager()
+                sceneManager.LoadScene('Arch')
+            }
+        })
+    }
+}))
 
 
-export default class Earth extends SceneGraph{
+export default class Earth extends SceneGraph {
 
-    constructor(inputScene){
+    constructor(inputScene) {
         super(inputScene)
         // Singleton
-        if(instance)
-        {
+        if (instance) {
             return instance
         }
         instance = this
@@ -133,11 +136,11 @@ export default class Earth extends SceneGraph{
         this.debug_folder
     }
 
-    GenerateLight(){
+    GenerateLight() {
         console.log('do not generate light for earth')
     }
 
-    loadScene(){
+    loadScene() {
         this.debug_folder = window.debug_ui.addFolder('Earth');
         console.log("loading earth")
         super.loadScene()
@@ -146,17 +149,20 @@ export default class Earth extends SceneGraph{
             backgroundBlurriness: 1.0,
             backgroundIntensity: 0.0
         })
+
+        let rendererManager = new RendererManager()
+        this.originalClearColor = rendererManager.renderer.setClearColor(0x000000)
     }
 
-    
-    unloadScene(){
+
+    unloadScene() {
         infoPanel.destroy()
         this.debug_folder.destroy();
     }
 
-    Create2DPoints(){
-        
-        for(const element of tags){
+    Create2DPoints() {
+
+        for (const element of tags) {
             //element.hide()
             this.scene.add(element.getLabel())
         }
@@ -164,11 +170,11 @@ export default class Earth extends SceneGraph{
          * Points
          */
         points = [
-   
+
         ]
     }
 
-    CreateModels(){
+    CreateModels() {
 
         const earthParameters = {}
         earthParameters.atmosphereDayColor = '#709bff'
@@ -194,7 +200,7 @@ export default class Earth extends SceneGraph{
                 uDayTexture: new THREE.Uniform(earthDayTexture),
                 uNightTexture: new THREE.Uniform(earthNightTexture),
                 uSpecularClouds: new THREE.Uniform(earthSpecularCloudsTexture),
-                uSunDirection: new THREE.Uniform(new THREE.Vector3(0,0,1)),
+                uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 1)),
                 uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereDayColor)),
                 uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color(earthParameters.atmosphereTwilightColor)),
 
@@ -227,23 +233,21 @@ export default class Earth extends SceneGraph{
         })
 
         const atmosphere = new THREE.Mesh(earthGeometry, atmosphereMaterial)
-        atmosphere.scale.set(1.05,1.05,1.05)
+        atmosphere.scale.set(1.05, 1.05, 1.05)
         this.scene.add(atmosphere)
 
         atmosphere.rotation.y = Math.PI * 1.5
 
         this.debug_folder
             .addColor(earthParameters, 'atmosphereDayColor')
-            .onChange(() =>
-            {
+            .onChange(() => {
                 earthMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
                 atmosphereMaterial.uniforms.uAtmosphereDayColor.value.set(earthParameters.atmosphereDayColor)
             })
-    
+
         this.debug_folder
             .addColor(earthParameters, 'atmosphereTwilightColor')
-            .onChange(() =>
-            {
+            .onChange(() => {
                 earthMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
                 atmosphereMaterial.uniforms.uAtmosphereTwilightColor.value.set(earthParameters.atmosphereTwilightColor)
             })
@@ -251,7 +255,7 @@ export default class Earth extends SceneGraph{
         /**
          * Sun
          */
-        const sunSpherical = new THREE.Spherical(1, 1.4765485471872 , 1.1686724671354)
+        const sunSpherical = new THREE.Spherical(1, 1.4765485471872, 1.1686724671354)
         const sunDirection = new THREE.Vector3()
 
         const debugSun = new THREE.Mesh(
@@ -280,16 +284,16 @@ export default class Earth extends SceneGraph{
         this.debug_folder
             .add(sunSpherical, 'theta')
             .min(0)
-            .max(Math.PI* 2)
+            .max(Math.PI * 2)
             .onChange(updateSun)
 
 
         //generate 3 balls for 3 positions
         const geometry = new THREE.SphereGeometry(0.015, 8, 8);
         const material = new THREE.MeshBasicMaterial({
-             color: 0x880808,
-             //wireframe: true
-            });
+            color: 0x880808,
+            //wireframe: true
+        });
 
         const shanghaiSphere = new THREE.Mesh(geometry, material);
         this.scene.add(shanghaiSphere)
@@ -307,26 +311,26 @@ export default class Earth extends SceneGraph{
         shenzhenSphere.name = 'TagIgnore'
 
 
-        let axisHelper = new THREE.AxesHelper(100)
-        this.scene.add(axisHelper)
+        // let axisHelper = new THREE.AxesHelper(100)
+        // this.scene.add(axisHelper)
     }
 
     /**
      * set the ideal camera location that can view the stuffs in scene
      */
     setIdealCameraLocation(camera) {
-        camera.position.set(2.5908305488761316,1.5796517004673807,-1.3387671837256307)
+        camera.position.set(2.5908305488761316, 1.5796517004673807, -1.3387671837256307)
     }
 
-    isSceneReady(){
+    isSceneReady() {
         return true
     }
 
-    getPoints(){
+    getPoints() {
         return points;
     }
 
-    getTags(){
+    getTags() {
         return tags;
     }
 }
