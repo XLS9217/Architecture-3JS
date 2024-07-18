@@ -8,7 +8,7 @@ const sizes = {
 }
 
 export let sceneCameraManager = null
-let camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1500)
+let camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 1500)
 
 export default class SceneCameraManager{
     constructor(){

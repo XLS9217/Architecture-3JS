@@ -166,6 +166,6 @@ export default class DebugManager{
         };
         folder.add(window.gui_obj, 'sendPlaneJSON').name('Send plain json (edit in code)');
 
-        folder.open();
+        folder.close();
     }
 }

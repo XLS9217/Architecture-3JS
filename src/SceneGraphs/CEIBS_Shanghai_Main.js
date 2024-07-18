@@ -19,7 +19,7 @@ import RendererManager from "../Utils/RenderManager";
 import * as Support from './SH_Main_Supportive/SH_Main_Support.js';
 
 import AS_RoomDisplay from "../AdvenceScenes/AS_RoomDisplay.js";
-import { color, uniform } from "three/examples/jsm/nodes/Nodes.js";
+import { color, texture, uniform } from "three/examples/jsm/nodes/Nodes.js";
 
 let instance = null
 let modelLoader = null
@@ -260,6 +260,9 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
                         //room frame indicator
                         if(tokens.length > 2 && tokens[0] == 'Frame'){
+
+                            const folder = window.debug_ui.addFolder('Room Frame Control');
+
                             console.log('level tag '+child.name+' found at ' + child.position.x + ' ' + child.position.y + ' '+ child.position.z )
 
                             let selectUniform = new THREE.Uniform(false)
@@ -299,12 +302,10 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
 
                             //extra utility set color by room name
                             if(child.name.includes('教室')){
-                                //console.log('child.name.includes(教室)')
                                 newTag.setBackgroundColor(classroomColor)
                                 colorUniform = new THREE.Uniform(Support.hexToVector3(classroomColor))
                             }
                             else if(child.name.includes('讨论')){
-                                //console.log('child.name.includes(讨论)')
                                 newTag.setBackgroundColor(meetingroomColor)
                                 colorUniform = new THREE.Uniform(Support.hexToVector3(meetingroomColor))
                             }
@@ -326,7 +327,34 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                             child.renderOrder = Number.NEGATIVE_INFINITY;
                             this.roomFrames.push(child)
                         }
+                        //quick fix, if necessary, shoud edit in model
+                        else if (child.name.includes('L1') && (tokens[1] == '1')){
+                            console.log(child.name)
+                            child.material.onBeforeCompile = (shader) => {
+                                shader.uniforms.uGrassHue = new THREE.Uniform(1.0)
+                                window.debug_ui.add(shader.uniforms.uGrassHue, 'value').min(0.0).max(3.0).step(0.01).name('FloorHue')
 
+                                shader.fragmentShader = `
+                                    uniform float uGrassHue;
+                                    ${shader.fragmentShader}
+                                `
+
+                                shader.fragmentShader = shader.fragmentShader.replace(
+                                    '#include <lights_physical_fragment>',
+                                    `
+                                    diffuseColor.rgb *= uGrassHue;
+                        
+                                    #include <lights_physical_fragment>
+                                    `
+                                );
+
+                            }
+                            const param = {size: child.material.map.wrapS }
+                            window.debug_ui.add(param, 'size', 0.001, 0.2, 0.0005).name('FloorSize').onChange((value) => {
+                                child.material.map.repeat.set(value, value);
+                            });
+                        
+                        }
                     }
                 });
 
@@ -642,7 +670,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
         poolColors.waterColor = '#305e91'
         poolColors.tideColor = '#4794b8'
 
-        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix5', 'glb', (modelPtr) => {           
+        modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/', 'CEIBS_Ground_Fix7', 'glb', (modelPtr) => {           
             modelPtr.traverse((child) => {
                 child.receiveShadow = true
                 //console.log(child.name)
@@ -738,6 +766,7 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                 //console.log(child.name);
 
                 if (child.name.includes('Transparent') && child.isMesh) {
+                    
                     child.renderOrder = Number.NEGATIVE_INFINITY;
                     child.material.metalness = 1.0
                     child.material.roughness = 1.0

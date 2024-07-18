@@ -33,6 +33,8 @@ import RendererManager from './Utils/RenderManager';
  * Begin init scene prop -------------------------------------------------
  */
 
+window.heckFunction = []
+
 //UserState
 const userState = new UserState()
 //router
@@ -213,6 +215,7 @@ unrealButton.addEventListener('click', ()=>{
 //test ground end-----------------------------------------------------------------------------------------
 const clock = new THREE.Clock()
 let objectsToTest = interactiveModelManager.getInteractiveModels()
+
 
 /**
  * Core Loop for animation and rendering

@@ -12,6 +12,7 @@ import SceneManager from '../Utils/SceneManager'
 import SceneCameraManager from '../Utils/CameraManager'
 import { distance } from 'three/examples/jsm/nodes/Nodes.js'
 import InteractiveModelMangaer from '../Utils/InteractiveModelMangaer'
+import { gsap } from 'gsap'
 
 import DeviceFrameFragment from '../Shaders/FragmentShaders/DeviceSelectFrame_Fragment.glsl'
 import DeviceFrameVertex from '../Shaders/VertexShaders/DeviceSelectFrame_Vertex.glsl'
@@ -41,11 +42,28 @@ export default class AS_RoomDisplay{
 
         this.interactiveModelManager = new InteractiveModelMangaer()
         this.sceneManager = new SceneManager()
+
+        
+        let sceneManager = new  SceneManager()
+        this.viperShader = new THREE.ShaderMaterial({
+            vertexShader: ViperWaveVertex,
+            fragmentShader: ViperWaveFragment,
+            uniforms: {
+                uTime: sceneManager.GetTimeUniform(),
+                uWaveStrength: new THREE.Uniform(10),
+                uMaxDistance: new THREE.Uniform(220.0),
+                uWaveStillDistance: new THREE.Uniform(0.0),
+            },
+            side: THREE.DoubleSide,
+            transparent: true,
+            depthWrite: false
+        });
     }
 
     loadScene(){
         let rendererManager = new RendererManager()
         rendererManager.renderer.setClearColor(0x000000)
+        rendererManager.switch2TempScene(this)
         
         this.originCameraPos = this.cameraManager.getCamera().position
 
@@ -58,13 +76,14 @@ export default class AS_RoomDisplay{
             {
                 //add logic to model
                 const model = gltf.scene
-                this.scene.add(model)
                 model.scale.set(this.size, this.size, this.size)
                 this.modelCustomize(model)
-                
-                //tell rendererManager to render this
-                let rendererManager = new RendererManager()
-                rendererManager.switch2TempScene(this)
+
+                //simulate slow loading!!!!!
+                setTimeout(() => {
+                    this.scene.add(model)
+                    this.roomLoadedEffect()
+                }, 750)
             }
         )
 
@@ -98,8 +117,19 @@ export default class AS_RoomDisplay{
         }
     }
 
+    roomLoadedEffect(){
+        gsap.to(this.viperShader.uniforms.uWaveStillDistance, {
+            value: 200,
+            duration: 1.5
+        })
+
+        gsap.to(this.viperShader.uniforms.uWaveStrength, {
+            value: 200,
+            duration: 1.0
+        })
+    }
+
     createSpecialProps(){
-        let sceneManager = new  SceneManager()
 
         //lights
         const ambient = new THREE.AmbientLight('#ffffff',1.0)
@@ -113,23 +143,11 @@ export default class AS_RoomDisplay{
         //the plane
         const planeGeometry = new THREE.PlaneGeometry(600, 600, 50, 50);
 
+        this.debugFolder.add(this.viperShader.uniforms.uWaveStrength, 'value').name('wave s').min(0.0).max(10.0)
+        this.debugFolder.add(this.viperShader.uniforms.uMaxDistance, 'value').name('grid dist').min(0.0).max(300.0)
+        this.debugFolder.add(this.viperShader.uniforms.uWaveStillDistance, 'value').name('keep wave still').min(0.0).max(200.0)
 
-
-        const viperShader = new THREE.ShaderMaterial({
-            vertexShader: ViperWaveVertex,
-            fragmentShader: ViperWaveFragment,
-            uniforms: {
-                uTime: sceneManager.GetTimeUniform(),
-                uWaveStrength: new THREE.Uniform(1.5),
-            },
-            side: THREE.DoubleSide,
-            transparent: true,
-            depthWrite: false
-        });
-
-        this.debugFolder.add(viperShader.uniforms.uWaveStrength, 'value').name('wave s').min(0.0).max(10.0)
-
-        const viperGridPlane = new THREE.Mesh(planeGeometry, viperShader);
+        const viperGridPlane = new THREE.Mesh(planeGeometry, this.viperShader);
         viperGridPlane.rotation.x = -Math.PI / 2;
         viperGridPlane.position.y -= 10.0
         this.scene.add(viperGridPlane);
