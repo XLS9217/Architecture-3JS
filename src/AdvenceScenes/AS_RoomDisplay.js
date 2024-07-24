@@ -79,6 +79,8 @@ export default class AS_RoomDisplay{
                 model.scale.set(this.size, this.size, this.size)
                 this.modelCustomize(model)
 
+                //rendererManager.enableOutlinePass(model)
+
                 //simulate slow loading!!!!!
                 setTimeout(() => {
                     this.scene.add(model)
@@ -124,7 +126,7 @@ export default class AS_RoomDisplay{
         })
 
         gsap.to(this.viperShader.uniforms.uWaveStrength, {
-            value: 200,
+            value: 5.0,
             duration: 1.0
         })
     }
@@ -166,6 +168,7 @@ export default class AS_RoomDisplay{
     modelCustomize( model ){
         model.traverse((child) => {
             let tokens = child.name.split('_')
+            if(child.isMesh) child.material.side = THREE.DoubleSide
             //if(child.isMesh){
                 /**
                  * Click z in blender, then rename group to N S W E
@@ -185,7 +188,7 @@ export default class AS_RoomDisplay{
                     })
                 }
                 else if (tokens[0] == "Device") {
-                    console.log(child.name);
+                    //console.log(child.name);
                     if (!this.deviceReference[tokens[1]]) {
                         this.deviceReference[tokens[1]] = [];
                     }

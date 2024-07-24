@@ -56,21 +56,29 @@ export default class TestScene extends SceneGraph{
     }
 
     CreateModels(){
+        let rendererManager = new RendererManager()
         modelLoader = new ModelLoader(this.scene)
 
+
         modelLoader.Load2Scene('CEIBS_SH/Unified_Parts/','CEIBS_Ground_Fix','glb', (modelPtr)=>{
+        //modelLoader.Load2Scene('models/testModelsGLB/','FuDanShow','glb', (modelPtr)=>{
             modelPtr.traverse((child) => {
                 //console.log(child.name)
                 child.receiveShadow = true
             })
+
+            
+                
         })
+
 
 
         
         //let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/displayRoom.glb')
-        let classRoomDisplay = new AS_RoomDisplay('CEIBS_SH/Room_Device/ClassroomDisplay.glb', 5.0)
-        let rendererManager = new RendererManager()
-
+        //let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/FuDanShow_Fix2.glb', 5.0)
+        let classRoomDisplay = new AS_RoomDisplay('models/testModelsGLB/ByteDance.glb',5.0)
+        classRoomDisplay.loadScene()
+        rendererManager.enableOutlinePass();
         
         //classRoomDisplay.loadScene()
         let toggle = false;

@@ -46,8 +46,11 @@ let ArchitectureShells = {}
 //frame material
 // let classroomColor = 0xd30D44
 // let meetingroomColor = 0x0095EF
-let classroomColor = 0x812b2f
-let meetingroomColor = 0x00567b
+// let classroomColor = 0x812b2f
+// let meetingroomColor = 0x00567b
+// let classColorUniform = new THREE.Uniform(Support.hexToVector3(classroomColor))
+// let mrColorUniform = new THREE.Uniform(Support.hexToVector3(meetingroomColor))
+
 
 let clearColor = 0xffffff
 
@@ -234,6 +237,42 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                 let ss = '';
                 const levels = {};
                 let LevelKeyArray = [] //in case more button then keys, mod button using this
+
+                // Define initial colors
+                let classroomColor = 0x812b2f;
+                let meetingroomColor = 0x00567b;
+
+                // Convert hex colors to RGB objects
+                let classroomColorRGB = new THREE.Color(classroomColor);
+                let meetingroomColorRGB = new THREE.Color(meetingroomColor);
+
+                // Create uniforms for the colors
+                let classColorUniform = new THREE.Uniform(classroomColorRGB);
+                let mrColorUniform = new THREE.Uniform(meetingroomColorRGB);
+
+                // Add folder for room frame control
+                const roomFolder = window.debug_ui.addFolder('Room Frame Control');
+
+                // Add color picker for classroom color
+                roomFolder.addColor({ color: `#${classroomColor.toString(16)}` }, 'color')
+                    .name('Classroom Color')
+                    .onChange((value) => {
+                        // Convert the hex color string to a THREE.Color object
+                        let color = new THREE.Color(value);
+                        classColorUniform.value = color;
+                    });
+
+                // Add color picker for meeting room color
+                roomFolder.addColor({ color: `#${meetingroomColor.toString(16)}` }, 'color')
+                    .name('Meeting Room Color')
+                    .onChange((value) => {
+                        // Convert the hex color string to a THREE.Color object
+                        let color = new THREE.Color(value);
+                        mrColorUniform.value = color;
+                    });
+
+                
+
                 modelPtr.traverse((child) => {
                     ss += child.name + '\n';
 
@@ -261,7 +300,6 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                         //room frame indicator
                         if(tokens.length > 2 && tokens[0] == 'Frame'){
 
-                            const folder = window.debug_ui.addFolder('Room Frame Control');
 
                             console.log('level tag '+child.name+' found at ' + child.position.x + ' ' + child.position.y + ' '+ child.position.z )
 
@@ -303,11 +341,13 @@ export default class CEIBS_Shanghai_Main extends SceneGraph {
                             //extra utility set color by room name
                             if(child.name.includes('教室')){
                                 newTag.setBackgroundColor(classroomColor)
-                                colorUniform = new THREE.Uniform(Support.hexToVector3(classroomColor))
+                                //colorUniform = new THREE.Uniform(Support.hexToVector3(classroomColor))
+                                colorUniform = classColorUniform
                             }
                             else if(child.name.includes('讨论')){
                                 newTag.setBackgroundColor(meetingroomColor)
-                                colorUniform = new THREE.Uniform(Support.hexToVector3(meetingroomColor))
+                                //colorUniform = new THREE.Uniform(Support.hexToVector3(meetingroomColor))
+                                colorUniform = mrColorUniform
                             }
 
                             //customize the material

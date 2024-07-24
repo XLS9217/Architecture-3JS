@@ -21,5 +21,5 @@ void main() {
     alpha *= 0.75 + vWaveStillFactor * 0.25;
 
     gl_FragColor = vec4(color, alpha);
-    //gl_FragColor = vec4(vec3(vWaveStillFactor), alpha);
+    //gl_FragColor = vec4(vec3(vGridDistFactor), alpha);
 }

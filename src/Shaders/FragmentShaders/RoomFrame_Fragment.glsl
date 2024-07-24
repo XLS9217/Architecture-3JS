@@ -24,8 +24,8 @@ void main(){
     vec3 worldTagPos = (vModelMatrix * vec4(uTagPosition,1.0)).xyz;
     float fadeFromTop = worldTagPos.y - vModelPosition.y;
 
-    float yGapPattern = mod(vModelPosition.y + uTime, uYGap);
-    alpha = yGapPattern;
+    // float yGapPattern = mod(vModelPosition.y + uTime, uYGap);
+    // alpha = yGapPattern;
 
     alpha = clamp(0.3, 0.8, alpha);
 
@@ -49,13 +49,13 @@ void main(){
     }
 
     //the glich effect
-    float glitchGap = 3.0;
-    if(uIsSelected){
-        glitchGap *= 2.0;
-        color *= mod(gl_FragCoord.x + uTime, glitchGap);
-    }else{
-        color *= mod(gl_FragCoord.y, glitchGap);
-    }
+    // float glitchGap = 3.0;
+    // if(uIsSelected){
+    //     glitchGap *= 2.0;
+    //     color *= mod(gl_FragCoord.x + uTime, glitchGap);
+    // }else{
+    //     color *= mod(gl_FragCoord.y, glitchGap);
+    // }
     
 
 
